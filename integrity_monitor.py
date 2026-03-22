@@ -1537,50 +1537,44 @@ class RealTimeHandler(FileSystemEventHandler):
     def _check_file(self, file_path, change_type):
         """Check if file change warrants an alert"""
         severity = self._determine_severity(file_path)
-        
-        # Get file info if file still exists
-        file_info = None
+    
+    # Get file size if file still exists
+        file_size = None
         if os.path.exists(file_path) and change_type != 'DELETED':
             try:
-                stat = os.stat(file_path)
-                file_info = {
-                    'size': stat.st_size,
-                    'modified': datetime.fromtimestamp(stat.st_mtime).isoformat()
-                }
+                file_size = os.path.getsize(file_path)
             except:
                 pass
-        
-        alert = {
-            'timestamp': datetime.now().isoformat(),
-            'type': change_type,
-            'path': file_path,
-            'severity': severity,
-            'file_info': file_info
-        }
-        
-        self.alert_manager.add_alert(alert)
     
+    # CORRECT: Pass separate arguments instead of a dictionary
+        self.alert_manager.add_alert(
+            alert_type=change_type,
+            path=file_path,
+            severity=severity,
+            size=file_size
+        )
+    # ===================
     def _check_move(self, src_path, dest_path):
         """Check if file move is suspicious"""
         severity = self._determine_severity(dest_path)
-        
-        # Check if moved to/from suspicious location
+    
+    # Check if moved to/from suspicious location
         src_suspicious = any(loc in src_path.lower() for loc in self.suspicious_locations)
         dest_suspicious = any(loc in dest_path.lower() for loc in self.suspicious_locations)
-        
+    
         if src_suspicious or dest_suspicious:
             severity = 'HIGH'
-        
-        alert = {
-            'timestamp': datetime.now().isoformat(),
-            'type': 'MOVED',
-            'src_path': src_path,
-            'dest_path': dest_path,
-            'severity': severity
-        }
-        
-        self.alert_manager.add_alert(alert)
     
+    # CORRECT: Pass separate arguments with src_path and dest_path as kwargs
+        self.alert_manager.add_alert(
+            alert_type='MOVED',
+            path=dest_path,
+            severity=severity,
+            src_path=src_path,
+            dest_path=dest_path
+        )
+
+    # ===============
     def _determine_severity(self, file_path):
         """Determine alert severity based on file path"""
         file_lower = file_path.lower()
@@ -1679,20 +1673,43 @@ class AlertManager:
         self.running = False
         print(f"{Fore.YELLOW}Real-time monitoring stopped{Style.RESET_ALL}")
     
-    def add_alert(self, alert):
-        """Add a new alert and display it"""
-        self.alerts.append(alert)
-        
-        # Keep only last 1000 alerts
-        if len(self.alerts) > 1000:
-            self.alerts = self.alerts[-1000:]
-        
-        # Display alert immediately
-        self._display_alert(alert)
-        
-        # Save to file
-        self._save_alert(alert)
+    def add_alert(self, alert_type, path, severity="LOW", **kwargs):
+        """Add a security alert with proper JSON serialization"""
+        try:
+            alert = {
+                'timestamp': datetime.now().isoformat(),
+                'type': alert_type,
+                'path': str(path),  # Ensure path is string
+                'severity': severity,
+                'size': kwargs.get('size', None),
+                'src_path': str(kwargs.get('src_path', '')),
+                'dest_path': str(kwargs.get('dest_path', '')),
+            }
     
+        # Convert any non-serializable objects
+            for key, value in alert.items():
+                if hasattr(value, 'isoformat'):  # datetime objects
+                    alert[key] = value.isoformat()
+                elif isinstance(value, bytes):
+                    alert[key] = value.decode('utf-8', errors='replace')
+                elif not isinstance(value, (str, int, float, bool, list, dict, type(None))):
+                    alert[key] = str(value)
+    
+        # Add to alerts list
+            self.alerts.append(alert)
+    
+        # Save to file
+            self._save_alert(alert)
+    
+        # Display alert
+            self._display_alert(alert)
+    
+        except Exception as e:
+            print(f"Failed to add alert: {e}")
+        # Don't raise the exception, just log it
+            print(f"Alert data that failed: {alert_type}, {path}")
+        # ==============
+    # ====end add alerts======
     def _display_alert(self, alert):
         """Display alert in real-time"""
         severity_colors = {
@@ -1732,28 +1749,52 @@ class AlertManager:
         return f"{size_bytes:.1f} TB"
     
     def _save_alert(self, alert):
-        """Save alert to file"""
-        alert_file = os.path.join(self.integrity_monitor.report_dir, 'alerts.json')
-        
+        """Save alert to JSON file with proper escaping"""
         try:
-            if os.path.exists(alert_file):
-                with open(alert_file, 'r') as f:
-                    alerts = json.load(f)
-            else:
-                alerts = []
-            
+        # Create alerts directory if it doesn't exist
+            alerts_dir = os.path.join("data", "alerts")
+            os.makedirs(alerts_dir, exist_ok=True)
+        
+            alerts_file = os.path.join(alerts_dir, "alerts.json")
+        
+        # Load existing alerts
+            alerts = []
+            if os.path.exists(alerts_file):
+                try:
+                    with open(alerts_file, 'r', encoding='utf-8') as f:
+                        content = f.read()
+                        if content.strip():
+                            alerts = json.loads(content)
+                except json.JSONDecodeError as e:
+                    print(f"Error reading alerts file: {e}")
+                # Backup corrupted file
+                    backup_file = alerts_file + ".backup"
+                    shutil.copy2(alerts_file, backup_file)
+                    print(f"Backed up corrupted file to {backup_file}")
+                    alerts = []
+                except Exception as e:
+                    print(f"Error loading alerts: {e}")
+                    alerts = []
+        
+        # Add new alert
             alerts.append(alert)
-            
-            # Keep only last 1000 alerts
+        
+        # Keep only last 1000 alerts
             if len(alerts) > 1000:
                 alerts = alerts[-1000:]
+        
+        # Write back with proper encoding and JSON formatting
+            with open(alerts_file, 'w', encoding='utf-8') as f:
+                json.dump(alerts, f, indent=2, ensure_ascii=False, default=str)
             
-            with open(alert_file, 'w') as f:
-                json.dump(alerts, f, indent=2)
-                
         except Exception as e:
-            print(f"{Fore.RED}Failed to save alert: {e}{Style.RESET_ALL}")
-    
+            print(f"Failed to save alert: {e}")
+        # Optionally log to a fallback file
+            fallback_file = os.path.join("data", "alerts", "alerts_fallback.txt")
+            with open(fallback_file, 'a', encoding='utf-8') as f:
+                f.write(f"{alert}\n")
+
+            # =======end save alerts======
     def get_alerts(self, severity=None, limit=100):
         """Get recent alerts"""
         if severity:

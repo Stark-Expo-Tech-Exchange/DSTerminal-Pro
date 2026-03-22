@@ -633,43 +633,88 @@ class SecurityTerminal:
         self.current_dir = workspace_root
         self.workspace_root = workspace_root
         self.crypto = CryptoEngine(os.getcwd())
-        # self.integrity = SystemIntegrityMonitor()
-            # Initialize integrity monitor if available
-         # Use the global variable
+    
+    # Use the global variable
         global INTEGRITY_AVAILABLE
-        
-        # Initialize integrity monitor if available
+    
+    # Create required directories first
+        data_dirs = [
+            "data/baselines",
+            "data/integrity_reports", 
+            "data/quarantine",
+            "data/alerts"
+        ]
+    
+        for dir_path in data_dirs:
+            try:
+                os.makedirs(dir_path, exist_ok=True)
+            except Exception as e:
+                print(f"{Fore.YELLOW}⚠ Could not create {dir_path}: {e}{Style.RESET_ALL}")
+    
+    # Initialize integrity monitor
+        self.integrity = None
+        self.alert_manager = None
+    
         if INTEGRITY_AVAILABLE:
             try:
+                from integrity_monitor import SystemIntegrityMonitor, AlertManager, ForensicAnalyzer
+            
+            # Initialize integrity monitor
                 self.integrity = SystemIntegrityMonitor()
-                # Create data directories if they don't exist
-                os.makedirs("data/baselines", exist_ok=True)
-                os.makedirs("data/integrity_reports", exist_ok=True)
-                os.makedirs("data/quarantine", exist_ok=True)
+            
+            # Initialize alert manager with better error handling
+                try:
+                    self.alert_manager = AlertManager(self.integrity)
+                    self.alert_manager.alerts = []  # Initialize alerts list
+                
+                # Load existing alerts if any
+                    alerts_file = os.path.join("data", "alerts", "alerts.json")
+                    if os.path.exists(alerts_file):
+                        try:
+                            with open(alerts_file, 'r', encoding='utf-8') as f:
+                                content = f.read()
+                                if content.strip():
+                                    self.alert_manager.alerts = json.loads(content)
+                        except json.JSONDecodeError as e:
+                            print(f"{Fore.YELLOW}⚠ Corrupted alerts file, starting fresh: {e}{Style.RESET_ALL}")
+                        # Backup corrupted file
+                            backup_file = alerts_file + ".backup"
+                            if os.path.exists(alerts_file):
+                                import shutil
+                                shutil.copy2(alerts_file, backup_file)
+                                print(f"{Fore.YELLOW}⚠ Backed up corrupted alerts to {backup_file}{Style.RESET_ALL}")
+                            self.alert_manager.alerts = []
+                        except Exception as e:
+                            print(f"{Fore.YELLOW}⚠ Error loading alerts: {e}{Style.RESET_ALL}")
+                            self.alert_manager.alerts = []
+                        
+                except Exception as e:
+                    print(f"{Fore.YELLOW}⚠ Alert Manager initialization failed: {e}{Style.RESET_ALL}")
+                    self.alert_manager = None
+                
                 if COLORS_AVAILABLE:
                     print(f"{Fore.GREEN}✓ Integrity Monitor initialized{Style.RESET_ALL}")
                 else:
                     print("✓ Integrity Monitor initialized")
-            except Exception as e:
-                if COLORS_AVAILABLE:
-                    print(f"{Fore.RED}✗ Failed to initialize Integrity Monitor: {e}{Style.RESET_ALL}")
-                else:
-                    print(f"✗ Failed to initialize Integrity Monitor: {e}")
+                
+            except ImportError as e:
+                print(f"{Fore.RED}✗ Failed to import Integrity Monitor modules: {e}{Style.RESET_ALL}")
                 self.integrity = None
+                self.alert_manager = None
+                INTEGRITY_AVAILABLE = False
+            
+            except Exception as e:
+                print(f"{Fore.RED}✗ Failed to initialize Integrity Monitor: {e}{Style.RESET_ALL}")
+                self.integrity = None
+                self.alert_manager = None
                 INTEGRITY_AVAILABLE = False
         else:
-            self.integrity = None
             if COLORS_AVAILABLE:
                 print(f"{Fore.YELLOW}⚠ Integrity Monitor disabled{Style.RESET_ALL}")
             else:
                 print("⚠ Integrity Monitor disabled")
-        
-        # Initialize alert manager later when needed
-        self.alert_manager = None
-
-        # Initialize alert manager later when needed
-        self.alert_manager = None
-
+    
+    # Initialize other components
         self.console = Console()
         self.scan_queue = queue.Queue()
         self.scan_results = {}
@@ -681,33 +726,82 @@ class SecurityTerminal:
         self.services_found = []
         self.nmap_mode = False
 
-        # Set up workspace root and current directory
+    # Set up workspace root and current directory
         self.workspace_root = os.path.abspath("DSTerminal_Workspace")
         self.current_dir = self.workspace_root
-        
-        # Create workspace if it doesn't exist
+    
+    # Create workspace if it doesn't exist
         if not os.path.exists(self.workspace_root):
             os.makedirs(self.workspace_root)
-            # print(f"{Fore.GREEN}[+] Created workspace: {self.workspace_root}{Style.RESET_ALL}")
-        
-        # Create default directories
+    
+    # Create default directories
         default_dirs = ["exploits", "reports", "sandbox", "scans"]
         for dir_name in default_dirs:
             dir_path = os.path.join(self.workspace_root, dir_name)
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
-        
+    
         self.terminal_width = self._get_terminal_width()
 
-        # Initialize encryption
-        # self.cipher = None
-        # self.init_cipher()
- 
-        # Virtual filesystem directory
+    # Virtual filesystem directory
         self.vfs_root = os.path.expanduser("~/.dsterminal_vfs")
         self.ensure_vfs()
 
     # =========initializing operator workspace and username and session logging===========
+    def _safe_save_alert(self, alert):
+        """Safely save alert with proper JSON serialization"""
+        if not self.alert_manager:
+            return False
+    
+        try:
+        # Ensure alert data is JSON serializable
+            safe_alert = {}
+            for key, value in alert.items():
+                if hasattr(value, 'isoformat'):
+                    safe_alert[key] = value.isoformat()
+                elif isinstance(value, bytes):
+                    safe_alert[key] = value.decode('utf-8', errors='replace')
+                elif isinstance(value, (str, int, float, bool, list, dict, type(None))):
+                    safe_alert[key] = value
+                else:
+                    safe_alert[key] = str(value)
+        
+        # Add to alerts list
+            self.alert_manager.alerts.append(safe_alert)
+        
+        # Keep only last 1000 alerts
+            if len(self.alert_manager.alerts) > 1000:
+                self.alert_manager.alerts = self.alert_manager.alerts[-1000:]
+        
+        # Save to file
+            alerts_file = os.path.join("data", "alerts", "alerts.json")
+            with open(alerts_file, 'w', encoding='utf-8') as f:
+                json.dump(self.alert_manager.alerts, f, indent=2, ensure_ascii=False, default=str)
+        
+            return True
+        
+        except Exception as e:
+            print(f"Failed to save alert: {e}")
+        # Write to fallback file
+            fallback_file = os.path.join("data", "alerts", "alerts_fallback.txt")
+            try:
+                with open(fallback_file, 'a', encoding='utf-8') as f:
+                    f.write(f"{alert}\n")
+            except:
+                pass
+            return False
+
+    def _check_integrity_available(self):
+        """Check if integrity monitor is available and show helpful message if not"""
+        if not hasattr(self, 'integrity') or self.integrity is None:
+            print(f"{Fore.RED}Integrity monitor not initialized.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Possible reasons:{Style.RESET_ALL}")
+            print(f"  {Fore.CYAN}• integrity_monitor.py file not found{Style.RESET_ALL}")
+            print(f"  {Fore.CYAN}• Missing dependencies: pip install watchdog{Style.RESET_ALL}")
+            print(f"  {Fore.CYAN}• Check that the file exists in: {os.getcwd()}{Style.RESET_ALL}")
+            return False
+        return True
+    
     def typewriter(self, text, delay=0.03):
         """Simulate typing animation"""
         for char in text:
@@ -6281,6 +6375,9 @@ class SecurityTerminal:
         # ------------integrity section===========
             # Handle integrity commands (with typo tolerance)
         elif cmd in ['integrity', 'integrit', 'integ', 'int']:
+            # check if integrity monitor is avilable
+            if not self._check_integrity_available():
+                return True
             if len(args) > 0:
                 subcmd = args[0].lower()
             

@@ -1,8 +1,0 @@
-# Nmap 7.98 scan initiated Tue Mar 10 18:25:35 2026 as: nmap -oN C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\DSTerminal_Workspace\\scans\\nmap_must_ac_mw_20260310_182535.txt must.ac.mw
-Nmap scan report for must.ac.mw (34.29.140.80)
-Host is up (0.31s latency).
-rDNS record for 34.29.140.80: 80.140.29.34.bc.googleusercontent.com
-All 1000 scanned ports on must.ac.mw (34.29.140.80) are in ignored states.
-Not shown: 1000 filtered tcp ports (no-response)
-
-# Nmap done at Tue Mar 10 18:30:50 2026 -- 1 IP address (1 host up) scanned in 314.78 seconds

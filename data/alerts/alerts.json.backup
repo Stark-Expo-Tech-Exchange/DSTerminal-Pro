@@ -1,0 +1,5216 @@
+[
+  {
+    "timestamp": "2026-03-22T16:55:19.115363",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Network\\Cookies-journal",
+    "severity": "LOW",
+    "size": 12824
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.166836",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 242
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.184254",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Network\\Cookies-journal",
+    "severity": "LOW",
+    "size": 12824
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.198770",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 746
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.212078",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 1012
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.226272",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Network\\Cookies",
+    "severity": "LOW",
+    "size": 196608
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.237347",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 1511
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.250648",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\Network\\Cookies-journal",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.268427",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 2013
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.284761",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 2280
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.296901",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 2547
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.309552",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 2814
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.320263",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 3081
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.332773",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 3348
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.345867",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 3615
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.358052",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 3882
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.368739",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 4149
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.385801",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 4416
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.400953",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 4683
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.413892",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 4950
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.426353",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 5217
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.437922",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 5484
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.451009",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 5751
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.467054",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 6018
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.480251",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 6285
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.495066",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 6552
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.508868",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 6819
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.521795",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 7086
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.534059",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 7353
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.546558",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 7620
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.558544",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 7887
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.569369",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 8154
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.582127",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 8421
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.594159",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 8688
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.608139",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 8955
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.618914",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 9222
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.779346",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 9489
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.812467",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 9756
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.830498",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 10023
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.843125",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 10291
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.853512",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 10559
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.894275",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 10827
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.904703",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 11095
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.917221",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 11363
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.930433",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 11631
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.943209",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 11899
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.957376",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 12167
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.969939",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 12435
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.982240",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 12703
+  },
+  {
+    "timestamp": "2026-03-22T16:55:19.996290",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 12971
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.009678",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 13239
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.020403",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 13507
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.033584",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 13775
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.047803",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 14043
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.061772",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 14311
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.075102",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 14579
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.086746",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 14847
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.099194",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 15115
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.112568",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 15383
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.131377",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 15651
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.144833",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 15919
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.157904",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 16187
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.170750",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 16455
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.184035",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 16723
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.217589",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 16991
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.231328",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 17259
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.244558",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 17527
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.256093",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 17795
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.272105",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 18063
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.300716",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 18331
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.314752",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 18599
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.328558",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 18867
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.340453",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 19135
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.353958",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 19403
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.370223",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 19671
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.390735",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 19939
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.403987",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 20207
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.417862",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 20475
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.431863",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 20743
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.471570",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 21011
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.485505",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 21279
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.499569",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 21547
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.513770",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 21815
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.528826",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 22083
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.540558",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 22351
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.555730",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 22619
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.569901",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 22887
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.583503",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 23155
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.596606",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 23423
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.609663",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 23691
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.621853",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 23959
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.635707",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 24227
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.649308",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 24495
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.662994",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 24763
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.676696",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 25031
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.688471",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 25299
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.703084",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 25567
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.717027",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 25835
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.732409",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 26103
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.747999",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 26371
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.762637",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 26639
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.775954",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 26907
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.789629",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 27175
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.803748",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 27443
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.818007",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 27711
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.835477",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 27979
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.852545",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 28247
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.867361",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 28515
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.883077",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 28783
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.899950",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 29051
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.914598",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 29319
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.928015",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 29587
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.940708",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 29855
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.954791",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 30123
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.968839",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 30391
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.983310",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 30659
+  },
+  {
+    "timestamp": "2026-03-22T16:55:20.996970",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 30927
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.011021",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 31195
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.023973",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 31463
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.038125",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 31731
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.052755",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 31999
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.066258",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 32267
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.081552",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 32535
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.095022",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 32803
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.108081",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 33071
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.122317",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 33339
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.293080",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 33607
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.340005",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 33875
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.357205",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 34143
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.372372",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 34411
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.390431",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 34679
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.406852",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 34947
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.429854",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 35215
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.447960",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 35483
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.462358",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 35751
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.475790",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 36019
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.491177",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 36287
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.506139",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 36555
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.522414",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 36823
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.537535",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 37091
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.552771",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 37359
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.567739",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 37627
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.582912",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 37895
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.598368",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 38163
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.615894",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 38431
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.630952",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 38699
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.647108",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 38967
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.661888",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 39235
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.676705",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 39503
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.691881",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 39771
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.706678",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 40039
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.722566",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 40307
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.737668",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 40575
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.752751",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 40843
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.767154",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 41111
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.781859",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 41379
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.797087",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 41647
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.812866",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 41915
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.828075",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 42183
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.843608",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 42451
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.858866",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 42719
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.874786",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 42987
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.889361",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 43255
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.905225",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 43523
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.920709",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 43791
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.936348",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 44059
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.951416",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 44327
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.966817",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 44595
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.982583",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 44863
+  },
+  {
+    "timestamp": "2026-03-22T16:55:21.997384",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 45131
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.011407",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 45399
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.027417",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 45667
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.043051",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 45935
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.058856",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 46203
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.074257",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 46471
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.090040",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 46739
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.105971",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 47007
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.125574",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 47275
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.143625",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 47543
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.159375",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 47811
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.175991",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 48079
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.194019",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 48347
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.216035",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 48615
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.232708",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 48883
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.249402",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 49151
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.266219",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 49419
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.281838",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 49687
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.298793",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 49955
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.315774",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 50223
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.333574",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 50491
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.350190",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 50759
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.400909",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 51027
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.416624",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 51295
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.433635",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 51563
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.450984",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 51831
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.467238",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 52099
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.483922",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 52367
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.500529",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 52635
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.516925",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 52903
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.534561",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 53171
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.550862",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 53439
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.567917",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 53707
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.586375",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 53975
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.603424",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 54243
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.619954",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 54511
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.636891",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 54779
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.653725",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 55047
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.670302",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 55315
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.686859",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 55583
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.703347",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 55851
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.719063",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 56119
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.735587",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 56387
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.751723",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 56655
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.770456",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 56923
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.787127",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 57191
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.803684",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 57459
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.820524",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 57727
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.839557",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 57995
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.857848",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 58263
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.877324",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 58531
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.894344",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 58799
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.911009",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 59067
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.928180",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 59335
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.946297",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 59603
+  },
+  {
+    "timestamp": "2026-03-22T16:55:22.964859",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 59871
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.131607",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 60139
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.179131",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 60407
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.196874",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 60675
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.215219",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 60943
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.239489",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 61211
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.267819",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 61479
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.291235",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 61747
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.309578",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 62015
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.329040",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 62283
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.353167",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 62551
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.376630",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 62819
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.399238",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 63087
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.417579",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 63355
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.438260",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 63623
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.457137",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 63891
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.474582",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 64159
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.523450",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 64427
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.543308",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 64695
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.561770",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 64963
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.580162",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 65231
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.600554",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 65499
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.624587",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 65767
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.647441",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 66035
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.670958",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 66303
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.690456",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 66571
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.708509",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 66839
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.726476",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 67107
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.745853",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 67375
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.764137",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 67643
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.783316",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 67911
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.803286",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 68179
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.822673",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 68447
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.841379",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 68715
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.859018",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 68983
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.877279",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 69251
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.895792",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 69519
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.914021",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 69787
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.933466",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 70055
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.955985",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 70323
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.976502",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 70591
+  },
+  {
+    "timestamp": "2026-03-22T16:55:23.995189",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 70859
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.019544",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 71127
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.039415",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 71395
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.059459",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 71663
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.077812",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 71931
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.096359",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 72199
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.120913",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 72467
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.187030",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 72735
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.210349",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 73003
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.233192",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 73271
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.255959",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 73539
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.440995",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 73807
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.479072",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 74075
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.509484",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 74343
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.531074",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 74611
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.550422",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 74879
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.570807",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 75147
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.593027",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 75415
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.612138",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 75683
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.631608",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 75951
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.650902",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 76219
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.671064",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 76487
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.689523",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 76755
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.711047",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 77023
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.734557",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 77291
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.753622",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 77559
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.807096",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 77827
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.827706",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 78095
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.846728",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 78363
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.866344",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 78631
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.886762",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 78899
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.910075",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 79167
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.930011",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 79435
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.950606",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 79703
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.972594",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 79971
+  },
+  {
+    "timestamp": "2026-03-22T16:55:24.993090",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 80239
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.012668",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 80507
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.031932",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 80775
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.050605",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 81043
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.069915",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 81311
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.091288",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 81579
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.121238",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 81847
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.142291",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 82115
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.163028",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 82383
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.183382",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 82651
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.202734",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 82919
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.223188",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 83187
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.251447",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 83455
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.270286",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 83723
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.290440",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 83991
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.312106",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 84259
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.334817",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 84527
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.355833",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 84795
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.380887",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 85063
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.406140",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 85331
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.431719",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 85599
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.451785",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 85867
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.473002",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 86135
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.547659",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 86403
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.571817",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 86671
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.596258",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 86939
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.619734",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 87207
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.642057",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 87475
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.664724",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 87743
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.686651",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 88011
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.708033",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 88279
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.729866",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 88547
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.751035",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 88815
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.770788",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 89083
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.791649",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 89351
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.816848",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 89619
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.837197",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 89887
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.862696",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 90155
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.890795",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 90423
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.911253",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 90691
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.933778",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 90959
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.954317",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 91227
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.975191",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 91495
+  },
+  {
+    "timestamp": "2026-03-22T16:55:25.998866",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 91763
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.211521",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 92031
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.264392",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 92299
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.292429",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 92567
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.318087",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 92835
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.340246",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 93103
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.370169",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 93371
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.403105",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 93639
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.425949",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 93907
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.450872",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 94175
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.475284",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 94443
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.503101",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 94711
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.526250",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 94979
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.553316",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 95247
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.577260",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 95515
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.603744",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 95783
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.627498",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 96051
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.654023",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 96319
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.677278",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 96587
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.704708",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 96855
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.734978",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 97123
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.760573",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 97391
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.786035",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 97659
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.808288",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 97927
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.836021",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 98195
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.893277",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 98463
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.925201",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 98731
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.946205",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 98999
+  },
+  {
+    "timestamp": "2026-03-22T16:55:26.976946",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 99267
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.008099",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 99535
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.031238",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 99803
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.055070",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 100071
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.077642",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 100340
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.103163",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 100609
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.125389",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 100878
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.148872",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 101147
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.179380",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 101416
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.209298",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 101685
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.239861",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 101954
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.262582",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 102223
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.288523",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 102492
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.313760",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 102761
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.340551",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 103030
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.418664",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 103299
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.441348",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 103568
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.464625",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 103837
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.499874",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 104106
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.545127",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 104375
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.577203",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 104644
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.660852",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 104913
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.707136",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 105182
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.744243",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 105451
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.768282",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 105720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.790438",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 105989
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.819863",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 106258
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.856822",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 106527
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.882416",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 106796
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.904029",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 107065
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.922085",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 107334
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.941457",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 107603
+  },
+  {
+    "timestamp": "2026-03-22T16:55:27.962742",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 107872
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.013418",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Programs\\Microsoft VS Code\\ce099c1ed2\\resources\\app\\node_modules\\node-pty\\package.json",
+    "severity": "LOW",
+    "size": 1695
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.150245",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 108411
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.182542",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 108680
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.210496",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 108949
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.269305",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 109218
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.296460",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 109487
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.331798",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 109756
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.360049",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 110025
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.388155",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 110294
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.414199",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 110563
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.504710",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 110832
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.530548",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 111101
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.565019",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 111370
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.590529",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 111639
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.620313",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 111908
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.645498",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 112177
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.672350",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 112446
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.696900",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 112715
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.744613",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 112984
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.768219",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 8720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.792690",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 113514
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.850728",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 8720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.875766",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 114045
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.934268",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 8720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.959847",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 114576
+  },
+  {
+    "timestamp": "2026-03-22T16:55:28.992284",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb",
+    "severity": "LOW",
+    "size": 143360
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.016926",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 115101
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.377444",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.411462",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.465730",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 115855
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.512892",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 116124
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.541079",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 116393
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.568840",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 116662
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.624564",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 116931
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.672158",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 117200
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.703351",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_s5juahvf.ads.ps1",
+    "severity": "HIGH",
+    "size": 60
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.734563",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_s5juahvf.ads.ps1",
+    "severity": "HIGH",
+    "size": 60
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.773116",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 117906
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.802696",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_do2jblvp.gcl.psm1",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.835702",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_do2jblvp.gcl.psm1",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.866728",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 118578
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.914981",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_s5juahvf.ads.ps1",
+    "severity": "HIGH"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.946070",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\__PSScriptPolicyTest_do2jblvp.gcl.psm1",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.969675",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 119249
+  },
+  {
+    "timestamp": "2026-03-22T16:55:29.993975",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 119518
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.026248",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 119787
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.056956",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 120056
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.089088",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 120325
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.122655",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 120594
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.153515",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 120863
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.188918",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 121132
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.223402",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 121401
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.259395",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 121670
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.295299",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 121939
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.335888",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 122208
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.381010",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\77EC63BDA74BD0D0E0426DC8F8008506",
+    "severity": "LOW",
+    "size": 330
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.415571",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\57C8EDB95DF3F0AD4EE2DC2B8CFD4157",
+    "severity": "LOW",
+    "size": 342
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.440642",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\FB0D848F74F70BB2EAA93746D24D9749",
+    "severity": "LOW",
+    "size": 330
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.475999",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 123227
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.516671",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\LocalLow\\Microsoft\\CryptnetUrlCache\\MetaData\\FB0D848F74F70BB2EAA93746D24D9749",
+    "severity": "LOW",
+    "size": 330
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.543674",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 123746
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.576411",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\IndexedDB\\https_chat.deepseek.com_0.indexeddb.leveldb\\000142.log",
+    "severity": "MEDIUM",
+    "size": 720805
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.612317",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 124300
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.639206",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 124569
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.666368",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 124838
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.723953",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 125107
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.751869",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 125376
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.784915",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 125645
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.819652",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 125914
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.846016",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 126183
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.875976",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 126452
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.909830",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 126721
+  },
+  {
+    "timestamp": "2026-03-22T16:55:30.945113",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 126990
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.065006",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 127259
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.105398",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 127528
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.139753",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 127797
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.167368",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 128066
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.205796",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 128335
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.234996",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 128604
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.272816",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 128873
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.308577",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 129142
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.343852",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 129411
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.376067",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 129680
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.411101",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 129949
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.443341",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 130218
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.479352",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 130487
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.518926",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 130756
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.714010",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 131025
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.782281",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 8720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.809669",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 131518
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.835641",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 8720
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.864469",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 132012
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.893225",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.925063",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 132487
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.949837",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb",
+    "severity": "LOW",
+    "size": 319488
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.975926",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 132975
+  },
+  {
+    "timestamp": "2026-03-22T16:55:31.999936",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.029827",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.058184",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 133655
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.087962",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 133924
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.113922",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 134193
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.148029",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 134462
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.176559",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 134731
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.212668",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 135000
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.242290",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 135269
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.273472",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 135538
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.304072",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 135807
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.355980",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 136076
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.388170",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 136345
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.416440",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 136614
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.444776",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 136883
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.473978",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 137152
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.498689",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 137421
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.526185",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 137690
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.551839",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 137959
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.583116",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 138228
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.611692",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 138497
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.639044",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 138766
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.670075",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 139035
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.698113",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 139304
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.724739",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 139573
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.754483",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 139842
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.785806",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 140111
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.814621",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 140380
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.843643",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 140649
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.868968",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 140918
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.930309",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 141187
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.960168",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 141456
+  },
+  {
+    "timestamp": "2026-03-22T16:55:32.987375",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 141725
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.026649",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 141994
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.081816",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 142263
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.118143",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt",
+    "severity": "LOW",
+    "size": 63264
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.157244",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 142779
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.190142",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 143048
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.220021",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 143317
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.252583",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 143586
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.286093",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 143855
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.319342",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 144124
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.350971",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 144393
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.389663",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\WebStorage\\QuotaManager-journal",
+    "severity": "LOW",
+    "size": 12824
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.428126",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 144909
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.485373",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\WebStorage\\QuotaManager-journal",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.523390",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 145421
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.568218",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\WebStorage\\QuotaManager",
+    "severity": "LOW",
+    "size": 40960
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.598278",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 145929
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.628984",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Microsoft\\Edge\\User Data\\Default\\WebStorage\\QuotaManager-journal",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.659557",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 146441
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.745653",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 146710
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.773790",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW",
+    "size": 12824
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.801426",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 147204
+  },
+  {
+    "timestamp": "2026-03-22T16:55:33.991182",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.042920",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 147679
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.074593",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.127276",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 148154
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.155989",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb",
+    "severity": "LOW",
+    "size": 319488
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.183583",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.209138",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 148847
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.245223",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 149116
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.272535",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 149385
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.300277",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 149654
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.329024",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 149923
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.362015",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 150192
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.391542",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 150461
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.422894",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 150730
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.456606",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 150999
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.487191",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 151268
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.513963",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 151537
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.547660",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 151806
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.573222",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 152075
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.601014",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 152344
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.627900",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 152613
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.660051",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 152882
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.696764",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 153151
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.732411",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 153420
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.758854",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 153689
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.786524",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 153958
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.814683",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 154227
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.847590",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 154496
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.875269",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 154765
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.903649",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 155034
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.930486",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 155303
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.962190",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 155572
+  },
+  {
+    "timestamp": "2026-03-22T16:55:34.991779",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 155841
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.020757",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 156110
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.141214",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 156379
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.174649",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 156648
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.204145",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 156917
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.235056",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 157186
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.266603",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 157455
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.295178",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 157724
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.338249",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 157993
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.366544",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 158262
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.403423",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 158531
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.434791",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 158800
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.461877",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 159069
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.490965",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 159338
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.523997",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 159607
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.555105",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 159876
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.582264",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 160145
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.614386",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 160414
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.643039",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 160683
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.674768",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 160952
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.702025",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 161221
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.735375",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 161490
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.763747",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 161759
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.794083",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 162028
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.822944",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 162297
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.852420",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 162566
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.894870",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt",
+    "severity": "LOW",
+    "size": 63271
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.936871",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 163082
+  },
+  {
+    "timestamp": "2026-03-22T16:55:35.972253",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 163351
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.046022",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 163620
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.305125",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-bg-1680.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.390348",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 164172
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.684432",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8067.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.716125",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8068.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.764739",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8069.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.810271",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-bg-1684.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.859207",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8067.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.890420",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.930245",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-pq-11361.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:36.968026",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-pq-11362.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.010768",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-pq-11362.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.058265",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-pq-11361.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.104082",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.144878",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 167295
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.203441",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.260321",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 167770
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.289246",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb",
+    "severity": "LOW",
+    "size": 319488
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.323857",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.356127",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 168463
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.399246",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\ntuser.dat.LOG1",
+    "severity": "MEDIUM",
+    "size": 327680
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.435336",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 168913
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.486500",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\collections\\__init__.pyi",
+    "severity": "LOW",
+    "size": 24121
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.532870",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 169458
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.571586",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\watchdog\\observers\\__init__.py",
+    "severity": "LOW",
+    "size": 3256
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.619816",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 170027
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.670283",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 170296
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.714787",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 170565
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.752341",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 170834
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.796111",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 171103
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.825779",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 171372
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.860004",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 171641
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.896956",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 171910
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.948157",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 172179
+  },
+  {
+    "timestamp": "2026-03-22T16:55:37.998682",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 172448
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.064347",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 172717
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.237605",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 172986
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.304082",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Microsoft\\Windows\\PowerShell\\PSReadLine\\ConsoleHost_history.txt",
+    "severity": "LOW",
+    "size": 63295
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.369713",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 173502
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.456035",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 173771
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.537348",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 174040
+  },
+  {
+    "timestamp": "2026-03-22T16:55:38.640028",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 174309
+  },
+  {
+    "timestamp": "2026-03-22T16:55:39.811675",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 174578
+  },
+  {
+    "timestamp": "2026-03-22T16:55:40.808976",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-bg-1689.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:40.911952",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Programs\\Microsoft VS Code\\Code.exe",
+    "severity": "HIGH",
+    "size": 202554912
+  },
+  {
+    "timestamp": "2026-03-22T16:55:41.044811",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8070.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:41.768419",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\plan-agent\\Plan.agent.md",
+    "severity": "LOW",
+    "size": 5249
+  },
+  {
+    "timestamp": "2026-03-22T16:55:41.950016",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\ask-agent\\Ask.agent.md",
+    "severity": "LOW",
+    "size": 2390
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.084856",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\globalStorage\\github.copilot-chat\\explore-agent\\Explore.agent.md",
+    "severity": "LOW",
+    "size": 2064
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.264587",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\pyright-9688-MG4dBymbwX7q\\43bd5ce096e5e28726c25c7e8d3ad250528666fc54-a",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.335198",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\pyright-9688-MG4dBymbwX7q\\43bd5ce096e5e28726c25c7e8d3ad250528666fc54-a",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.421919",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 176858
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.483855",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.539644",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 177369
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.593051",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.647560",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 177881
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.699012",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.743529",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb",
+    "severity": "LOW",
+    "size": 143360
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.821323",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.882007",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\User\\workspaceStorage\\0eaa89918cab79434d876b06fe8de0bf\\state.vscdb-journal",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.918055",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8068.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:42.956010",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8069.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.002727",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Local\\Temp\\python-languageserver-cancellation\\1f81af6d9f8bd12eaffe50e8cfd1d1f8a18a3de0d2\\cancellation-8071.tmp",
+    "severity": "LOW",
+    "size": 0
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.042910",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 179942
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.089840",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\queue.pyi",
+    "severity": "LOW",
+    "size": 1965
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.128816",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\turtle.pyi",
+    "severity": "LOW",
+    "size": 26068
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.176633",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 180731
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.234414",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\stdeb\\__init__.py",
+    "severity": "LOW",
+    "size": 298
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.365103",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\stdeb\\command\\__init__.py",
+    "severity": "LOW",
+    "size": 65
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.416955",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\msvcrt.pyi",
+    "severity": "LOW",
+    "size": 1228
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.670315",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 181838
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.745252",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\tty.pyi",
+    "severity": "LOW",
+    "size": 901
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.806160",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\termios.pyi",
+    "severity": "LOW",
+    "size": 8475
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.853930",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\math.pyi",
+    "severity": "LOW",
+    "size": 6296
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.901724",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 182882
+  },
+  {
+    "timestamp": "2026-03-22T16:55:43.947631",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\shlex.pyi",
+    "severity": "LOW",
+    "size": 2254
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.006168",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\socket.pyi",
+    "severity": "LOW",
+    "size": 47579
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.054333",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 183671
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.094287",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stubs\\netifaces\\netifaces.pyi",
+    "severity": "LOW",
+    "size": 1775
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.148206",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stubs\\requests\\requests\\__init__.pyi",
+    "severity": "LOW",
+    "size": 1390
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.195498",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\uuid.pyi",
+    "severity": "LOW",
+    "size": 3215
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.245639",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stubs\\tqdm\\tqdm\\__init__.pyi",
+    "severity": "LOW",
+    "size": 1225
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.300973",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 185025
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.362744",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stubs\\tqdm\\tqdm\\std.pyi",
+    "severity": "LOW",
+    "size": 10412
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.429280",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stubs\\tqdm\\tqdm\\utils.pyi",
+    "severity": "LOW",
+    "size": 2156
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.489973",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\random.pyi",
+    "severity": "LOW",
+    "size": 5123
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.557652",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\ssl.pyi",
+    "severity": "LOW",
+    "size": 23145
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.611487",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\OpenSSL\\__init__.py",
+    "severity": "LOW",
+    "size": 497
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.718635",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\.vscode\\extensions\\ms-python.vscode-pylance-2026.1.1\\dist\\typeshed-fallback\\stdlib\\subprocess.pyi",
+    "severity": "LOW",
+    "size": 75195
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.774830",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 186903
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.825607",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\x509\\__init__.py",
+    "severity": "LOW",
+    "size": 8257
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.866545",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\x509\\base.py",
+    "severity": "LOW",
+    "size": 27997
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.922065",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 187767
+  },
+  {
+    "timestamp": "2026-03-22T16:55:44.966732",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\hazmat\\bindings\\_rust\\__init__.pyi",
+    "severity": "LOW",
+    "size": 1257
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.016054",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 188355
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.060814",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\03223e5b-fefa-40d4-9b82-044a9389b23c.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.109187",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 188838
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.147913",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\hazmat\\bindings\\_rust\\x509.pyi",
+    "severity": "LOW",
+    "size": 10189
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.190342",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\x509\\extensions.py",
+    "severity": "LOW",
+    "size": 77724
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.224097",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 189725
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.266491",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\__init__.py",
+    "severity": "LOW",
+    "size": 762
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.316217",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 190286
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.389967",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\x509\\ocsp.py",
+    "severity": "LOW",
+    "size": 12699
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.438318",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\cryptography\\fernet.py",
+    "severity": "LOW",
+    "size": 6963
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.478064",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 191142
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.528154",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\__init__.py",
+    "severity": "LOW",
+    "size": 1354
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.581819",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\03223e5b-fefa-40d4-9b82-044a9389b23c.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.632134",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 191921
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.673490",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\03223e5b-fefa-40d4-9b82-044a9389b23c.tmp",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.715076",
+    "type": "CREATED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.777168",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.829557",
+    "type": "MOVED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP",
+    "severity": "HIGH",
+    "src_path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity",
+    "dest_path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.875979",
+    "type": "MOVED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity",
+    "severity": "HIGH",
+    "src_path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\03223e5b-fefa-40d4-9b82-044a9389b23c.tmp",
+    "dest_path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.920290",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:45.961737",
+    "type": "DELETED",
+    "path": "C:\\Users\\stark\\AppData\\Roaming\\Code\\Network\\TransportSecurity~RF8fda2c.TMP",
+    "severity": "LOW"
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.038100",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\shortcuts\\__init__.py",
+    "severity": "LOW",
+    "size": 949
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.094890",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\shortcuts\\prompt.py",
+    "severity": "LOW",
+    "size": 60235
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.135204",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 194619
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.178205",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 194888
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.218072",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\formatted_text\\__init__.py",
+    "severity": "LOW",
+    "size": 1509
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.265001",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 195468
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.315246",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\formatted_text\\html.py",
+    "severity": "LOW",
+    "size": 4374
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.364538",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 196044
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.414733",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\completion\\__init__.py",
+    "severity": "LOW",
+    "size": 992
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.452082",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\completion\\nested.py",
+    "severity": "LOW",
+    "size": 3844
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.494240",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 196924
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.539136",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\completion\\base.py",
+    "severity": "LOW",
+    "size": 16103
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.592021",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 197497
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.648977",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\auto_suggest.py",
+    "severity": "LOW",
+    "size": 5798
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.689952",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 198065
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.731549",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\history.py",
+    "severity": "LOW",
+    "size": 9441
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.780976",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 198628
+  },
+  {
+    "timestamp": "2026-03-22T16:55:46.839696",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\completion\\word_completer.py",
+    "severity": "LOW",
+    "size": 3435
+  },
+  {
+    "timestamp": "2026-03-22T16:55:47.154478",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\venv\\Lib\\site-packages\\prompt_toolkit\\shortcuts\\utils.py",
+    "severity": "LOW",
+    "size": 6950
+  },
+  {
+    "timestamp": "2026-03-22T16:55:47.206956",
+    "type": "MODIFIED",
+    "path": "C:\\Users\\stark\\Downloads\\DSTerminal_releases_latest-master\\DSTerminal_releases_latest-master\\data\\alerts\\alerts.json",
+    "severity": "LOW",
+    "size": 199513
+  }
+]
