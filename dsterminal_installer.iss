@@ -1,12 +1,12 @@
 ; DSTerminal Installer Script - Non-Admin Safe with Documentation & Auto-Update
-; Version: 2.1.0
+; Version: 2.0.113
 ; Date: 2024
 
 [Setup]
 ; Basic Setup Information
 AppName=DSTerminal
-AppVersion=2.1.0
-AppVerName=DSTerminal v2.1.0
+AppVersion=2.0.113
+AppVerName=DSTerminal v2.0.113
 AppPublisher=Stark Expo Tech Exchange
 AppPublisherURL=https://starkexpotechexchange-mw.com
 AppSupportURL=https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/issues
@@ -20,7 +20,7 @@ DefaultDirName={userappdata}\DSTerminal
 DefaultGroupName=DSTerminal
 LicenseFile=license.txt
 OutputDir=installer_output
-OutputBaseFilename=DSTerminal_Installer_v2.1.0
+OutputBaseFilename=DSTerminal_Installer_v2.0.113
 Compression=lzma2/ultra64
 SolidCompression=yes
 DisableWelcomePage=no
@@ -31,14 +31,14 @@ AllowNoIcons=yes
 PrivilegesRequired=lowest
 MinVersion=10.0.10240
 UninstallDisplayIcon={app}\dsterminal.exe
-UninstallDisplayName=DSTerminal v2.1.0
-VersionInfoVersion=2.1.0
+UninstallDisplayName=DSTerminal v2.0.113
+VersionInfoVersion=2.0.113
 VersionInfoCompany=Stark Expo Tech Exchange
 VersionInfoDescription=DSTerminal SOC Platform
-VersionInfoTextVersion=2.1.0
+VersionInfoTextVersion=2.0.113
 VersionInfoCopyright=© 2024 Stark Expo Tech Exchange
 VersionInfoProductName=DSTerminal
-VersionInfoProductVersion=2.1.0
+VersionInfoProductVersion=2.0.113
 
 ; Create uninstaller in registry
 CreateUninstallRegKey=yes
@@ -148,16 +148,17 @@ Name: "{userdesktop}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingD
 Name: "{userdesktop}\DSTerminal Documentation"; Filename: "{app}\docs\index.html"; IconFilename: "{app}\dsterminal.exe"; Tasks: docshortcut; Components: docs
 
 ; Quick Launch (Windows 7/10)
-Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: quicklaunchicon
+;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: quicklaunchicon
 
 ; Startup folder (optional)
-Name: "{userstartup}\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: startwithwindows; Parameters: "--minimized"
+;Name: "{userstartup}\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: startwithwindows; Parameters: "--minimized"
 
 [Run]
 ; ========== POST-INSTALLATION ACTIONS ==========
 
 ; Launch documentation after install (if selected)
 Filename: "{app}\docs\index.html"; Description: "View DSTerminal Documentation"; Flags: postinstall shellexec skipifsilent; Components: docs
+Filename: "{cmd}"; Parameters: "/c setx PATH ""%PATH%;{app}"""; Flags: runhidden
 
 ; Launch DSTerminal after install
 Filename: "{app}\dsterminal.exe"; Description: "Launch DSTerminal"; Flags: nowait postinstall skipifsilent; Components: core
@@ -203,7 +204,7 @@ begin
   begin
     SaveStringToFile(ConfigFile, 
       '{' + #13#10 +
-      '  "version": "2.1.0",' + #13#10 +
+      '  "version": "2.0.113",' + #13#10 +
       '  "created": "' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + '",' + #13#10 +
       '  "operator": "default",' + #13#10 +
       '  "settings": {' + #13#10 +
@@ -234,9 +235,14 @@ begin
   Result := IsAdminLoggedOn or IsPowerUserLoggedOn;
 end;
 
+[Registry]
+; Add DSTerminal to user PATH (no admin required)
+Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "PATH"; \
+ValueData: "{olddata};{app}"; Flags: preservestringtype
+
 [Messages]
-BeveledLabel=DSTerminal SOC Platform v2.1.0
+BeveledLabel=DSTerminal SOC Platform v2.0.113
 
 [CustomMessages]
 SetupAppTitle=DSTerminal Installer
-SetupWindowTitle=DSTerminal v2.1.0 Setup
+SetupWindowTitle=DSTerminal v2.0.113 Setup

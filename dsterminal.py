@@ -6672,6 +6672,7 @@ class SecurityTerminal:
             self.show_tip(cmd)
 
 # ==================== HELP MENU ====================
+
     def show_help(self):
         """Display interactive hacking-styled help menu with categories"""
     
@@ -6815,37 +6816,37 @@ class SecurityTerminal:
                     cmd_color = Fore.YELLOW
                 elif "ls" in cmd or "cat" in cmd or "touch" in cmd:
                     cmd_color = Fore.BLUE
-
-                # In the command display loop, add these conditions:
                 elif "msf" in cmd or "metasploit" in cmd or "msfconsole" in cmd:
-                    cmd_color = Fore.RED + Style.BRIGHT  # Metasploit in bright red
+                    cmd_color = Fore.RED + Style.BRIGHT
                 elif "nmap" in cmd:
-                    cmd_color = Fore.YELLOW + Style.BRIGHT  # Nmap in bright yellow
-                elif "scan" in cmd or "exploit" in cmd or "nikto" in cmd:
-                    cmd_color = Fore.RED
-                elif "encrypt" in cmd or "crypto" in cmd or "decrypt" in cmd:
-                    cmd_color = Fore.MAGENTA
-                elif "net" in cmd or "portsweep" in cmd or "traceroute" in cmd:
-                    cmd_color = Fore.CYAN
-                elif "sqlmap" in cmd or "certcheck" in cmd:
-                    cmd_color = Fore.YELLOW
-                elif "ls" in cmd or "cat" in cmd or "touch" in cmd:
-                    cmd_color = Fore.BLUE   
+                    cmd_color = Fore.YELLOW + Style.BRIGHT
                 elif "viewlogs" in cmd or "sessiondump" in cmd:
-                    cmd_color = Fore.MAGENTA + Style.BRIGHT  # Forensics in bright magenta
-                elif "sessiondump" in cmd or "viewlogs" in cmd:
-                    cmd_color = Fore.MAGENTA + Style.BRIGHT  # Forensics commands in bright magenta
+                    cmd_color = Fore.MAGENTA + Style.BRIGHT
                 elif "recon" in cmd or "enum" in cmd:
-                    cmd_color = Fore.GREEN + Style.BRIGHT  # Recon commands in bright green
+                    cmd_color = Fore.GREEN + Style.BRIGHT
                 elif "regmon" in cmd or "watchfolder" in cmd:
-                    cmd_color = Fore.YELLOW + Style.BRIGHT  # Monitoring commands in bright yellow
+                    cmd_color = Fore.YELLOW + Style.BRIGHT
                 elif "sysinfo" in cmd or "killproc" in cmd or "harden" in cmd:
-                    cmd_color = Fore.CYAN + Style.BRIGHT  # System management in bright cyan
+                    cmd_color = Fore.CYAN + Style.BRIGHT
                 else:
                     cmd_color = Fore.GREEN
             
-            # Format the line with proper spacing
-                line = f"{cat_color}│{Style.RESET_ALL} {cmd_color}{cmd:<30}{Style.RESET_ALL} {Fore.WHITE}{desc:<{terminal_width-45}}{Style.RESET_ALL}{cat_color}│{Style.RESET_ALL}"
+            # Format the line safely - FIXED: Avoid % formatting issues
+                cmd_part = f"{cmd_color}{cmd}{Style.RESET_ALL}"
+                desc_part = f"{Fore.WHITE}{desc}{Style.RESET_ALL}"
+            
+            # Calculate padding to align properly
+                cmd_width = 30
+                desc_width = terminal_width - 45
+            
+            # Pad the command part to fixed width
+                cmd_padded = cmd_part.ljust(cmd_width)
+            
+            # Pad the description part to fixed width
+                desc_padded = desc_part.ljust(desc_width)[:desc_width]
+            
+            # Build the line without using width specifiers in f-string that might contain %
+                line = f"{cat_color}│{Style.RESET_ALL} {cmd_padded} {desc_padded}{cat_color}│{Style.RESET_ALL}"
                 print(line[:terminal_width])
                 time.sleep(0.09)  # Slight typing effect
         
@@ -6915,6 +6916,7 @@ class SecurityTerminal:
                     print(f"{Fore.RED}✗ Command '{search}' not found. Type 'search' to search descriptions.{Style.RESET_ALL}")
     
         print(f"{Fore.GREEN}[✓] Help system closed{Style.RESET_ALL}")
+
 # --------------------help menu ends here from above========================
 # =============================END==========================================
 #     def run(self):
