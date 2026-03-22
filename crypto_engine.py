@@ -166,7 +166,7 @@ class CryptoEngine:
 ║{Colors.CYAN}  ██████╔╝███████║   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗{Colors.RED}║
 ║{Colors.CYAN}  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝{Colors.RED}║
 ╚══════════════════════════════════════════════════════════════╝{Colors.END}
-{Colors.GREEN}                    [ ENCRYPTION SUITE v2.0 - HACKER EDITION ]{Colors.END}
+{Colors.GREEN}                    [ ENCRYPTION SUITE v2.0.113 -  EDITION ]{Colors.END}
 {Colors.YELLOW}                    ═══════════════════════════════════════════{Colors.END}
 """
         print(banner)

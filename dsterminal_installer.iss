@@ -20,7 +20,7 @@ DefaultDirName={userappdata}\DSTerminal
 DefaultGroupName=DSTerminal
 LicenseFile=license.txt
 OutputDir=installer_output
-OutputBaseFilename=DSTerminal_Installer_v2.0.113
+OutputBaseFilename=DSTerminal_Installer_2025_v2.0.113
 Compression=lzma2/ultra64
 SolidCompression=yes
 DisableWelcomePage=no
@@ -73,7 +73,7 @@ Name: "startwithwindows"; Description: "Start DSTerminal with Windows (minimized
 [Files]
 ; ========== CORE APPLICATION ==========
 ; Main executable (ensure this file exists in dist folder)
-Source: "dist\dsterminal_win-2.0.59_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
+Source: "dist\dsterminal_win-2025_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
 
 ; Configuration files
