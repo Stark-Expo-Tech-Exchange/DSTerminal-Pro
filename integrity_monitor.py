@@ -844,157 +844,82 @@ class SystemIntegrityMonitor:
         return report_file
 
     # ===================
-    def generate_pdf_report(self, changes=None, scan_results=None):
-        """Generate a formatted PDF integrity report with DSTerminal logo"""
-        try:
-            from fpdf import FPDF
-            import textwrap
-            import os
-            from datetime import datetime
-        except ImportError:
-            print(f"{Fore.RED}✗ fpdf2 not installed. Install with: pip install fpdf2{Style.RESET_ALL}")
-            return None
+    def _get_ascii_progress_bar(self, current, total, width=40):
+        """Get ASCII-only progress bar for PDF"""
+        percent = (current / total) * 100
+        filled = int(width * current // total)
     
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_file = os.path.join(self.report_dir, f'report_{timestamp}.pdf')
+    # Use equals signs for filled, hyphens for empty (ASCII only)
+        bar = "=" * filled + "-" * (width - filled)
+    
+        return f"[{bar}] {percent:.1f}% [{current}/{total}]"
+
+    def generate_pdf_report(self, changes=None, scan_results=None):
+        """Generate a PDF report with ASCII characters instead of Unicode blocks"""
+        if not PDF_AVAILABLE:
+            if COLORAMA_AVAILABLE:
+                print(f"{Fore.YELLOW}fpdf2 not installed. Install with: pip install fpdf2{Style.RESET_ALL}")
+            else:
+                print("fpdf2 not installed. Install with: pip install fpdf2")
+            return None
     
         if scan_results is None:
             scan_results = self.scan_system()
     
-    # Create PDF with Unicode support
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        report_file = os.path.join(self.report_dir, f'report_{timestamp}.pdf')
+    
+    # Use Helvetica which supports more characters
         pdf = FPDF()
         pdf.add_page()
-    
-    # Add Unicode font support (use built-in fonts that support Unicode)
         pdf.set_font("Helvetica", size=10)
     
-    # ==================== HEADER WITH ASCII LOGO ====================
-    # Use ASCII art that's safe for PDF
-        pdf.set_font("Courier", size=8)
-    
-    # Center the ASCII logo
-        page_width = pdf.w - 2 * pdf.l_margin
-        logo_lines = [
-            "+--------------------------------------------------+",
-            "|     DSTERMINAL INTEGRITY MONITOR                |",
-            "|                                                  |",
-            "|     ██████╗ ███████╗████████╗███████╗██████╗    |",
-            "|     ██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗   |",
-            "|     ██║  ██║███████╗   ██║   █████╗  ██████╔╝   |",
-            "|     ██║  ██║╚════██║   ██║   ██╔══╝  ██╔══██╗   |",
-            "|     ██████╔╝███████║   ██║   ███████╗██║  ██║   |",
-            "|     ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝   |",
-            "|                                                  |",
-            "+--------------------------------------------------+"
-        ]
-    
-        for line in logo_lines:
-        # Replace Unicode box characters with ASCII if needed
-            safe_line = line.replace('╔', '+').replace('╗', '+').replace('╚', '+').replace('╝', '+')
-            safe_line = safe_line.replace('═', '-').replace('║', '|')
-        
-            line_width = pdf.get_string_width(safe_line)
-            x = (page_width - line_width) / 2 + pdf.l_margin
-            pdf.set_x(x)
-            pdf.cell(line_width, 4, safe_line, ln=True)
-    
-        pdf.ln(5)
-    
-    # ==================== TITLE ====================
+    # Title
         pdf.set_font("Helvetica", 'B', 16)
-        title = "SYSTEM INTEGRITY REPORT"
-        title_width = pdf.get_string_width(title)
-        x = (page_width - title_width) / 2 + pdf.l_margin
-        pdf.set_x(x)
-        pdf.cell(title_width, 10, title, ln=True)
+        pdf.cell(0, 10, "DSTerminal System Integrity Report", 0, 1, 'C')
+        pdf.ln(10)
     
+    # Metadata
+        pdf.set_font("Helvetica", 'B', 12)
+        pdf.cell(0, 8, "Report Metadata", 0, 1, 'L')
         pdf.set_font("Helvetica", size=10)
+        pdf.cell(40, 6, f"Generated:", 0, 0)
+        pdf.cell(0, 6, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 0, 1)
+        pdf.cell(40, 6, f"Hostname:", 0, 0)
+        pdf.cell(0, 6, scan_results['system_info']['hostname'], 0, 1)
+        pdf.cell(40, 6, f"OS:", 0, 0)
+        pdf.cell(0, 6, f"{scan_results['system_info']['os']} {scan_results['system_info']['os_version']}", 0, 1)
         pdf.ln(5)
     
-    # ==================== METADATA SECTION ====================
-        pdf.set_fill_color(230, 230, 250)  # Light lavender
-        pdf.set_font("Helvetica", 'B', 11)
-        pdf.cell(0, 8, "REPORT METADATA", 0, 1, 'L', 1)
-        pdf.set_font("Helvetica", size=9)
+    # Summary
+        pdf.set_font("Helvetica", 'B', 12)
+        pdf.cell(0, 8, "Scan Summary", 0, 1, 'L')
+        pdf.set_font("Helvetica", size=10)
     
-    # Safe string function to avoid encoding issues
-        def safe_str(text):
-            if text is None:
-                return ""
-        # Replace any problematic characters
-            return str(text).encode('ascii', errors='replace').decode('ascii')
+        total_files = (len(scan_results['critical_files']) + len(scan_results['configs']) + 
+                    len(scan_results['logs']) + len(scan_results['databases']) + 
+                    len(scan_results['files']))
     
-    # System info
-        pdf.cell(40, 6, "Generated:", 0, 0)
-        pdf.cell(0, 6, safe_str(datetime.now().strftime('%Y-%m-%d %H:%M:%S')), 0, 1)
-    
-        pdf.cell(40, 6, "Hostname:", 0, 0)
-        pdf.cell(0, 6, safe_str(scan_results['system_info'].get('hostname', 'Unknown')), 0, 1)
-    
-    # Fix Windows display
-        os_name = scan_results['system_info'].get('os', 'Unknown')
-        os_version = scan_results['system_info'].get('os_version', '')
-        if os_name == 'Windows' and '10.0.' in os_version:
-            build = os_version.split('.')[2] if len(os_version.split('.')) > 2 else '0'
-            if build.isdigit() and int(build) >= 22000:
-                os_name = "Windows 11"
-    
-        pdf.cell(40, 6, "OS:", 0, 0)
-        pdf.cell(0, 6, safe_str(f"{os_name} {os_version}"), 0, 1)
-    
-        pdf.cell(40, 6, "Architecture:", 0, 0)
-        pdf.cell(0, 6, safe_str(scan_results['system_info'].get('architecture', 'Unknown')), 0, 1)
+        pdf.cell(0, 6, f"Total Files Scanned: {total_files}", 0, 1)
+        pdf.cell(0, 6, f"  Critical System Files: {len(scan_results['critical_files'])}", 0, 1)
+        pdf.cell(0, 6, f"  Configuration Files: {len(scan_results['configs'])}", 0, 1)
+        pdf.cell(0, 6, f"  Log Files: {len(scan_results['logs'])}", 0, 1)
+        pdf.cell(0, 6, f"  Databases: {len(scan_results['databases'])}", 0, 1)
+        pdf.cell(0, 6, f"  User Files: {len(scan_results['files'])}", 0, 1)
         pdf.ln(5)
     
-    # ==================== SCAN SUMMARY ====================
-        pdf.set_fill_color(173, 216, 230)  # Light blue
-        pdf.set_font("Helvetica", 'B', 11)
-        pdf.cell(0, 8, "SCAN SUMMARY", 0, 1, 'L', 1)
-        pdf.set_font("Helvetica", size=9)
-    
-        total_files = (
-            len(scan_results.get('critical_files', [])) +
-            len(scan_results.get('configs', [])) +
-            len(scan_results.get('logs', [])) +
-            len(scan_results.get('databases', [])) +
-            len(scan_results.get('files', []))
-        )
-    
-        stats = [
-            ("Critical System Files:", len(scan_results.get('critical_files', []))),
-            ("Configuration Files:", len(scan_results.get('configs', []))),
-            ("Log Files:", len(scan_results.get('logs', []))),
-            ("Databases:", len(scan_results.get('databases', []))),
-            ("User Files:", len(scan_results.get('files', []))),
-            ("TOTAL FILES SCANNED:", total_files)
-        ]
-    
-        for label, value in stats:
-            pdf.cell(50, 6, label, 0, 0)
-            pdf.cell(0, 6, str(value), 0, 1)
-        pdf.ln(5)
-    
-    # ==================== INTEGRITY FINDINGS ====================
-        if changes and any([changes.get('new_files', []), 
-                            changes.get('modified_files', []), 
-                            changes.get('deleted_files', [])]):
-            pdf.set_fill_color(255, 228, 225)  # Misty rose
-            pdf.set_font("Helvetica", 'B', 11)
-            pdf.cell(0, 8, "INTEGRITY FINDINGS", 0, 1, 'L', 1)
-            pdf.set_font("Helvetica", size=9)
+    # Findings
+        if changes:
+            pdf.set_font("Helvetica", 'B', 12)
+            pdf.cell(0, 8, "Integrity Findings", 0, 1, 'L')
+            pdf.set_font("Helvetica", size=10)
         
-        # Change summary
-            change_stats = [
-                ("New Files:", len(changes.get('new_files', []))),
-                ("Modified Files:", len(changes.get('modified_files', []))),
-                ("Deleted Files:", len(changes.get('deleted_files', []))),
-            ]
+            pdf.cell(0, 6, f"New Files: {len(changes.get('new_files', []))}", 0, 1)
+            pdf.cell(0, 6, f"Modified Files: {len(changes.get('modified_files', []))}", 0, 1)
+            pdf.cell(0, 6, f"Deleted Files: {len(changes.get('deleted_files', []))}", 0, 1)
+            pdf.ln(5)
         
-            for label, value in change_stats:
-                pdf.cell(40, 5, label, 0, 0)
-                pdf.cell(0, 5, str(value), 0, 1)
-        
-        # Critical changes
+        # List critical changes
             critical_items = []
             for change_type in ['new_files', 'modified_files', 'deleted_files']:
                 for item in changes.get(change_type, []):
@@ -1002,81 +927,46 @@ class SystemIntegrityMonitor:
                         critical_items.append((change_type, item))
         
             if critical_items:
-                pdf.ln(3)
-                pdf.set_text_color(255, 0, 0)  # Red
                 pdf.set_font("Helvetica", 'B', 10)
+                pdf.set_text_color(255, 0, 0)
                 pdf.cell(0, 6, "CRITICAL/HIGH SEVERITY CHANGES:", 0, 1)
-                pdf.set_text_color(0, 0, 0)  # Back to black
-                pdf.set_font("Helvetica", size=8)
+                pdf.set_text_color(0, 0, 0)
+                pdf.set_font("Helvetica", size=9)
             
                 for change_type, item in critical_items[:10]:
-                    path = safe_str(item.get('path', 'Unknown'))
+                    path = item.get('path', 'Unknown')
+                # Truncate long paths
                     if len(path) > 70:
                         path = path[:67] + "..."
-                    pdf.cell(15, 4, f"[{item.get('severity', 'UNKNOWN')}]", 0, 0)
-                    pdf.multi_cell(0, 4, path)
-        else:
-            pdf.set_text_color(0, 128, 0)  # Green
-            pdf.set_font("Helvetica", 'B', 11)
-            pdf.cell(0, 8, "✓ SYSTEM INTEGRITY INTACT - No changes detected", 0, 1)
-            pdf.set_text_color(0, 0, 0)
+                    pdf.cell(15, 5, f"[{item.get('severity', 'UNKNOWN')}]", 0, 0)
+                    pdf.multi_cell(0, 5, path)
     
+    # Progress bar using ASCII characters
+        pdf.set_font("Helvetica", 'B', 12)
+        pdf.cell(0, 8, "Scan Progress", 0, 1, 'L')
+        pdf.set_font("Helvetica", size=10)
+    
+    # Use ASCII characters instead of Unicode blocks
+        bar_length = 40
+        filled = bar_length  # 100% complete
+    
+    # ASCII progress bar using equals signs and hyphens
+        progress_bar = "[" + "=" * filled + "]" + f" 100% ({total_files} files)"
+        pdf.cell(0, 6, progress_bar, 0, 1)
         pdf.ln(5)
     
-    # ==================== FILE INVENTORY SAMPLES ====================
-        pdf.set_fill_color(240, 248, 255)  # Alice blue
-        pdf.set_font("Helvetica", 'B', 11)
-        pdf.cell(0, 8, "RECENT FILES (Sample)", 0, 1, 'L', 1)
-        pdf.set_font("Helvetica", size=8)
+    # File type breakdown
+        pdf.set_font("Helvetica", 'B', 12)
+        pdf.cell(0, 8, "File Type Breakdown", 0, 1, 'L')
+        pdf.set_font("Helvetica", size=10)
     
-        categories = [
-            ('Critical System Files', scan_results.get('critical_files', [])[:5]),
-            ('Recent Configs', sorted(scan_results.get('configs', []), 
-                                    key=lambda x: x.get('modified', ''), reverse=True)[:5]),
-            ('Recent Logs', sorted(scan_results.get('logs', []), 
-                                key=lambda x: x.get('modified', ''), reverse=True)[:5])
-        ]
+        pdf.cell(0, 6, f"Critical System Files: {len(scan_results['critical_files'])}", 0, 1)
+        pdf.cell(0, 6, f"Configuration Files: {len(scan_results['configs'])}", 0, 1)
+        pdf.cell(0, 6, f"Log Files: {len(scan_results['logs'])}", 0, 1)
+        pdf.cell(0, 6, f"Databases: {len(scan_results['databases'])}", 0, 1)
+        pdf.cell(0, 6, f"User Files: {len(scan_results['files'])}", 0, 1)
     
-        for cat_name, items in categories:
-            if items:
-                pdf.set_font("Helvetica", 'B', 9)
-                pdf.cell(0, 5, f"{cat_name}:", 0, 1)
-                pdf.set_font("Helvetica", size=8)
-            
-                for item in items:
-                    name = safe_str(item.get('name', 'Unknown'))
-                    if len(name) > 40:
-                        name = name[:37] + "..."
-                    modified = item.get('modified', 'Unknown')[:10] if item.get('modified') else 'Unknown'
-                    pdf.cell(40, 4, modified, 0, 0)
-                    pdf.cell(0, 4, name, 0, 1)
-                pdf.ln(2)
-    
-    # ==================== PROGRESS BAR SUMMARY ====================
-    # Add a progress summary using ASCII instead of Unicode blocks
-        pdf.set_fill_color(220, 220, 220)  # Light gray
-        pdf.set_font("Helvetica", 'B', 10)
-        pdf.cell(0, 6, "SCAN PROGRESS SUMMARY", 0, 1, 'L', 1)
-        pdf.set_font("Helvetica", size=8)
-    
-    # Create ASCII progress bar using = and - instead of blocks
-        total = total_files
-        if total > 0:
-            bar_length = 40
-            filled = bar_length  # 100% complete
-        
-        # Use ASCII characters instead of Unicode blocks
-            progress_bar = "[" + "=" * filled + "]" + f" 100% ({total} files)"
-        
-            pdf.cell(0, 4, f"Configuration Files: {len(scan_results.get('configs', []))}", 0, 1)
-            pdf.cell(0, 4, f"Log Files: {len(scan_results.get('logs', []))}", 0, 1)
-            pdf.cell(0, 4, f"Database Files: {len(scan_results.get('databases', []))}", 0, 1)
-            pdf.cell(0, 4, f"System Files: {len(scan_results.get('critical_files', []))}", 0, 1)
-            pdf.cell(0, 4, f"User Files: {len(scan_results.get('files', []))}", 0, 1)
-            pdf.ln(2)
-            pdf.cell(0, 4, f"Progress: {progress_bar}", 0, 1)
-    
-    # ==================== FOOTER ====================
+    # Footer
         pdf.set_y(-30)
         pdf.set_font("Helvetica", 'I', 8)
         pdf.cell(0, 5, "Generated by DSTerminal Integrity Monitor v2.0.113", 0, 1, 'C')
@@ -1085,13 +975,19 @@ class SystemIntegrityMonitor:
     # Save PDF
         try:
             pdf.output(report_file)
-            print(f"{Fore.GREEN}✓ PDF report generated: {report_file}{Style.RESET_ALL}")
+            if COLORAMA_AVAILABLE:
+                print(f"{Fore.GREEN}✓ PDF report generated: {report_file}{Style.RESET_ALL}")
+            else:
+                print(f"✓ PDF report generated: {report_file}")
             return report_file
         except Exception as e:
-            print(f"{Fore.RED}✗ Failed to generate PDF: {e}{Style.RESET_ALL}")
+            if COLORAMA_AVAILABLE:
+                print(f"{Fore.RED}Failed to generate PDF: {e}{Style.RESET_ALL}")
+            else:
+                print(f"Failed to generate PDF: {e}")
             return None
     
-        # ======================
+    # ======================
     def generate_all_reports(self, changes, scan_results=None):
         """Generate all report formats (TXT, JSON, PDF)"""
         if scan_results is None:
