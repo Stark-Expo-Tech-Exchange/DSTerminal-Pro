@@ -1,17 +1,11 @@
 ╔══════════════════════════════════════════════╗
 ║       DSTerminal Operator Security Audit Log ║
 ╠══════════════════════════════════════════════╣
-║ Operator   : OP-0280D5
-║ Session ID : SOC-95F60
+║ Operator   : OP-7535D2
+║ Session ID : SOC-5E919
 ║ Host       : WILSON-SON
-║ Start Time : 2026-03-22 17:31:33
+║ Start Time : 2026-03-22 17:44:08
 ╠══════════════════════════════════════════════╣
 ║ Command Activity                             ║
 ╠══════════════════════════════════════════════╣
-[17:32:11] COMMAND: integrity help
-[17:32:14] COMMAND: int
-[17:32:17] COMMAND: integ
-[17:32:28] COMMAND: integrity status
-[17:32:56] COMMAND: integrity report json
-[17:36:02] COMMAND: integrity report pdf
-[17:39:37] COMMAND: exit
+[17:45:39] COMMAND: exit

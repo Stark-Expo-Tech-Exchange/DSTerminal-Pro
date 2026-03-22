@@ -1,5 +1,34 @@
 # Add these imports at the top of your file
 try:
+    from colorama import init, Fore, Back, Style
+    init(autoreset=True)
+    COLORAMA_AVAILABLE = True
+except ImportError:
+    COLORAMA_AVAILABLE = False
+    # Fallback color definitions
+    class Fore:
+        RED = '\033[91m'
+        GREEN = '\033[92m'
+        YELLOW = '\033[93m'
+        BLUE = '\033[94m'
+        MAGENTA = '\033[95m'
+        CYAN = '\033[96m'
+        WHITE = '\033[97m'
+        RESET = '\033[0m'
+    
+    class Back:
+        RED = '\033[101m'
+        GREEN = '\033[102m'
+        YELLOW = '\033[103m'
+        BLUE = '\033[104m'
+        RESET = '\033[0m'
+    
+    class Style:
+        BRIGHT = '\033[1m'
+        DIM = '\033[2m'
+        NORMAL = '\033[22m'
+        RESET_ALL = '\033[0m'
+
     from fpdf import FPDF
     from datetime import datetime
     import textwrap
@@ -71,14 +100,36 @@ class SystemIntegrityMonitor:
         self.db_file = "data/system_integrity.db"
         self.report_dir = "data/integrity_reports"
         self.baseline_dir = "data/baselines"
+        self.alerts_dir = "data/alerts"
+        self.quarantine_dir = "data/quarantine"
         self.terminal_width = shutil.get_terminal_size().columns
         
         # Create necessary directories
-        for dir_path in [self.report_dir, self.baseline_dir]:
+        for dir_path in [self.report_dir, self.baseline_dir, self.alerts_dir, self.quarantine_dir]:
             os.makedirs(dir_path, exist_ok=True)
+
         
         # System paths based on OS
         self.system_paths = self._get_system_paths()
+        # Store colorama availability as class attribute
+        global COLORAMA_AVAILABLE
+        self.colorama_available = COLORAMA_AVAILABLE
+    
+    # Create necessary directories
+        for dir_path in [self.report_dir, self.baseline_dir, self.alerts_dir, self.quarantine_dir]:
+            os.makedirs(dir_path, exist_ok=True)
+    
+    # Initialize system paths
+        self.system_paths = self._get_system_paths()
+    
+    # Initialize alert manager
+        self.alert_manager = AlertManager(self)
+    
+        if self.colorama_available:
+            print(f"{Fore.GREEN}✓ System Integrity Monitor initialized{Style.RESET_ALL}")
+        else:
+            print("✓ System Integrity Monitor initialized")
+
         
     # ==============================
     # SYSTEM PATH DETECTION
