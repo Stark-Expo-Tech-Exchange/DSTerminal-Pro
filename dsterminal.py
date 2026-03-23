@@ -1,8 +1,31 @@
 import os
 import sys
+import tempfile
 
-import sys
+def get_base_path():
+    """Get the base path for the application (works for both development and installed versions)"""
+    if getattr(sys, 'frozen', False):
+        # Running as compiled executable
+        if hasattr(sys, '_MEIPASS'):
+            return sys._MEIPASS
+        else:
+            return os.path.dirname(sys.executable)
+    else:
+        # Running as script
+        return os.path.dirname(os.path.abspath(__file__))
 
+# Set the base path
+BASE_PATH = get_base_path()
+
+# Add the base path to Python path
+if BASE_PATH not in sys.path:
+    sys.path.insert(0, BASE_PATH)
+
+# Change to the base path
+os.chdir(BASE_PATH)
+
+# Now continue with the rest of your imports and code...
+# =================
 VERSION = "2.0.113"
 APP_NAME = "DSTerminal"
 DESCRIPTION = "Defensive Security Terminal"
@@ -85,26 +108,84 @@ except ImportError:
     COLORS_AVAILABLE = False
 
 # Try to import integrity monitor
+# try:
+#     # First check if the file exists
+#     integrity_path = os.path.join(BASE_PATH, 'integrity_monitor.py')
+#     if os.path.exists('integrity_monitor.py'):
+#         from integrity_monitor import SystemIntegrityMonitor
+#         # Try to import optional classes
+#         AlertManager = None
+#         ForensicAnalyzer = None
+
+#         try:
+#             from integrity_monitor import AlertManager as AM
+#             AlertManager = AM
+#         except ImportError:
+#             pass
+
+#         try:
+#             from integrity_monitor import ForensicAnalyzer as FA
+#             ForensicAnalyzer = FA
+#             # If we got here, integrity monitor is available
+#         except ImportError:
+#             pass
+        
+#         INTEGRITY_AVAILABLE = True
+#         if COLORS_AVAILABLE:
+#             print(f"{Fore.GREEN}✓ Integrity Monitor loaded successfully{Style.RESET_ALL}")
+#         else:
+#             print("✓ Integrity Monitor loaded successfully")
+#     else:
+#         INTEGRITY_AVAILABLE = False
+#         if COLORS_AVAILABLE:
+#             print(f"{Fore.YELLOW}⚠ integrity monitor not found{Style.RESET_ALL}")
+#         else:
+#             print("⚠ integrity monitor not found")
+            
+# except ImportError as e:
+#     INTEGRITY_AVAILABLE = False
+#     if COLORS_AVAILABLE:
+#         print(f"{Fore.YELLOW}⚠ Integrity Monitor not available: {e}{Style.RESET_ALL}")
+#         print(f"{Fore.YELLOW}  Run: pip install -r requirements.txt{Style.RESET_ALL}")
+#     else:
+#         print(f"⚠ Integrity Monitor not available: {e}")
+#         print("  Run: pip install -r requirements.txt")
+
+# Try to import integrity monitor with proper path handling
+
+# Try to import integrity monitor with proper path handling
 try:
-    # First check if the file exists
-    if os.path.exists('integrity_monitor.py'):
-        from integrity_monitor import SystemIntegrityMonitor
-        # Try to import optional classes
-        AlertManager = None
-        ForensicAnalyzer = None
-
-        try:
-            from integrity_monitor import AlertManager as AM
-            AlertManager = AM
-        except ImportError:
-            pass
-
-        try:
-            from integrity_monitor import ForensicAnalyzer as FA
-            ForensicAnalyzer = FA
-            # If we got here, integrity monitor is available
-        except ImportError:
-            pass
+    # Check multiple possible locations
+    possible_paths = []
+    
+    if getattr(sys, 'frozen', False):
+        if hasattr(sys, '_MEIPASS'):
+            possible_paths.append(os.path.join(sys._MEIPASS, 'integrity_monitor.py'))
+        possible_paths.append(os.path.join(os.path.dirname(sys.executable), 'integrity_monitor.py'))
+    else:
+        possible_paths.append(os.path.join(BASE_PATH, 'integrity_monitor.py'))
+    
+    # Also check current directory
+    possible_paths.append('integrity_monitor.py')
+    
+    integrity_path = None
+    for path in possible_paths:
+        if os.path.exists(path):
+            integrity_path = path
+            break
+    
+    if integrity_path and os.path.exists(integrity_path):
+        print(f"Debug: Found integrity_monitor.py at: {integrity_path}")
+        # Import from the file
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("integrity_monitor", integrity_path)
+        integrity_monitor = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(integrity_monitor)
+        
+        # Get the classes
+        SystemIntegrityMonitor = integrity_monitor.SystemIntegrityMonitor
+        AlertManager = integrity_monitor.AlertManager
+        ForensicAnalyzer = integrity_monitor.ForensicAnalyzer
         
         INTEGRITY_AVAILABLE = True
         if COLORS_AVAILABLE:
@@ -115,18 +196,57 @@ try:
         INTEGRITY_AVAILABLE = False
         if COLORS_AVAILABLE:
             print(f"{Fore.YELLOW}⚠ integrity monitor not found{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}  Searched in: {possible_paths}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}  Current directory: {os.getcwd()}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}  Files in directory: {os.listdir('.')}{Style.RESET_ALL}")
         else:
-            print("⚠ integrity monitor not found")
+            print(f"⚠ integrity monitor not found")
+            print(f"  Searched in: {possible_paths}")
+            print(f"  Files in directory: {os.listdir('.')}")
             
 except ImportError as e:
     INTEGRITY_AVAILABLE = False
     if COLORS_AVAILABLE:
-        print(f"{Fore.YELLOW}⚠ Integrity Monitor not available: {e}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}  Run: pip install -r requirements.txt{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}⚠ Integrity Monitor import error: {e}{Style.RESET_ALL}")
     else:
-        print(f"⚠ Integrity Monitor not available: {e}")
-        print("  Run: pip install -r requirements.txt")
+        print(f"⚠ Integrity Monitor import error: {e}")
+    import traceback
+    traceback.print_exc()
+# =================================
+# Import crypto_engine
+try:
+    crypto_path = os.path.join(BASE_PATH, 'crypto_engine.py')
+    if os.path.exists(crypto_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("crypto_engine", crypto_path)
+        crypto_engine_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(crypto_engine_module)
+        CryptoEngine = crypto_engine_module.CryptoEngine
+        crypto_engine = CryptoEngine(BASE_PATH)
+    else:
+        print(f"⚠ crypto_engine.py not found at: {crypto_path}")
+        crypto_engine = None
+except Exception as e:
+    print(f"⚠ Crypto engine import error: {e}")
+    crypto_engine = None
 
+# Import edu_typing_engine
+try:
+    edu_path = os.path.join(BASE_PATH, 'edu_typing_engine.py')
+    if os.path.exists(edu_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("edu_typing_engine", edu_path)
+        edu_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(edu_module)
+        EducationTypingEngine = edu_module.EducationTypingEngine
+        engine = EducationTypingEngine(speed=0.03)
+    else:
+        print(f"⚠ edu_typing_engine.py not found at: {edu_path}")
+        engine = None
+except Exception as e:
+    print(f"⚠ Education typing engine import error: {e}")
+    engine = None
+    # =========================
 import math
 import shlex
 import shutil
