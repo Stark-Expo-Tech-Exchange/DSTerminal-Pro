@@ -75,12 +75,12 @@ Name: "startwithwindows"; Description: "Start DSTerminal with Windows (minimized
 ; Main executable (ensure this file exists in dist folder)
 Source: "dist\dsterminal_win-2025_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
+Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
 
 ; Configuration files
 Source: "config\*"; DestDir: "{app}\config"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 Source: "config\settings.json"; DestDir: "{app}\config"; Flags: ignoreversion onlyifdoesntexist; Components: core
 Source: "config\default.profile"; DestDir: "{app}\config"; Flags: ignoreversion; Components: core
-
 ; Python dependencies (if needed)
 Source: "requirements.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: core
 

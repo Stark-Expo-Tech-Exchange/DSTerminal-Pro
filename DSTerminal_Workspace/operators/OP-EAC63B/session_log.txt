@@ -1,0 +1,14 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-EAC63B
+║ Session ID : SOC-730BF
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-23 10:08:45
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[10:09:37] COMMAND: integrity help
+[10:11:02] COMMAND: integrity scan
+[10:16:31] COMMAND: integrity report pdf
+[10:40:08] COMMAND: exit

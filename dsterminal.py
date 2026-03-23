@@ -1,5 +1,30 @@
 import os
 import sys
+
+import sys
+
+VERSION = "2.0.113"
+APP_NAME = "DSTerminal"
+DESCRIPTION = "Defensive Security Terminal"
+AUTHOR = "Stark Expo Tech Exchange"
+
+def show_version():
+    print(f"{APP_NAME} v{VERSION}")
+    print(DESCRIPTION)
+    print(f"Developed by {AUTHOR}")
+
+def main():
+    if len(sys.argv) > 1:
+        arg = sys.argv[1].lower()
+
+        if arg in ["--version", "-v", "version"]:
+            show_version()
+            return
+
+    # continue normal terminal startup
+    run_terminal()
+
+
 import io
 import glob
 import queue
@@ -1219,7 +1244,7 @@ class SecurityTerminal:
         f"║    Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release()}   ║",
         "║    Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange║",
         "║    Type 'help' for available commands                                            ║",
-        f"║ (🔍, ⚡, 🛡️) 🌐 ⚡ CLI Mode: {'ADMIN' if self.is_admin() else 'USER'}               ",
+        f"║ (🔍 ⚡ 🛡️) 🌐 ⚡ CLI Mode: {'ADMIN' if self.is_admin() else 'USER'}               ",
         "╚════════════════════════════════════════════════════════════════════============══╝"
         ]
 
