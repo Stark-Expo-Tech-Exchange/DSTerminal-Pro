@@ -1,0 +1,85 @@
+Server:		10.253.194.50
+Address:	10.253.194.50#53
+
+Non-authoritative answer:
+Name:	unima.ac.mw
+Address: 41.70.32.5
+Name:	unima.ac.mw
+Address: 2c0f:ea60:200:2::5
+
+% Domain Information over Whois protocol
+% 
+% Whoisd Server Version: 3.9.0
+% Timestamp: Mon Mar 23 12:44:57 2026
+
+domain:       unima.ac.mw
+registrant:   UNIMA-AC-MW-REG
+admin-c:      UNIMA-AC-MW-ADMIN
+admin-c:      UNIMA-AC-MW-BILLING
+nsset:        UNIMA-AC-MW-NS
+registrar:    mw_system_reg
+registered:   13.11.2019 15:52:20
+expire:       13.11.2030
+
+contact:      UNIMA-AC-MW-REG
+org:          University of Malawi -ICT CENTRE
+name:         Bridget Nyirongo
+address:      P.O Box 280
+address:      Zomba
+address:      --
+address:      MW
+phone:        +265.999450978
+fax-no:       +265.1524046
+e-mail:       bnyirongo@cc.ac.mw
+registrar:    mw_system_reg
+created:      13.11.2019 15:51:18
+
+contact:      UNIMA-AC-MW-ADMIN
+org:          University of Malawi -ICT CENTRE
+name:         Bridget Nyirongo
+address:      P.O Box 280
+address:      Zomba
+address:      --
+address:      MW
+phone:        +265.999450978
+fax-no:       +265.1524046
+e-mail:       bnyirongo@cc.ac.mw
+registrar:    mw_system_reg
+created:      13.11.2019 15:51:27
+
+contact:      UNIMA-AC-MW-BILLING
+org:          University of Malawi -ICT CENTRE
+name:         Bridget Nyirongo
+address:      P.O Box 280
+address:      Zomba
+address:      --
+address:      MW
+phone:        +265.999450978
+fax-no:       +265.1524046
+e-mail:       bnyirongo@cc.ac.mw
+registrar:    mw_system_reg
+created:      13.11.2019 15:51:47
+
+nsset:        UNIMA-AC-MW-NS
+nserver:      malonje.cc.ac.mw 
+nserver:      domwe.sdn.mw 
+nserver:      matawale.unima.ac.mw 
+tech-c:       UNIMA-AC-MW-TECH
+registrar:    mw_system_reg
+created:      13.11.2019 15:52:04
+changed:      01.12.2022 16:43:57
+
+contact:      UNIMA-AC-MW-TECH
+org:          University of Malawi -ICT CENTRE
+name:         Martin Ngalande
+address:      P.O Box 280
+address:      Zomba
+address:      --
+address:      MW
+phone:        +265.882479780
+fax-no:       +265.1524046
+e-mail:       mngalande@cc.ac.mw
+registrar:    mw_system_reg
+created:      13.11.2019 15:51:38
+
+

@@ -1,0 +1,23 @@
+╔══════════════════════════════════════════════╗
+║        DSTerminal Operator Security Audit Log    ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-AA8F27
+║ Session ID : SOC-04BA1
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-08 18:03:14
+╠══════════════════════════════════════════════╣
+║ Command Activity                                 ║
+╠                                           ═══╣
+╠══════════════════════════════════════════════╣
+║ Session End : 2026-03-08 18:03:14
+╚══════════════════════════════════════════════╝
+[18:03:33] COMMAND: cd operators
+[18:03:35] COMMAND: ls
+[18:03:44] COMMAND: cd OP-6D89E5
+[18:03:48] COMMAND: ls
+[18:03:52] COMMAND: cd ..
+[18:03:54] COMMAND: ls
+[18:04:01] COMMAND: cd OP-CADB98
+[18:04:02] COMMAND: ls
+[18:04:10] COMMAND: cat session_log.txt
+[18:15:56] COMMAND: exit

@@ -1,0 +1,13 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-C3FBD4
+║ Session ID : SOC-1D17C
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-13 14:35:11
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[14:35:36] COMMAND: integrity report json
+
+[14:42:32] COMMAND: exit

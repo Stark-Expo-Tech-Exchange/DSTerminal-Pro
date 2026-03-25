@@ -1,0 +1,18 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-0A91E6
+║ Session ID : SOC-822B8
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-12 23:35:06
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[23:35:25] COMMAND: help
+[23:36:00] COMMAND: ls
+[23:36:07] COMMAND: cd operators
+[23:36:09] COMMAND: ls
+[23:36:31] COMMAND: cd OP-0A91E6
+[23:36:34] COMMAND: ls
+[23:36:49] COMMAND: cat session_log.txt
+[23:37:19] COMMAND: exit

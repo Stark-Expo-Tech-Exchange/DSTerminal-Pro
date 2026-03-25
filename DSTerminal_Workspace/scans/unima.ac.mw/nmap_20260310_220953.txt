@@ -1,0 +1,5 @@
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-03-10 22:09 +0200
+Warning: Hostname unima.ac.mw resolves, but not to any IPv4 address. Try scanning with -6
+Failed to resolve "unima.ac.mw".
+WARNING: No targets were specified, so 0 hosts scanned.
+Nmap done: 0 IP addresses (0 hosts up) scanned in 2.07 seconds

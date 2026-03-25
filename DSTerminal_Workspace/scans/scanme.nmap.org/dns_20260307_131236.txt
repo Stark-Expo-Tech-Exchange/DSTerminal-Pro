@@ -1,0 +1,172 @@
+Non-authoritative answer:
+
+Server:  UnKnown
+Address:  10.219.170.29
+
+Name:    scanme.nmap.org
+Addresses:  2600:3c01::f03c:91ff:fe18:bb2f
+	  45.33.32.156
+
+
+Whois v1.21 - Domain information lookup
+Copyright (C) 2005-2019 Mark Russinovich
+Sysinternals - www.sysinternals.com
+
+Connecting to ORG.whois-servers.net...
+
+WHOIS Server: whois.dynadot.com
+
+Registrar URL: http://www.dynadot.com
+
+Updated Date: 2023-08-31T05:05:15Z
+
+Creation Date: 1999-01-18T05:00:00Z
+
+Registry Expiry Date: 2029-01-18T05:00:00Z
+
+Registrar: Dynadot Inc
+
+Registrar IANA ID: 472
+
+Registrar Abuse Contact Email: abuse@dynadot.com
+
+Registrar Abuse Contact Phone: +1.6502620100
+
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+
+Name Server: ns1.linode.com
+
+Name Server: ns2.linode.com
+
+Name Server: ns3.linode.com
+
+Name Server: ns4.linode.com
+
+Name Server: ns5.linode.com
+
+DNSSEC: unsigned
+
+URL of the ICANN Whois Inaccuracy Complaint Form: https://icann.org/wicf/
+
+>>> Last update of WHOIS database: 2026-03-07T11:12:39Z <<<
+
+
+
+For more information on Whois status codes, please visit https://icann.org/epp
+
+
+
+Terms of Use: Access to Public Interest Registry WHOIS information is provided to assist persons in determining the contents of a domain name registration record in the Public Interest Registry registry database. The data in this record is provided by Public Interest Registry for informational purposes only, and Public Interest Registry does not guarantee its accuracy. This service is intended only for query-based access. You agree that you will use this data only for lawful purposes and that, under no circumstances will you use this data to (a) allow, enable, or otherwise support the transmission by e-mail, telephone, or facsimile of mass unsolicited, commercial advertising or solicitations to entities other than the data recipient's own existing customers; or (b) enable high volume, automated, electronic processes that send queries or data to the systems of Registry Operator, a Registrar, or Identity Digital except as reasonably necessary to register domain names or modify existing registrations. All rights reserved. Public Interest Registry reserves the right to modify these terms at any time. By submitting this query, you agree to abide by this policy.  The Registrar of Record identified in this output may have an RDDS service that can be queried for additional information on how to contact the Registrant, Admin, or Tech contact of the queried domain name.
+
+
+Connecting to whois.dynadot.com...
+
+WHOIS Server: whois.dynadot.com
+Registrar URL: http://www.dynadot.com
+Updated Date: 2023-08-26T05:16:38.0Z
+Creation Date: 1999-01-18T05:00:00.0Z
+Registrar Registration Expiration Date: 2029-01-18T05:00:00.0Z
+Registrar: DYNADOT LLC
+Registrar IANA ID: 472
+Registrar Abuse Contact Email: abuse@dynadot.com
+Registrar Abuse Contact Phone: +1.6502620100
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Registry Registrant ID: CPF-1139053
+Registrant Name: REDACTED FOR PRIVACY
+Registrant Organization: Super Privacy Service LTD c/o Dynadot
+Registrant Street: PO Box 701
+Registrant Street: 
+Registrant City: San Mateo
+Registrant State/Province: California
+Registrant Postal Code: 94401
+Registrant Country: US
+Registrant Phone: +1.6505854708
+Registrant Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Registry Admin ID: CPF-1139053
+Admin Name: REDACTED FOR PRIVACY
+Admin Organization: Super Privacy Service LTD c/o Dynadot
+Admin Street: PO Box 701
+Admin Street: 
+Admin City: San Mateo
+Admin State/Province: California
+Admin Postal Code: 94401
+Admin Country: US
+Admin Phone: +1.6505854708
+Admin Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Registry Tech ID: CPF-1139053
+Tech Name: REDACTED FOR PRIVACY
+Tech Organization: Super Privacy Service LTD c/o Dynadot
+Tech Street: PO Box 701
+Tech Street: 
+Tech City: San Mateo
+Tech State/Province: California
+Tech Postal Code: 94401
+Tech Country: US
+Tech Phone: +1.6505854708
+Tech Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Name Server: ns1.linode.com
+Name Server: ns2.linode.com
+Name Server: ns3.linode.com
+Name Server: ns4.linode.com
+Name Server: ns5.linode.com
+DNSSEC: unsigned
+URL of the ICANN WHOIS Data Problem Reporting System: http://wdprs.internic.net/
+>>> Last update of WHOIS database: 2023-08-25 22:16:38 -0700 <<<
+
+
+
+Domain Name: NMAP.ORG
+Registry Domain ID: 5ed7a21fc9f74f97b55511f9857111f0-LROR
+Registrar WHOIS Server: whois.dynadot.com
+Registrar URL: http://www.dynadot.com
+Updated Date: 2023-08-26T05:16:38.0Z
+Creation Date: 1999-01-18T05:00:00.0Z
+Registrar Registration Expiration Date: 2029-01-18T05:00:00.0Z
+Registrar: DYNADOT LLC
+Registrar IANA ID: 472
+Registrar Abuse Contact Email: abuse@dynadot.com
+Registrar Abuse Contact Phone: +1.6502620100
+Domain Status: clientTransferProhibited https://icann.org/epp#clientTransferProhibited
+Registry Registrant ID: CPF-1139053
+Registrant Name: REDACTED FOR PRIVACY
+Registrant Organization: Super Privacy Service LTD c/o Dynadot
+Registrant Street: PO Box 701
+Registrant Street: 
+Registrant City: San Mateo
+Registrant State/Province: California
+Registrant Postal Code: 94401
+Registrant Country: US
+Registrant Phone: +1.6505854708
+Registrant Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Registry Admin ID: CPF-1139053
+Admin Name: REDACTED FOR PRIVACY
+Admin Organization: Super Privacy Service LTD c/o Dynadot
+Admin Street: PO Box 701
+Admin Street: 
+Admin City: San Mateo
+Admin State/Province: California
+Admin Postal Code: 94401
+Admin Country: US
+Admin Phone: +1.6505854708
+Admin Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Registry Tech ID: CPF-1139053
+Tech Name: REDACTED FOR PRIVACY
+Tech Organization: Super Privacy Service LTD c/o Dynadot
+Tech Street: PO Box 701
+Tech Street: 
+Tech City: San Mateo
+Tech State/Province: California
+Tech Postal Code: 94401
+Tech Country: US
+Tech Phone: +1.6505854708
+Tech Email: https://www.dynadot.com/domain/contact-request?domain=nmap.org
+Name Server: ns1.linode.com
+Name Server: ns2.linode.com
+Name Server: ns3.linode.com
+Name Server: ns4.linode.com
+Name Server: ns5.linode.com
+DNSSEC: unsigned
+URL of the ICANN WHOIS Data Problem Reporting System: http://wdprs.internic.net/
+>>> Last update of WHOIS database: 2023-08-25 22:16:38 -0700 <<<
+
+

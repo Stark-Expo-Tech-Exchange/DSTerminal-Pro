@@ -1,0 +1,11 @@
+Starting Nmap 7.98 ( https://nmap.org ) at 2026-03-09 00:45 +0200
+Nmap scan report for unima.ac.mw (41.70.32.5)
+Host is up (0.036s latency).
+Other addresses for unima.ac.mw (not scanned): 2c0f:ea60:200:2::5
+Not shown: 998 filtered tcp ports (no-response)
+PORT    STATE SERVICE    VERSION
+80/tcp  open  http       Apache httpd
+443/tcp open  ssl/https?
+
+Service detection performed. Please report any incorrect results at https://nmap.org/submit/ .
+Nmap done: 1 IP address (1 host up) scanned in 58.88 seconds

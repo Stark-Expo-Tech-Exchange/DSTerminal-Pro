@@ -1,0 +1,27 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-92D2DA
+║ Session ID : SOC-BCF14
+║ Host       : parrot
+║ Start Time : 2026-03-23 14:27:27
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[14:27:52] COMMAND: integrity
+[14:27:56] COMMAND: integ
+[14:27:58] COMMAND: int
+[14:28:04] COMMAND: integrity help
+[14:28:09] COMMAND: integrity status
+[14:28:17] COMMAND: ls
+[14:28:26] COMMAND: cd reports
+[14:28:28] COMMAND: ls
+[14:28:33] COMMAND: pwd
+[14:28:36] COMMAND: cd ..
+[14:28:40] COMMAND: cd operators
+[14:28:42] COMMAND: ls
+[14:29:11] COMMAND: cd ..
+[14:29:13] COMMAND: ls
+[14:29:19] COMMAND: cd scans
+[14:29:21] COMMAND: ls
+[14:29:29] COMMAND: integrity monitor

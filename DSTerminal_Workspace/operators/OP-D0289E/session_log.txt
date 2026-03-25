@@ -1,0 +1,43 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-D0289E
+║ Session ID : SOC-8514D
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-12 21:48:37
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠                                           ═══╣
+╠══════════════════════════════════════════════╣
+║ Session End : 2026-03-12 21:48:37
+╚══════════════════════════════════════════════╝
+[21:49:28] COMMAND: ls
+[21:49:35] COMMAND: cd reports
+[21:49:36] COMMAND: ls
+[21:49:40] COMMAND: pwd
+[21:49:44] COMMAND: cd ..
+[21:49:45] COMMAND: ls
+[21:49:52] COMMAND: cd scans
+[21:49:53] COMMAND: ls
+[21:50:11] COMMAND: cat nmap_must_ac_mw_20260310_220801_formatted.txt
+[21:50:25] COMMAND: hashfile nmap_must_ac_mw_20260310_220801_formatted.txt
+[21:51:10] COMMAND: encrypt nmap_must_ac_mw_20260310_220801_formatted.txt
+[21:51:26] COMMAND: crypto-status
+[21:51:55] COMMAND: encrypt-test
+[21:53:11] COMMAND: crypto-status
+[21:53:17] COMMAND: crypto-list
+[21:53:25] COMMAND: crypto-info
+[21:53:35] COMMAND: crypto-verify
+[21:53:49] COMMAND: crypto-backup
+[21:54:05] COMMAND: clear
+[21:54:17] COMMAND: ls
+[21:54:19] COMMAND: pwd
+[21:54:29] COMMAND: hashfile nmap_must_ac_mw_20260310_220801_formatted.txt
+[21:54:57] COMMAND: encrypt nmap_must_ac_mw_20260310_220801_formatted.txt
+[21:56:04] COMMAND: hashfile
+[21:56:33] COMMAND: encrypt --file nmap_must_ac_mw_20260310_220801_formatted.txt
+
+[21:56:43] COMMAND: encrypt -f nmap_must_ac_mw_20260310_220801_formatted.txt
+
+[21:56:56] COMMAND: pwd
+[21:59:08] COMMAND: exit

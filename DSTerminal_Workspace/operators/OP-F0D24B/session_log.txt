@@ -1,0 +1,14 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-F0D24B
+║ Session ID : SOC-89245
+║ Host       : parrot
+║ Start Time : 2026-03-23 12:20:45
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[12:23:42] COMMAND: integrity monitor
+[12:25:06] COMMAND: integrity monitor stop
+[12:25:11] COMMAND: integrity monitor
+[12:27:51] COMMAND: integrity status

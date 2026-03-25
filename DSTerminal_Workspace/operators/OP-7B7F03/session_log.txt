@@ -1,0 +1,21 @@
+╔══════════════════════════════════════════════╗
+║        DSTerminal Operator Security Audit Log    ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-7B7F03
+║ Session ID : SOC-D4811
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-08 17:35:26
+╠══════════════════════════════════════════════╣
+║ Command Activity                                 ║
+╠                                           ═══╣
+╠══════════════════════════════════════════════╣
+║ Session End : 2026-03-08 17:35:26
+╚══════════════════════════════════════════════╝
+[17:56:42] COMMAND: ls
+[17:56:46] COMMAND: pwd
+[17:56:52] COMMAND: cd operators
+[17:56:53] COMMAND: ls
+[17:57:12] COMMAND: cd OP-7B7F03
+[17:57:15] COMMAND: ls
+[17:57:27] COMMAND: cat session_log.txt
+[18:00:14] COMMAND: exit

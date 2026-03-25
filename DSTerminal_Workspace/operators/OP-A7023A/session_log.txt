@@ -1,0 +1,15 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-A7023A
+║ Session ID : SOC-841E0
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-13 14:42:47
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[14:43:47] COMMAND: integrity report json
+
+[14:47:31] COMMAND: integrity report latest
+[14:47:52] COMMAND: integrity report pdf
+[14:53:40] COMMAND: exit

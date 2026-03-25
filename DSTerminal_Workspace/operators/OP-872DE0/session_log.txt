@@ -1,0 +1,22 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-872DE0
+║ Session ID : SOC-0BAF4
+║ Host       : WILSON-SON
+║ Start Time : 2026-03-12 18:58:52
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠                                           ═══╣
+╠══════════════════════════════════════════════╣
+║ Session End : 2026-03-12 18:58:52
+╚══════════════════════════════════════════════╝
+[18:59:37] COMMAND: certcheck
+[19:00:28] COMMAND: certcheck
+[19:01:03] COMMAND: 
+[19:01:03] COMMAND: 
+[19:01:49] COMMAND: clearlogs
+[19:01:57] COMMAND: clear
+[19:02:11] COMMAND: nmap scan -full unima.ac.mw
+[21:35:48] COMMAND: clear
+[21:41:35] COMMAND: exit
