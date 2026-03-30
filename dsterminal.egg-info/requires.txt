@@ -20,7 +20,7 @@ psutil==7.0.0
 pycparser==2.22
 py-cpuinfo==9.0.0
 pyfiglet==1.0.2
-Pygments==2.19.1
+Pygments==2.20.0
 pyinstaller==6.13.0
 pyinstaller-hooks-contrib==2025.4
 pyOpenSSL==25.1.0
