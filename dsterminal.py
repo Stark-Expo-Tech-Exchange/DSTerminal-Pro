@@ -1,6 +1,7 @@
 import os
 import sys
 import tempfile
+from pathlib import Path
 
 def get_base_path():
     """Get the base path for the application (works for both development and installed versions)"""
@@ -106,53 +107,7 @@ except ImportError:
             pass
     
     COLORS_AVAILABLE = False
-
-# Try to import integrity monitor
-# try:
-#     # First check if the file exists
-#     integrity_path = os.path.join(BASE_PATH, 'integrity_monitor.py')
-#     if os.path.exists('integrity_monitor.py'):
-#         from integrity_monitor import SystemIntegrityMonitor
-#         # Try to import optional classes
-#         AlertManager = None
-#         ForensicAnalyzer = None
-
-#         try:
-#             from integrity_monitor import AlertManager as AM
-#             AlertManager = AM
-#         except ImportError:
-#             pass
-
-#         try:
-#             from integrity_monitor import ForensicAnalyzer as FA
-#             ForensicAnalyzer = FA
-#             # If we got here, integrity monitor is available
-#         except ImportError:
-#             pass
-        
-#         INTEGRITY_AVAILABLE = True
-#         if COLORS_AVAILABLE:
-#             print(f"{Fore.GREEN}✓ Integrity Monitor loaded successfully{Style.RESET_ALL}")
-#         else:
-#             print("✓ Integrity Monitor loaded successfully")
-#     else:
-#         INTEGRITY_AVAILABLE = False
-#         if COLORS_AVAILABLE:
-#             print(f"{Fore.YELLOW}⚠ integrity monitor not found{Style.RESET_ALL}")
-#         else:
-#             print("⚠ integrity monitor not found")
-            
-# except ImportError as e:
-#     INTEGRITY_AVAILABLE = False
-#     if COLORS_AVAILABLE:
-#         print(f"{Fore.YELLOW}⚠ Integrity Monitor not available: {e}{Style.RESET_ALL}")
-#         print(f"{Fore.YELLOW}  Run: pip install -r requirements.txt{Style.RESET_ALL}")
-#     else:
-#         print(f"⚠ Integrity Monitor not available: {e}")
-#         print("  Run: pip install -r requirements.txt")
-
-# Try to import integrity monitor with proper path handling
-
+ 
 # Try to import integrity monitor with proper path handling
 try:
     # Check multiple possible locations
@@ -175,7 +130,6 @@ try:
             break
     
     if integrity_path and os.path.exists(integrity_path):
-        print(f"Debug: Found integrity_monitor.py at: {integrity_path}")
         # Import from the file
         import importlib.util
         spec = importlib.util.spec_from_file_location("integrity_monitor", integrity_path)
@@ -266,6 +220,7 @@ import json
 import time
 import random
 import ssl
+import whois
 import OpenSSL
 import subprocess
 from cryptography.x509 import load_pem_x509_certificate
@@ -346,7 +301,27 @@ def init_workspace():
         print(f"{Fore.RED}[!] Failed to initialize workspace: {e}{Style.RESET_ALL}")
         sys.exit(1) 
 # Initialize workspace safely
-WORKSPACE = init_workspace()
+# WORKSPACE = init_workspace()
+def get_workspace_dir() -> Path:
+    """Get the DSTerminal workspace directory"""
+    home = Path.home()
+    workspace = home / "dsterminal_workspace"
+    workspace.mkdir(exist_ok=True)
+    
+    # Create subdirectories for different report types
+    (workspace / "integrity_reports").mkdir(exist_ok=True)
+    (workspace / "network_reports").mkdir(exist_ok=True)
+    (workspace / "compliance_reports").mkdir(exist_ok=True)
+    (workspace / "logs").mkdir(exist_ok=True)
+    (workspace / "baselines").mkdir(exist_ok=True)
+    (workspace / "alerts").mkdir(exist_ok=True)
+    (workspace / "quarantine").mkdir(exist_ok=True)
+    (workspace / "forensic").mkdir(exist_ok=True)
+    (workspace / "auto_quarantine").mkdir(exist_ok=True)
+    
+    return workspace
+
+WORKSPACE = get_workspace_dir()
 console = Console()
 
 # Configuration
@@ -774,9 +749,10 @@ class SecurityTerminal:
     UNDERLINE = '\033[4m'
     REVERSE = '\033[7m'
     RESET_ALL = '\033[0m'
+
     def __init__(self, workspace_root="."):
-        self.current_dir = workspace_root
-        self.workspace_root = workspace_root
+        self.workspace = str(WORKSPACE)
+        self.report_dir = os.path.join(self.workspace, "integrity_reports")
         self.crypto = CryptoEngine(os.getcwd())
     
     # Use the global variable
@@ -2930,7 +2906,7 @@ class SecurityTerminal:
         recv = current.bytes_recv - self.prev_io.bytes_recv
         self.prev_io = current
         return sent, recv
-
+# ========================================
     def network_monitor(self):
         """Animated network monitoring with hacking-style visuals (stable version)"""
         self.init_bandwidth()
@@ -2942,17 +2918,17 @@ class SecurityTerminal:
     # Generate connection table
     # ----------------------------
         def generate_connection_table(connections):
-            table = RichTable()
+            rich_table = RichTable()
 
-            table.add_column("LOCAL", style="cyan")
-            table.add_column("→", justify="center")
-            table.add_column("REMOTE", style="magenta")
-            table.add_column("PID", justify="right")
-            table.add_column("STATUS", justify="right")
-            table.add_column("THREAT", justify="right")
-            table.add_column("COUNTRY")
-            table.add_column("ISP")
-            table.add_column("SCORE", justify="right")
+            rich_table.add_column("LOCAL", style="cyan")
+            rich_table.add_column("→", justify="center")
+            rich_table.add_column("REMOTE", style="magenta")
+            rich_table.add_column("PID", justify="right")
+            rich_table.add_column("STATUS", justify="right")
+            rich_table.add_column("THREAT", justify="right")
+            rich_table.add_column("COUNTRY")
+            rich_table.add_column("ISP")
+            rich_table.add_column("SCORE", justify="right")
 
             for conn in connections:
                 if conn.status == "ESTABLISHED" and conn.raddr:
@@ -2963,39 +2939,20 @@ class SecurityTerminal:
                     local = f"{conn.laddr.ip}:{conn.laddr.port}"
                     remote = f"{conn.raddr.ip}:{conn.raddr.port}"
 
-                    table.add_row(local, "⋙", remote,
+                    rich_table.add_row(local, "⋙", remote,
                                 str(conn.pid) if conn.pid else "N/A",
                                 "[green]ACTIVE", icon,
                                 country, isp, str(score))
-            return table
-
-        # Threat scoring
-                    # level, icon, score = calculate_threat_score(conn, geo)
-
-                    # country = geo["country"] if geo else "N/A"
-                    # isp = geo["isp"] if geo else "N/A"
-
-                    # table.add_row(
-                    #     local,
-                    #     "⋙",
-                    #     remote,
-                    #     str(conn.pid) if conn.pid else "N/A",
-                    #     "[green]ACTIVE",
-                    #     icon,
-                    #     country,
-                    #     isp,
-                    #     str(score)
-                    # )
-
-            # return table  # 🔥 IMPORTANT: Only returns Table (no recursion!)
-
+            return rich_table
+ 
     # ----------------------------
     # Pre-scan animation
     # ----------------------------
         def threat_scan_animation():
             with console.status("[bold green]Initializing network sensors..."):
                 for i in range(5):
-                    console.log(f"[cyan]Scanning layer {i+1}/5...")
+                    console.print(f"[cyan]Scanning layer {i+1}/5...")
+                    log_locals=False
                     time.sleep(1)
 
     # ----------------------------
@@ -3012,8 +2969,19 @@ class SecurityTerminal:
         from rich.table import Table as RichTable
         from reportlab.lib.styles import getSampleStyleSheet
 
-        def export_forensic_report(connections, filename="forensic_report.pdf"):
-            doc = SimpleDocTemplate(filename)
+        def export_forensic_report(connections, report_file="forensic_report.pdf"):
+            workspace_dir = getattr(self, 'reports_dir', None)
+            if workspace_dir is None:
+                # try to find workspace from parent
+                if hasattr(self, 'current_workspace'):
+                    workspace_dir = self.current_workspace
+                else:
+                    workspace_dir = os.getcwd()  # fallback to current directory
+
+            report_file = os.path.join(self.report_dir, f'report_{datetime.now().strftime("%Y%m%d_%H%M%S")}.pdf')
+            os.makedirs(os.path.dirname(report_file), exist_ok=True)
+
+            doc = SimpleDocTemplate(report_file)
             elements = []
 
             styles = getSampleStyleSheet()
@@ -3034,17 +3002,17 @@ class SecurityTerminal:
 
                     data.append([local, remote, str(conn.pid), conn.status, country, isp, str(score)])
 
-            table = PDFTable(data)
-            table.setStyle(TableStyle([
+            pdf_table = PDFTable(data)
+            pdf_table.setStyle(TableStyle([
                 ('BACKGROUND', (0,0), (-1,0), colors.grey),
                 ('GRID', (0,0), (-1,-1), 0.5, colors.black),
                 ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
                 ('ALIGN', (2, 1), (-1, -1), 'CENTER')
             ]))
 
-            elements.append(table)
+            elements.append(pdf_table)
             doc.build(elements)
-            print(f"[✓] Forensic report exported to {filename}")
+            print(f"[green][✓] Forensic report exported to {report_file}[/green]")
 
 
 
@@ -3086,7 +3054,7 @@ class SecurityTerminal:
                         console.print(f"[red]Access Error: {e}")
                         break
 
-                    table = generate_connection_table(connections)
+                    rich_table = generate_connection_table(connections)
 
                     stats = RichTable()
                     stats.add_column("Metric")
@@ -3111,7 +3079,7 @@ class SecurityTerminal:
                     dashboard.add_row(bandwidth_panel)
                     dashboard.add_row(
                         Panel(
-                            table,
+                            rich_table,
                             title="[bold red]NETWORK TRAFFIC ANALYSIS[/bold red]",
                             border_style="bright_blue"
                         )
@@ -3154,6 +3122,8 @@ class SecurityTerminal:
 
         connections = psutil.net_connections()
         export_forensic_report(connections)
+    
+    
     # ==================== NEW ADVANCED COMMANDS ====================
     def check_exploits(self):
         vulns = {
@@ -4707,7 +4677,8 @@ class SecurityTerminal:
             return "Unknown"
 
     def _export_ssl_results(self, domain, ssock, cert_obj, chain):
-
+        """Export SSL results to workspace directory"""
+    
         subject = self._bytes_to_str_dict(
             dict(cert_obj.get_subject().get_components())
         )
@@ -4719,10 +4690,8 @@ class SecurityTerminal:
         data = {
             "domain": domain,
             "scan_time": datetime.now().isoformat(),
-
             "protocol": ssock.version(),
             "cipher": ssock.cipher()[0],
-
             "certificate": {
                 "subject": subject,
                 "issuer": issuer,
@@ -4730,9 +4699,7 @@ class SecurityTerminal:
                 "serial": str(cert_obj.get_serial_number()),
                 "signature": cert_obj.get_signature_algorithm().decode()
             },
-
             "chain": self._clean_chain(chain),
-
             "security_profile": {
                 "tls13": ssock.version() == "TLSv1.3",
                 "ocsp": "checked",
@@ -4740,12 +4707,31 @@ class SecurityTerminal:
             }
         }
 
-        filename = f"dsterminal_ssl_{domain}_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
+    # Get workspace directory
+        workspace_dir = getattr(self, 'workspace_dir', None)
+        if workspace_dir is None:
+            if hasattr(self, 'current_workspace'):
+                workspace_dir = self.current_workspace
+            else:
+                workspace_dir = os.path.join(os.path.expanduser("~"), "dsterminal_workspace")
+    
+    # Ensure workspace directory exists
+        os.makedirs(workspace_dir, exist_ok=True)
+    
+        # Create reports subdirectory in workspace
+        reports_dir = os.path.join(workspace_dir, "reports")
+        os.makedirs(reports_dir, exist_ok=True)
+    
+    # Save to workspace/reports/
+        report_file = os.path.join(
+            reports_dir, 
+            f"ssl_audit_{domain}_{datetime.now().strftime('%Y%m%d_%H%M')}.json"
+        )
 
-        with open(filename, "w") as f:
+        with open(report_file, "w") as f:
             json.dump(data, f, indent=2)
 
-        print(f"\n[✓] Encrypted audit report saved: {filename}")
+        print(f"\n[✓] Encrypted audit report saved: {report_file}")
 
     def _bytes_to_str_dict(self, data):
         """Convert bytes dictionary to string dictionary"""
@@ -4807,7 +4793,10 @@ class SecurityTerminal:
 
         return cleaned
 
+
     def _generate_pdf_report(self, data, logo_path="icon.jpg", footer_logo_path="icon.jpg"):
+        """Generate PDF report in workspace directory"""
+    
     # Safely get all keys with defaults
         domain = data.get("domain", "unknown_domain")
         certificate = data.get("certificate", {})
@@ -4826,10 +4815,30 @@ class SecurityTerminal:
         ocsp = security_profile.get("ocsp", "N/A")
         forward_secrecy = security_profile.get("forward_secrecy", False)
 
-        filename = f"dsterminal_report_{domain}_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+    # Get workspace directory
+        workspace_dir = getattr(self, 'workspace_dir', None)
+        if workspace_dir is None:
+            if hasattr(self, 'current_workspace'):
+                workspace_dir = self.current_workspace
+            else:
+                workspace_dir = os.path.join(os.path.expanduser("~"), "dsterminal_workspace")
+
+    
+    # Ensure workspace directory exists
+        os.makedirs(workspace_dir, exist_ok=True)
+    
+    # Create reports subdirectory in workspace
+        reports_dir = os.path.join(workspace_dir, "reports")
+        os.makedirs(reports_dir, exist_ok=True)
+    
+    # Save to workspace/reports/
+        report_file = os.path.join(
+            reports_dir,
+            f"ssl_report_{domain}_{datetime.now().strftime('%Y%m%d_%H%M')}.pdf"
+        )
 
         doc = SimpleDocTemplate(
-            filename,
+            report_file,
             pagesize=A4,
             rightMargin=40,
             leftMargin=40,
@@ -4841,7 +4850,7 @@ class SecurityTerminal:
         styles = getSampleStyleSheet()
         elements = []
 
-            # -------- Top Logo (auto-scaled, centered) --------
+    # -------- Top Logo (auto-scaled, centered) --------
         if os.path.exists(logo_path):
             logo = Image(logo_path)
             max_width = page_width - doc.leftMargin - doc.rightMargin
@@ -4903,40 +4912,53 @@ class SecurityTerminal:
         elements.append(Spacer(1, 40))
         footer_data = []
 
-            # Footer logo
+    # Footer logo
         if os.path.exists(footer_logo_path):
             footer_logo = Image(footer_logo_path)
             max_footer_width = 50  # small logo width
-            scale_ratio = max_footer_width / footer_logo.imageWidth
-            footer_logo.drawWidth = footer_logo.imageWidth * scale_ratio
-            footer_logo.drawHeight = footer_logo.imageHeight * scale_ratio
+            if footer_logo.imageWidth > max_footer_width:
+                scale_ratio = max_footer_width / footer_logo.imageWidth
+                footer_logo.drawWidth = footer_logo.imageWidth * scale_ratio
+                footer_logo.drawHeight = footer_logo.imageHeight * scale_ratio
             footer_data.append([footer_logo, Paragraph("AUTOGENERATED CERTIFICATE REPORT | DSTerminal Platform\n© Stark Expo Tech Exchange", normal)])
             footer_table = Table(footer_data, colWidths=[60, page_width - 60 - doc.leftMargin - doc.rightMargin])
             footer_table.setStyle(TableStyle([('VALIGN', (0,0), (-1,-1), 'MIDDLE')]))
             elements.append(footer_table)
         else:
         # fallback if logo missing
-            elements.append(Paragraph("AUTOGENERATED REPORT | DSTerminal Platform", normal))
+            elements.append(Paragraph("AUTOGENERATED REPORT | DSTerminal Unified Platform", normal))
             elements.append(Paragraph("© Stark Expo Tech Exchange LTD", normal))
 
-   
         doc.build(elements)
-        print(f"\n[✓] PDF Compliance Report Created: {filename}")
+        print(f"\n[✓] PDF Compliance Report Created: {report_file}")
 # ===lists of reports===
     def list_reports(self):
+        """List all reports in workspace reports directory"""
         print("\n📊 DSTerminal Reports")
         print("="*50)
 
-        reports_path = os.path.join(self.workspace_root, "reports")
-        if not os.path.exists(reports_path) or not os.listdir(reports_path):
-            print("No reports found.")
+    # Get workspace directory
+        workspace_dir = getattr(self, 'workspace_dir', None)
+        if workspace_dir is None:
+            if hasattr(self, 'current_workspace'):
+                workspace_dir = self.current_workspace
+            else:
+                workspace_dir = os.path.join(os.path.expanduser("~"), "dsterminal_workspace")
+
+    
+    # Look in workspace/reports/
+        reports_dir = os.path.join(workspace_dir, "reports")
+    
+        if not os.path.exists(reports_dir) or not os.listdir(reports_dir):
+            print("No reports found in workspace.")
             return
 
-        for f in os.listdir(reports_path):
-            file_path = os.path.join(reports_path, f)
-            size = os.path.getsize(file_path)
-            print(f"📄 {f:35} ({self.human_readable_size(size)})")
-        
+        for f in os.listdir(reports_dir):
+            report_path = os.path.join(reports_dir, f)
+            if os.path.isfile(report_path):
+                size = os.path.getsize(report_path)
+                print(f"📄 {f:50} ({self.human_readable_size(size)})")
+
 # ====ends list of report
     def _styled_table(self, data):
 
@@ -4964,7 +4986,7 @@ class SecurityTerminal:
 
     # Expiry check
         expires = datetime.strptime(cert["expires"][:8], "%Y%m%d")
-        days_left = (expires - datetime.utcnow()).days
+        days_left = (expires - datetime.now()).days
 
         if days_left < 60:
             recs.append("Renew SSL certificate within 30 days")
@@ -4973,10 +4995,11 @@ class SecurityTerminal:
             recs.append("Upgrade server configuration to support TLS 1.3")
 
         if sec["ocsp"] != "VALID":
-            recs.append("Enable OCSP stapling for revocation validation")
+            recs.append("Enable OCSP(Online Certificate Status Protocol Stapling) stapling for revocation validation.""\n" "A method for checking if an SSL/TLS certificate has been revoked (invalidated before its expiration date). Instead of the client (your browser) checking the certificate status, the server does it and ""staples"" the proof to the certificate")
+            
 
         if sec["forward_secrecy"] is False:
-            recs.append("Enable Perfect Forward Secrecy (ECDHE)")
+            recs.append("Enable Perfect Forward Secrecy (ECDHE)." "\n" "A security feature that ensures session keys cannot be compromised even if the server's private key is later exposed. It uses ephemeral key exchange (like ECDHE) to generate unique session keys for each connection, providing stronger protection against future attacks." "\n" "ECDHE = Elliptic Curve Diffie-Hellman Ephemeral (the ""ephemeral"" part means temporary keys)")
 
         if not recs:
             recs.append("No critical risks detected. Maintain current security posture.")
@@ -5027,7 +5050,8 @@ class SecurityTerminal:
     # Finish with a completed checkmark
         sys.stdout.write(f"\r{Fore.GREEN}[✓] {text} Completed{' ' * 40}{Style.RESET_ALL}\n")
         sys.stdout.flush()
-
+# =======================================================
+# ============================================
     def dump_memory(self):
         """Create a memory dump (requires admin)"""
         if not self.is_admin():
@@ -6912,6 +6936,70 @@ class SecurityTerminal:
         else: 
             print("[!] Unknown command. Type 'help' for more command options.")
             self.show_tip(cmd)
+    def _run_recon_script(self, target, full=False):
+        """Run the recon script with proper path handling"""
+        try:
+        # Determine the script to run
+            script_name = "recon_full.py" if full else "recon.py"
+        
+        # Find the script in various possible locations
+            possible_paths = []
+        
+        # Check in the bundled executable's temp folder
+            if getattr(sys, 'frozen', False):
+                if hasattr(sys, '_MEIPASS'):
+                    possible_paths.append(os.path.join(sys._MEIPASS, script_name))
+                possible_paths.append(os.path.join(os.path.dirname(sys.executable), script_name))
+        
+        # Check in current directory
+            possible_paths.append(os.path.join(os.getcwd(), script_name))
+        
+        # Check in the script directory
+            possible_paths.append(os.path.join(BASE_PATH, script_name))
+        
+            script_path = None
+            for path in possible_paths:
+                if os.path.exists(path):
+                    script_path = path
+                    break
+        
+            if not script_path:
+                print(f"[!] Could not find {script_name}")
+                print(f"    Searched in: {possible_paths}")
+                return
+        
+            print(f"[+] Running recon on {target}...")
+        
+        # Run the script with the target
+            if full:
+                cmd = [sys.executable, script_path, "-full", target]
+            else:
+                cmd = [sys.executable, script_path, target]
+        
+        # Run the script and show output
+            process = subprocess.Popen(
+                cmd,
+                stdout=subprocess.PIPE,
+                stderr=subprocess.STDOUT,
+                text=True,
+                bufsize=1
+            )
+        
+        # Print output in real-time
+            for line in process.stdout:
+                print(line, end='')
+        
+            process.wait()
+        
+            if process.returncode == 0:
+                print(f"[+] Recon completed successfully")
+            else:
+                print(f"[!] Recon failed with exit code: {process.returncode}")
+            
+        except Exception as e:
+            print(f"[!] Error running recon: {e}")
+            import traceback
+            traceback.print_exc()
 
 # ==================== HELP MENU ====================
 

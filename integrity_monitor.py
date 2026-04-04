@@ -2,6 +2,7 @@
 """
 DSTerminal Integrity Monitor Module
 Comprehensive system integrity monitoring with real-time alerts
+All reports saved to DSTerminal workspace
 """
 
 # Add these imports at the top of your file
@@ -26,6 +27,31 @@ import threading
 import glob
 from datetime import datetime, timedelta
 import psutil  # You'll need to install: pip install psutil
+
+# ==============================
+# WORKSPACE MANAGEMENT
+# ==============================
+
+def get_workspace_dir() -> Path:
+    """Get the DSTerminal workspace directory"""
+    home = Path.home()
+    workspace = home / "dsterminal_workspace"
+    workspace.mkdir(exist_ok=True)
+    
+    # Create subdirectories for different report types
+    (workspace / "integrity_reports").mkdir(exist_ok=True)
+    (workspace / "network_reports").mkdir(exist_ok=True)
+    (workspace / "compliance_reports").mkdir(exist_ok=True)
+    (workspace / "logs").mkdir(exist_ok=True)
+    (workspace / "baselines").mkdir(exist_ok=True)
+    (workspace / "alerts").mkdir(exist_ok=True)
+    (workspace / "quarantine").mkdir(exist_ok=True)
+    (workspace / "forensic").mkdir(exist_ok=True)
+    (workspace / "auto_quarantine").mkdir(exist_ok=True)
+    
+    return workspace
+
+WORKSPACE = get_workspace_dir()
 
 # Define COLORAMA_AVAILABLE as a global variable
 try:
@@ -88,11 +114,13 @@ except ImportError:
 
 class SystemIntegrityMonitor:
     def __init__(self):
-        self.db_file = "data/system_integrity.db"
-        self.report_dir = "data/integrity_reports"
-        self.baseline_dir = "data/baselines"
-        self.alerts_dir = "data/alerts"
-        self.quarantine_dir = "data/quarantine"
+        # Use DSTerminal workspace directories
+        self.workspace = str(WORKSPACE)
+        self.db_file = os.path.join(self.workspace, "logs", "system_integrity.db")
+        self.report_dir = os.path.join(self.workspace, "integrity_reports")
+        self.baseline_dir = os.path.join(self.workspace, "baselines")
+        self.alerts_dir = os.path.join(self.workspace, "alerts")
+        self.quarantine_dir = os.path.join(self.workspace, "quarantine")
         
         # Get terminal width
         try:
@@ -129,12 +157,13 @@ class SystemIntegrityMonitor:
     # ===========================
         if self.colorama_available:
             print(f"{Fore.GREEN}✓ System Integrity Monitor initialized{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}✓ Workspace: {self.workspace}{Style.RESET_ALL}")
         else:
             print("✓ System Integrity Monitor initialized")
+            print(f"✓ Workspace: {self.workspace}")
     # ==============================
     # cinematic animation log
     # ==============================
-    # Add these animation helper methods to the SystemIntegrityMonitor class
 
     def _animated_spinner(self, stop_event, message, spinner_type='default'):
         """Animated spinner with different styles"""
@@ -149,10 +178,10 @@ class SystemIntegrityMonitor:
     
         colors = {
             'configs': [Fore.CYAN, Fore.GREEN, Fore.MAGENTA],
-            'logs': [Fore.BLUE, Fore.CYAN, Fore.LIGHTBLUE_EX],
-            'databases': [Fore.MAGENTA, Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX],
-            'system': [Fore.RED, Fore.LIGHTRED_EX, Fore.YELLOW],
-            'user': [Fore.GREEN, Fore.LIGHTGREEN_EX, Fore.CYAN],
+            'logs': [Fore.BLUE, Fore.CYAN, Fore.LIGHTBLUE_EX] if self.colorama_available else [Fore.BLUE, Fore.CYAN, Fore.BLUE],
+            'databases': [Fore.MAGENTA, Fore.LIGHTMAGENTA_EX, Fore.LIGHTRED_EX] if self.colorama_available else [Fore.MAGENTA, Fore.MAGENTA, Fore.RED],
+            'system': [Fore.RED, Fore.LIGHTRED_EX, Fore.YELLOW] if self.colorama_available else [Fore.RED, Fore.RED, Fore.YELLOW],
+            'user': [Fore.GREEN, Fore.LIGHTGREEN_EX, Fore.CYAN] if self.colorama_available else [Fore.GREEN, Fore.GREEN, Fore.CYAN],
             'default': [Fore.CYAN, Fore.GREEN, Fore.MAGENTA]
         }
     
@@ -332,7 +361,53 @@ class SystemIntegrityMonitor:
     
         print(f"\n{Fore.GREEN}✓ Found {count} configuration items{Style.RESET_ALL}")
         print(f"{Fore.CYAN}{'─' * 60}{Style.RESET_ALL}\n")
-    # ============================
+    
+    def _scan_category(self, category, results, target_key=None):
+        """Scan a specific category with cinematic header"""
+        if target_key is None:
+            target_key = category
+
+        # Category icons and colors
+        category_styles = {
+            'configs': {'icon': '⚙️', 'title': 'CONFIGURATION FILES', 'color': Fore.CYAN},
+            'logs': {'icon': '📋', 'title': 'LOG FILES', 'color': Fore.BLUE},
+            'databases': {'icon': '🗄️', 'title': 'DATABASES', 'color': Fore.MAGENTA},
+            'system_files': {'icon': '🔒', 'title': 'CRITICAL SYSTEM FILES', 'color': Fore.RED},
+            'user_files': {'icon': '👤', 'title': 'USER FILES', 'color': Fore.GREEN}
+        }
+
+        style = category_styles.get(category, {'icon': '📁', 'title': category.upper(), 'color': Fore.WHITE})
+
+        if self.colorama_available:
+            print(f"\n{style['color']}{'═' * 60}{Style.RESET_ALL}")
+            print(f"{style['color']}{Style.BRIGHT}{style['icon']}  SCANNING {style['title']}  {style['icon']}{Style.RESET_ALL}")
+            print(f"{style['color']}{'═' * 60}{Style.RESET_ALL}")
+        else:
+            print(f"\n{'=' * 60}")
+            print(f"SCANNING {style['title']}")
+            print(f"{'=' * 60}")
+
+        self._animated_scan_line(f"Initializing {category} scanner", duration=1)
+
+        count = 0
+        total_paths = len(self.system_paths.get(category, []))
+
+        for i, path in enumerate(self.system_paths.get(category, []), 1):
+            if os.path.exists(path):
+                self._animated_progress_bar(i, total_paths, f"Scanning {category}", 40)
+                count += self._scan_directory(path, results[target_key], category)
+
+        terminal_width = shutil.get_terminal_size().columns
+        print(f"\r{' ' * terminal_width}", end='\r')
+
+        if self.colorama_available:
+            print(f"\n{Fore.GREEN}✓ Found {count} {category}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'─' * 60}{Style.RESET_ALL}\n")
+        else:
+            print(f"\n✓ Found {count} {category}")
+            print(f"{'─' * 60}\n")
+
+        return count
 
     def _scan_logs(self, results):
         """Scan log files with cinematic animations"""
@@ -475,7 +550,7 @@ class SystemIntegrityMonitor:
         bar_length = 40
         filled_length = int(bar_length * current // total)
     
-    # Create gradient bar
+        # Create gradient bar
         bar = ''
         for i in range(bar_length):
             if i < filled_length:
@@ -488,7 +563,7 @@ class SystemIntegrityMonitor:
             else:
                 bar += f"{Fore.WHITE}░{Style.RESET_ALL}"
     
-    # Animated spinner
+        # Animated spinner
         spinners = ['◴', '◷', '◶', '◵']
         spinner = spinners[int(time.time() * 4) % 4]
     
@@ -503,7 +578,7 @@ class SystemIntegrityMonitor:
     
         if current == total:
             print()
-        # ===============================
+    
     def scan_system(self, scan_type='all'):
         """Scan system for files, configs, logs, and databases"""
         results = {
@@ -546,55 +621,13 @@ class SystemIntegrityMonitor:
         if scan_type in ['all', 'user']:
             self._scan_category('user_files', results, 'files')
         
+        # Save scan results to workspace
+        scan_file = os.path.join(self.report_dir, f'scan_results_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+        with open(scan_file, 'w', encoding='utf-8') as f:
+            json.dump(results, f, indent=2, default=str)
+        
         return results
     
-    def _scan_category(self, category, results, target_key=None):
-        """Scan a specific category with cinematic header"""
-        if target_key is None:
-            target_key = category
-    
-    # Category icons and colors
-        category_styles = {
-            'configs': {'icon': '⚙️', 'title': 'CONFIGURATION FILES', 'color': Fore.CYAN},
-            'logs': {'icon': '📋', 'title': 'LOG FILES', 'color': Fore.BLUE},
-            'databases': {'icon': '🗄️', 'title': 'DATABASES', 'color': Fore.MAGENTA},
-            'system_files': {'icon': '🔒', 'title': 'CRITICAL SYSTEM FILES', 'color': Fore.RED},
-            'user_files': {'icon': '👤', 'title': 'USER FILES', 'color': Fore.GREEN}
-        }
-    
-        style = category_styles.get(category, {'icon': '📁', 'title': category.upper(), 'color': Fore.WHITE})
-    
-        if self.colorama_available:
-            print(f"\n{style['color']}{'═' * 60}{Style.RESET_ALL}")
-            print(f"{style['color']}{Style.BRIGHT}{style['icon']}  SCANNING {style['title']}  {style['icon']}{Style.RESET_ALL}")
-            print(f"{style['color']}{'═' * 60}{Style.RESET_ALL}")
-        else:
-            print(f"\n{'=' * 60}")
-            print(f"SCANNING {style['title']}")
-            print(f"{'=' * 60}")
-    
-        self._animated_scan_line(f"Initializing {category} scanner", duration=1)
-    
-        count = 0
-        total_paths = len(self.system_paths.get(category, []))
-    
-        for i, path in enumerate(self.system_paths.get(category, []), 1):
-            if os.path.exists(path):
-                self._animated_progress_bar(i, total_paths, f"Scanning {category}", 40)
-                count += self._scan_directory(path, results[target_key], category)
-    
-        terminal_width = shutil.get_terminal_size().columns
-        print(f"\r{' ' * terminal_width}", end='\r')
-    
-        if self.colorama_available:
-            print(f"\n{Fore.GREEN}✓ Found {count} {category}{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{'─' * 60}{Style.RESET_ALL}\n")
-        else:
-            print(f"\n✓ Found {count} {category}")
-            print(f"{'─' * 60}\n")
-    
-        return count
-
     def _scan_directory(self, directory, results_list, category, max_depth=3):
         """Recursively scan a directory with progress animation"""
         count = 0
@@ -613,8 +646,7 @@ class SystemIntegrityMonitor:
                         results_list.append(file_info)
                         count += 1
                     
-                    # Update progress every 100 files
-                        if count % 100 == 0:
+                        if count % 100 == 0 and self.colorama_available:
                             print(f"\r  {Fore.CYAN}Processed {count} files...{Style.RESET_ALL}", end='', flush=True)
                     
                         if len(results_list) > 10000:
@@ -704,12 +736,13 @@ class SystemIntegrityMonitor:
     # BASELINE MANAGEMENT
     # ==============================
     def create_baseline(self, scan_results=None):
-        """Create a baseline of system state"""
+        """Create a baseline of system state and save to workspace"""
         if scan_results is None:
             scan_results = self.scan_system()
         
         baseline = {
             'created': datetime.now().isoformat(),
+            'workspace': self.workspace,
             'system_info': scan_results['system_info'],
             'files': scan_results['files'],
             'configs': scan_results['configs'],
@@ -718,7 +751,7 @@ class SystemIntegrityMonitor:
             'critical_files': scan_results['critical_files']
         }
         
-        # Save baseline
+        # Save baseline to workspace
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
         baseline_file = os.path.join(self.baseline_dir, f'baseline_{timestamp}.json')
         
@@ -837,6 +870,21 @@ class SystemIntegrityMonitor:
                     'severity': self._determine_severity(path, 'new')
                 })
         
+        # Save integrity check results to workspace
+        integrity_result_file = os.path.join(self.report_dir, f'integrity_check_{datetime.now().strftime("%Y%m%d_%H%M%S")}.json')
+        with open(integrity_result_file, 'w', encoding='utf-8') as f:
+            json.dump({
+                'timestamp': datetime.now().isoformat(),
+                'workspace': self.workspace,
+                'changes': changes,
+                'summary': {
+                    'new_files': len(changes['new_files']),
+                    'modified_files': len(changes['modified_files']),
+                    'deleted_files': len(changes['deleted_files']),
+                    'permission_changes': len(changes['permission_changes'])
+                }
+            }, f, indent=2, default=str)
+        
         return changes
     
     def _analyze_change(self, baseline, current):
@@ -875,12 +923,12 @@ class SystemIntegrityMonitor:
     # REPORT GENERATION
     # ==============================
     def generate_report(self, changes=None, scan_results=None):
-        """Generate a text report"""
+        """Generate a text report and save to workspace"""
         if scan_results is None:
             scan_results = self.scan_system()
         
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_file = os.path.join(self.report_dir, f'report_{timestamp}.txt')
+        report_file = os.path.join(self.report_dir, f'integrity_report_{timestamp}.txt')
         
         with open(report_file, 'w', encoding='utf-8') as f:
             f.write("=" * 80 + "\n")
@@ -888,6 +936,7 @@ class SystemIntegrityMonitor:
             f.write("=" * 80 + "\n\n")
             
             f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+            f.write(f"Workspace: {self.workspace}\n")
             f.write(f"Hostname: {scan_results['system_info']['hostname']}\n")
             f.write(f"OS: {scan_results['system_info']['os']} {scan_results['system_info']['os_version']}\n")
             f.write(f"Architecture: {scan_results['system_info']['architecture']}\n\n")
@@ -927,27 +976,28 @@ class SystemIntegrityMonitor:
                         f.write(f"    Severity: {item.get('severity', 'LOW')}\n\n")
             
             f.write("=" * 80 + "\n")
-            f.write("End of Report".center(80) + "\n")
+            f.write(f"Report saved to: {report_file}\n")
             f.write("=" * 80 + "\n")
         
         if self.colorama_available:
-            print(f"{Fore.GREEN}✓ Report generated: {report_file}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}✓ Text report saved to workspace: {report_file}{Style.RESET_ALL}")
         else:
-            print(f"✓ Report generated: {report_file}")
+            print(f"✓ Text report saved to workspace: {report_file}")
         
         return report_file
     
     def generate_json_report(self, changes=None, scan_results=None):
-        """Generate a JSON report"""
+        """Generate a JSON report and save to workspace"""
         if scan_results is None:
             scan_results = self.scan_system()
         
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_file = os.path.join(self.report_dir, f'report_{timestamp}.json')
+        report_file = os.path.join(self.report_dir, f'integrity_report_{timestamp}.json')
         
         report_data = {
             'metadata': {
                 'generated': datetime.now().isoformat(),
+                'workspace': self.workspace,
                 'version': '2.0.113'
             },
             'system_info': scan_results['system_info'],
@@ -972,14 +1022,14 @@ class SystemIntegrityMonitor:
             json.dump(report_data, f, indent=2, default=str)
         
         if self.colorama_available:
-            print(f"{Fore.GREEN}✓ JSON report generated: {report_file}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}✓ JSON report saved to workspace: {report_file}{Style.RESET_ALL}")
         else:
-            print(f"✓ JSON report generated: {report_file}")
+            print(f"✓ JSON report saved to workspace: {report_file}")
         
         return report_file
     
     def generate_pdf_report(self, changes=None, scan_results=None):
-        """Generate a PDF report with ASCII characters only"""
+        """Generate a PDF report and save to workspace"""
         if not PDF_AVAILABLE:
             if self.colorama_available:
                 print(f"{Fore.YELLOW}fpdf2 not installed. Install with: pip install fpdf2{Style.RESET_ALL}")
@@ -991,31 +1041,32 @@ class SystemIntegrityMonitor:
             scan_results = self.scan_system()
     
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        report_file = os.path.join(self.report_dir, f'report_{timestamp}.pdf')
+        report_file = os.path.join(self.report_dir, f'integrity_report_{timestamp}.pdf')
     
-    # Create PDF with Helvetica font (ASCII compatible)
         pdf = FPDF()
         pdf.add_page()
         pdf.set_font("Helvetica", size=10)
     
-    # Title
+        # Title
         pdf.set_font("Helvetica", 'B', 16)
         pdf.cell(0, 10, "DSTerminal System Integrity Report", 0, 1, 'C')
         pdf.ln(10)
     
-    # Metadata
+        # Metadata
         pdf.set_font("Helvetica", 'B', 12)
         pdf.cell(0, 8, "Report Metadata", 0, 1, 'L')
         pdf.set_font("Helvetica", size=10)
         pdf.cell(40, 6, f"Generated:", 0, 0)
         pdf.cell(0, 6, datetime.now().strftime('%Y-%m-%d %H:%M:%S'), 0, 1)
+        pdf.cell(40, 6, f"Workspace:", 0, 0)
+        pdf.cell(0, 6, self.workspace, 0, 1)
         pdf.cell(40, 6, f"Hostname:", 0, 0)
         pdf.cell(0, 6, scan_results['system_info']['hostname'], 0, 1)
         pdf.cell(40, 6, f"OS:", 0, 0)
         pdf.cell(0, 6, f"{scan_results['system_info']['os']} {scan_results['system_info']['os_version']}", 0, 1)
         pdf.ln(5)
     
-    # Summary
+        # Summary
         pdf.set_font("Helvetica", 'B', 12)
         pdf.cell(0, 8, "Scan Summary", 0, 1, 'L')
         pdf.set_font("Helvetica", size=10)
@@ -1032,13 +1083,12 @@ class SystemIntegrityMonitor:
         pdf.cell(0, 6, f"  User Files: {len(scan_results['files'])}", 0, 1)
         pdf.ln(5)
     
-    # Findings
+        # Findings
         if changes:
             pdf.set_font("Helvetica", 'B', 12)
             pdf.cell(0, 8, "Integrity Findings", 0, 1, 'L')
             pdf.set_font("Helvetica", size=10)
         
-        # Summary counts
             new_count = len(changes.get('new_files', []))
             modified_count = len(changes.get('modified_files', []))
             deleted_count = len(changes.get('deleted_files', []))
@@ -1047,7 +1097,6 @@ class SystemIntegrityMonitor:
             pdf.cell(0, 6, f"Modified Files: {modified_count}", 0, 1)
             pdf.cell(0, 6, f"Deleted Files: {deleted_count}", 0, 1)
         
-        # Severity breakdown
             severity_counts = {'CRITICAL': 0, 'HIGH': 0, 'MEDIUM': 0, 'LOW': 0}
             for change_type in ['new_files', 'modified_files', 'deleted_files']:
                 for item in changes.get(change_type, []):
@@ -1063,94 +1112,20 @@ class SystemIntegrityMonitor:
                     pdf.cell(30, 5, f"  {severity}:", 0, 0)
                     pdf.cell(0, 5, str(count), 0, 1)
             pdf.ln(5)
-        
-        # List critical changes
-            critical_items = []
-            for change_type in ['new_files', 'modified_files', 'deleted_files']:
-                for item in changes.get(change_type, []):
-                    if item.get('severity') in ['CRITICAL', 'HIGH']:
-                        critical_items.append((change_type, item))
-        
-            if critical_items:
-                pdf.set_font("Helvetica", 'B', 10)
-                pdf.set_text_color(255, 0, 0)
-                pdf.cell(0, 6, "CRITICAL/HIGH SEVERITY CHANGES:", 0, 1)
-                pdf.set_text_color(0, 0, 0)
-                pdf.set_font("Helvetica", size=8)
-            
-                for change_type, item in critical_items[:20]:
-                    path = item.get('path', 'Unknown')
-                # Truncate long paths
-                    if len(path) > 80:
-                        path = path[:77] + "..."
-                    severity = item.get('severity', 'UNKNOWN')
-                    pdf.cell(15, 5, f"[{severity}]", 0, 0)
-                    pdf.multi_cell(0, 5, path)
-                    pdf.ln(1)
     
-    # Progress bar using simple ASCII (no Unicode blocks)
-        pdf.set_font("Helvetica", 'B', 12)
-        pdf.cell(0, 8, "Scan Progress", 0, 1, 'L')
-        pdf.set_font("Helvetica", size=10)
-    
-    # Create simple ASCII progress bar with = and -
-        bar_length = 40
-        filled = bar_length  # 100% complete
-        bar = "=" * filled
-        progress_bar = f"[{bar}] 100% ({total_files} files scanned)"
-        pdf.cell(0, 6, progress_bar, 0, 1)
-        pdf.ln(5)
-    
-    # File type breakdown with simple ASCII
-        pdf.set_font("Helvetica", 'B', 12)
-        pdf.cell(0, 8, "File Type Breakdown", 0, 1, 'L')
-        pdf.set_font("Helvetica", size=10)
-    
-    # Calculate percentages for ASCII bar chart
-        config_pct = (len(scan_results['configs']) / total_files * 100) if total_files > 0 else 0
-        log_pct = (len(scan_results['logs']) / total_files * 100) if total_files > 0 else 0
-        db_pct = (len(scan_results['databases']) / total_files * 100) if total_files > 0 else 0
-        sys_pct = (len(scan_results['critical_files']) / total_files * 100) if total_files > 0 else 0
-        user_pct = (len(scan_results['files']) / total_files * 100) if total_files > 0 else 0
-    
-        def make_ascii_bar(percentage, width=30):
-            filled_width = int(width * percentage / 100)
-            return "[" + "=" * filled_width + " " * (width - filled_width) + "]"
-    
-        pdf.cell(0, 5, f"Configuration Files: {len(scan_results['configs'])} ({config_pct:.1f}%)", 0, 1)
-        pdf.cell(0, 5, f"  {make_ascii_bar(config_pct)}", 0, 1)
-        pdf.ln(2)
-    
-        pdf.cell(0, 5, f"Log Files: {len(scan_results['logs'])} ({log_pct:.1f}%)", 0, 1)
-        pdf.cell(0, 5, f"  {make_ascii_bar(log_pct)}", 0, 1)
-        pdf.ln(2)
-    
-        pdf.cell(0, 5, f"Database Files: {len(scan_results['databases'])} ({db_pct:.1f}%)", 0, 1)
-        pdf.cell(0, 5, f"  {make_ascii_bar(db_pct)}", 0, 1)
-        pdf.ln(2)
-    
-        pdf.cell(0, 5, f"System Files: {len(scan_results['critical_files'])} ({sys_pct:.1f}%)", 0, 1)
-        pdf.cell(0, 5, f"  {make_ascii_bar(sys_pct)}", 0, 1)
-        pdf.ln(2)
-    
-        pdf.cell(0, 5, f"User Files: {len(scan_results['files'])} ({user_pct:.1f}%)", 0, 1)
-        pdf.cell(0, 5, f"  {make_ascii_bar(user_pct)}", 0, 1)
-        pdf.ln(5)
-    
-    # Footer
+        # Footer
         pdf.set_y(-30)
         pdf.set_font("Helvetica", 'I', 8)
-        pdf.cell(0, 5, "Generated by DSTerminal Integrity Monitor v2.0.113", 0, 1, 'C')
+        pdf.cell(0, 5, f"Generated by DSTerminal Integrity Monitor v2.0.113", 0, 1, 'C')
         pdf.cell(0, 5, f"Report: {os.path.basename(report_file)}", 0, 1, 'C')
-        pdf.cell(0, 5, f"DSTerminal Security Platform - Stark Expo Tech Exchange", 0, 1, 'C')
+        pdf.cell(0, 5, f"Workspace: {self.workspace}", 0, 1, 'C')
     
-    # Save PDF
         try:
             pdf.output(report_file)
             if self.colorama_available:
-                print(f"{Fore.GREEN}✓ PDF report generated: {report_file}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}✓ PDF report saved to workspace: {report_file}{Style.RESET_ALL}")
             else:
-                print(f"✓ PDF report generated: {report_file}")
+                print(f"✓ PDF report saved to workspace: {report_file}")
             return report_file
         except Exception as e:
             if self.colorama_available:
@@ -1158,9 +1133,9 @@ class SystemIntegrityMonitor:
             else:
                 print(f"Failed to generate PDF: {e}")
             return None
-        # ==================================
+    
     def generate_all_reports(self, changes, scan_results=None):
-        """Generate all report formats"""
+        """Generate all report formats and save to workspace"""
         if scan_results is None:
             scan_results = self.scan_system()
         
@@ -1171,12 +1146,14 @@ class SystemIntegrityMonitor:
         
         if self.colorama_available:
             print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}✓ ALL REPORTS GENERATED{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}✓ ALL REPORTS SAVED TO WORKSPACE{Style.RESET_ALL}")
             print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}Workspace location: {self.workspace}/integrity_reports/{Style.RESET_ALL}")
         else:
             print("\n" + "="*60)
-            print("✓ ALL REPORTS GENERATED")
+            print("✓ ALL REPORTS SAVED TO WORKSPACE")
             print("="*60)
+            print(f"Workspace location: {self.workspace}/integrity_reports/")
         
         return reports
     
@@ -1191,45 +1168,6 @@ class SystemIntegrityMonitor:
             size_bytes /= 1024.0
         return f"{size_bytes:.1f} TB"
     
-    def _print_progress(self, current, total, message, for_pdf=False):
-        """Print progress bar with spinning wheels"""
-        percent = (current / total) * 100
-        bar_length = 40
-        filled_length = int(bar_length * current // total)
-    
-        if for_pdf:
-            # Use ASCII characters for PDF (no Unicode)
-            bar = '=' * filled_length + '-' * (bar_length - filled_length)
-            progress_text = f"{message}: [{bar}] {percent:.1f}% [{current}/{total}]"
-            print(progress_text)  # Simple print for PDF context
-        else:
-        # Use Unicode for terminal display
-            bar = '█' * filled_length + '░' * (bar_length - filled_length)
-        
-        # Add spinning wheels based on progress
-            wheels = ['◴', '◷', '◶', '◵']
-            wheel_index = current % 4
-        
-        # Different colors for wheels
-            left_wheel = f"{Fore.CYAN}{wheels[wheel_index]}{Style.RESET_ALL}"
-            center_wheel = f"{Fore.GREEN}{wheels[(wheel_index + 1) % 4]}{Style.RESET_ALL}"
-            right_wheel = f"{Fore.MAGENTA}{wheels[(wheel_index + 2) % 4]}{Style.RESET_ALL}"
-        
-            progress_text = f"{message}: |{bar}| {percent:.1f}% [{current}/{total}] {left_wheel}{center_wheel}{right_wheel}"
-        
-        # Center the display
-            terminal_width = shutil.get_terminal_size().columns
-        
-        # Remove ANSI codes for width calculation
-            clean_text = progress_text.replace(Fore.CYAN, '').replace(Fore.GREEN, '').replace(Fore.MAGENTA, '').replace(Style.RESET_ALL, '')
-            text_width = len(clean_text)
-            padding = max(0, (terminal_width - text_width) // 2)
-        
-            print(f"\r{' ' * padding}{progress_text}", end='', flush=True)
-    
-        if current == total:
-            print()  # New line when done
-
     # ==============================
     # MAIN INTERFACE FUNCTIONS
     # ==============================
@@ -1267,7 +1205,6 @@ class SystemIntegrityMonitor:
                     print("-" * 60)
                 
                 for item in sorted(items, key=lambda x: x.get('modified', ''), reverse=True)[:20]:
-                    created = item.get('created', 'Unknown')[:16] if item.get('created') else 'Unknown'
                     modified = item.get('modified', 'Unknown')[:16] if item.get('modified') else 'Unknown'
                     
                     if self.colorama_available:
@@ -1283,24 +1220,28 @@ class SystemIntegrityMonitor:
                     print()
     
     def full_integrity_check(self):
-        """Perform full system integrity check"""
+        """Perform full system integrity check and save reports to workspace"""
         scan_results = self.scan_system()
         changes = self.check_integrity(scan_results)
         
         if changes:
             self._display_changes(changes)
-            report_file = self.generate_report(changes, scan_results)
+            reports = self.generate_all_reports(changes, scan_results)
             self._display_mitigation_summary(changes)
             
             if self.colorama_available:
-                print(f"\n{Fore.GREEN}Full report saved to: {report_file}{Style.RESET_ALL}")
+                print(f"\n{Fore.GREEN}✓ Full integrity check complete{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}Reports saved to: {self.report_dir}{Style.RESET_ALL}")
             else:
-                print(f"\nFull report saved to: {report_file}")
+                print(f"\n✓ Full integrity check complete")
+                print(f"Reports saved to: {self.report_dir}")
         else:
             if self.colorama_available:
                 print(f"\n{Fore.GREEN}System integrity is intact. No changes detected.{Style.RESET_ALL}")
             else:
                 print(f"\nSystem integrity is intact. No changes detected.")
+        
+        return changes
     
     def _display_changes(self, changes):
         """Display changes in console"""
@@ -1380,6 +1321,10 @@ class SystemIntegrityMonitor:
             if severity_counts['HIGH'] > 0:
                 print(f"  • Review HIGH severity changes soon")
 
+
+# [The rest of your classes remain exactly the same: RealTimeHandler, AlertManager, ForensicAnalyzer, AutoRemediation]
+# They will automatically use the workspace directories because they reference self.report_dir, self.baseline_dir, etc.
+# which now point to the workspace locations.
 
 class RealTimeHandler(FileSystemEventHandler):
     """Handles real-time file system events"""
@@ -2818,11 +2763,16 @@ class AutoRemediation:
                 print(f"Failed to list quarantined files: {e}")
             return []
 
+
 # For testing
 if __name__ == "__main__":
-    print("Integrity Monitor Module")
-    print("=" * 50)
+    print("=" * 60)
+    print("DSTERMINAL INTEGRITY MONITOR")
+    print("=" * 60)
+    print(f"Workspace: {WORKSPACE}")
+    print()
     
     # Test initialization
     monitor = SystemIntegrityMonitor()
     print("\n✓ Module loaded successfully")
+    print(f"✓ All reports will be saved to: {WORKSPACE}/integrity_reports/")
