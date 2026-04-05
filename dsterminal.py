@@ -227,6 +227,94 @@ except Exception as e:
     VT_AVAILABLE = False
     print(f"{Fore.RED}⚠ VirusTotal module import error: {e}{Style.RESET_ALL}")
 # ===============================
+# try import recon and recon_full here====================
+# =================================
+# Import Recon Modules (recon.py and recon_full.py)
+try:
+    recon_path = os.path.join(BASE_PATH, 'recon.py')
+    if os.path.exists(recon_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("recon", recon_path)
+        recon_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(recon_module)
+        
+        # Import specific functions/classes from recon.py
+        ReconScanner = getattr(recon_module, 'ReconScanner', None)
+        run_recon = getattr(recon_module, 'run_recon', None)
+        recon_menu = getattr(recon_module, 'recon_menu', None)
+        
+        RECON_AVAILABLE = True
+        print(f"{Fore.GREEN}✓ Recon module loaded successfully{Style.RESET_ALL}")
+    else:
+        RECON_AVAILABLE = False
+        print(f"{Fore.YELLOW}⚠ recon.py not found at: {recon_path}{Style.RESET_ALL}")
+except Exception as e:
+    RECON_AVAILABLE = False
+    print(f"{Fore.RED}⚠ Recon module import error: {e}{Style.RESET_ALL}")
+
+# =================================
+# Import Recon Full Module (recon_full.py)
+try:
+    recon_full_path = os.path.join(BASE_PATH, 'recon_full.py')
+    if os.path.exists(recon_full_path):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location("recon_full", recon_full_path)
+        recon_full_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(recon_full_module)
+        
+        # Import specific functions/classes from recon_full.py
+        FullReconScanner = getattr(recon_full_module, 'FullReconScanner', None)
+        run_full_recon = getattr(recon_full_module, 'run_full_recon', None)
+        full_recon_menu = getattr(recon_full_module, 'full_recon_menu', None)
+        
+        RECON_FULL_AVAILABLE = True
+        print(f"{Fore.GREEN}✓ Recon Full module loaded successfully{Style.RESET_ALL}")
+    else:
+        RECON_FULL_AVAILABLE = False
+        print(f"{Fore.YELLOW}⚠ recon_full.py not found at: {recon_full_path}{Style.RESET_ALL}")
+except Exception as e:
+    RECON_FULL_AVAILABLE = False
+    print(f"{Fore.RED}⚠ Recon Full module import error: {e}{Style.RESET_ALL}")
+# =========================added recon and recon_full debug like
+# After importing recon modules, add fallback assignments:
+
+# Ensure these variables exist even if imports fail
+if 'RECON_AVAILABLE' not in dir():
+    RECON_AVAILABLE = False
+if 'RECON_FULL_AVAILABLE' not in dir():
+    RECON_FULL_AVAILABLE = False
+
+# fallback functions if imports failed
+if not RECON_AVAILABLE:
+    def recon_menu():
+        print(f"{Fore.YELLOW}Recon module not available. Using basic recon...{Style.RESET_ALL}")
+        terminal = SecurityTerminal()
+        terminal.run_recon_basic()
+    
+    def run_recon():
+        print(f"{Fore.YELLOW}Recon module not available. Using basic recon...{Style.RESET_ALL}")
+        terminal = SecurityTerminal()
+        terminal.run_recon_basic()
+    
+    recon_menu = recon_menu
+    run_recon = run_recon
+
+if not RECON_FULL_AVAILABLE:
+    def full_recon_menu():
+        print(f"{Fore.YELLOW}Full Recon module not available. Using basic recon...{Style.RESET_ALL}")
+        terminal = SecurityTerminal()
+        terminal.run_full_recon_basic()
+    
+    def run_full_recon():
+        print(f"{Fore.YELLOW}Full Recon module not available. Using basic recon...{Style.RESET_ALL}")
+        terminal = SecurityTerminal()
+        terminal.run_full_recon_basic()
+    
+    full_recon_menu = full_recon_menu
+    run_full_recon = run_full_recon
+
+
+# ========================================================
 # Import edu_typing_engine
 try:
     edu_path = os.path.join(BASE_PATH, 'edu_typing_engine.py')
@@ -798,6 +886,20 @@ class SecurityTerminal:
         self.report_dir = os.path.join(self.workspace, "integrity_reports")
         self.crypto = CryptoEngine(os.getcwd())
     
+
+        if workspace_root is None:
+            self.workspace_root = os.path.expanduser("~/dsterminal_workspace")
+        else:
+            self.workspace_root = workspace_root
+    
+    # Ensure workspace directory exists
+        if not os.path.exists(self.workspace_root):
+            os.makedirs(self.workspace_root)
+    
+    # Create scans subdirectory
+        self.scans_dir = os.path.join(self.workspace_root, "scans")
+        os.makedirs(self.scans_dir, exist_ok=True)
+    # ==========================
     # Use the global variable
         global INTEGRITY_AVAILABLE
     
@@ -964,7 +1066,115 @@ class SecurityTerminal:
             except:
                 pass
             return False
+# =====================recon & recon_full fallback
+    def run_recon_basic(self, target=None):
+        """Fallback basic recon if recon.py not available"""
+        print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════╗")
+        print(f"║           BASIC RECONNAISSANCE TOOL            ║")
+        print(f"╚══════════════════════════════════════════════════╝{Style.RESET_ALL}")
+    
+        if not target:
+            target = input("Enter target (IP or domain): ").strip()
+    
+        if not target:
+            print(f"{Fore.RED}[!] No target specified{Style.RESET_ALL}")
+            return
+    
+        print(f"\n{Fore.GREEN}[+] Running basic recon on {target}{Style.RESET_ALL}")
+    
+    # Basic DNS lookup
+        try:
+            ip = socket.gethostbyname(target)
+            print(f"{Fore.CYAN}[*] IP Address: {ip}{Style.RESET_ALL}")
+        except:
+            print(f"{Fore.RED}[!] Could not resolve hostname{Style.RESET_ALL}")
+    
+    # Basic whois (if available)
+        try:
+            import whois
+            w = whois.whois(target)
+            if w.registrar:
+                print(f"{Fore.CYAN}[*] Registrar: {w.registrar}{Style.RESET_ALL}")
+            if w.creation_date:
+                print(f"{Fore.CYAN}[*] Created: {w.creation_date}{Style.RESET_ALL}")
+        except:
+            pass
+    
+    # Basic ping test
+        param = '-n' if platform.system().lower() == 'windows' else '-c'
+        response = subprocess.run(['ping', param, '1', target], capture_output=True)
+        if response.returncode == 0:
+            print(f"{Fore.GREEN}[✓] Host is reachable{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}[✗] Host is not responding{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[!] Full recon module not available. Install recon.py for advanced features.{Style.RESET_ALL}")
 
+    def run_full_recon_basic(self, target=None):
+        """Fallback full recon if recon_full.py not available"""
+        print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════╗")
+        print(f"║         FULL RECONNAISSANCE TOOL (BASIC)        ║")
+        print(f"╚══════════════════════════════════════════════════╝{Style.RESET_ALL}")
+    
+        if not target:
+            target = input("Enter target (IP or domain): ").strip()
+    
+        if not target:
+            print(f"{Fore.RED}[!] No target specified{Style.RESET_ALL}")
+            return
+    
+        print(f"\n{Fore.GREEN}[+] Running full recon on {target}{Style.RESET_ALL}")
+    
+    # DNS enumeration
+        try:
+            ip = socket.gethostbyname(target)
+            print(f"{Fore.CYAN}[*] IP Address: {ip}{Style.RESET_ALL}")
+        
+        # Try reverse DNS
+            try:
+                hostname, _, _ = socket.gethostbyaddr(ip)
+                print(f"{Fore.CYAN}[*] Reverse DNS: {hostname}{Style.RESET_ALL}")
+            except:
+                pass
+        except:
+            print(f"{Fore.RED}[!] Could not resolve hostname{Style.RESET_ALL}")
+    
+    # Port scan common ports
+        print(f"\n{Fore.YELLOW}[*] Scanning common ports...{Style.RESET_ALL}")
+        common_ports = [21, 22, 23, 25, 53, 80, 110, 143, 443, 993, 995, 3306, 3389, 5432, 8080, 8443]
+        open_ports = []
+    
+        for port in common_ports:
+            try:
+                sock = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
+                sock.settimeout(0.5)
+                result = sock.connect_ex((target, port))
+                if result == 0:
+                    open_ports.append(port)
+                    print(f"{Fore.GREEN}[+] Port {port}: OPEN{Style.RESET_ALL}")
+                sock.close()
+            except:
+                pass
+    
+        if not open_ports:
+            print(f"{Fore.YELLOW}[!] No common ports found open{Style.RESET_ALL}")
+    
+    # Service detection on open ports
+        if open_ports:
+            print(f"\n{Fore.CYAN}[*] Attempting service detection...{Style.RESET_ALL}")
+            services = {
+                21: "FTP", 22: "SSH", 23: "Telnet", 25: "SMTP", 53: "DNS",
+                80: "HTTP", 110: "POP3", 143: "IMAP", 443: "HTTPS", 993: "IMAPS",
+                995: "POP3S", 3306: "MySQL", 3389: "RDP", 5432: "PostgreSQL",
+                8080: "HTTP-Alt", 8443: "HTTPS-Alt"
+            }
+            for port in open_ports:
+                if port in services:
+                    print(f"{Fore.GREEN}[*] Port {port}: {services[port]}{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[!] Full recon module not available. Install recon_full.py for advanced features.{Style.RESET_ALL}")
+
+# =================================
     def _check_integrity_available(self):
         """Check if integrity monitor is available and show helpful message if not"""
         if not hasattr(self, 'integrity') or self.integrity is None:
@@ -983,7 +1193,31 @@ class SecurityTerminal:
             sys.stdout.flush()
             time.sleep(delay)
         print()
- 
+   
+    # ======================check integrity mwthod=============below
+    def check_integrity(self):
+        """Check system integrity"""
+        if not self._check_integrity_available():
+            return
+    
+        print(f"{Fore.CYAN}Starting integrity check...{Style.RESET_ALL}")
+    
+        if hasattr(self, 'integrity') and self.integrity:
+            try:
+                scan_results = self.integrity.scan_system()
+                changes = self.integrity.check_integrity(scan_results)
+            
+                if changes and any(changes.values()):
+                    print(f"{Fore.RED}[!] Integrity violations detected!{Style.RESET_ALL}")
+                    if hasattr(self.integrity, '_display_changes'):
+                        self.integrity._display_changes(changes)
+                else:
+                    print(f"{Fore.GREEN}[✓] System integrity verified{Style.RESET_ALL}")
+            except Exception as e:
+                print(f"{Fore.RED}[!] Integrity check failed: {e}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}[!] Integrity monitor not available{Style.RESET_ALL}")
+
 # Example neon style constants
     NEON_HEADER = "╔══════════════════════════════════════════════╗"
     NEON_FOOTER = "╚══════════════════════════════════════════════╝"
@@ -1052,17 +1286,17 @@ class SecurityTerminal:
 
         start_time = time.time()
 
-        self.typewriter("\n[ DSTerminal Security Initialization ]\n", 0.03)
-        self.typewriter("✔ Generating Operator Identity...", 0.05)
+        self.typewriter("\n[ DSTerminal Initialization ]\n", 0.03)
+        self.typewriter("✔ Generating Operator Identity...", 0.03)
         time.sleep(1.5)
 
         self.typewriter("✔ Creating Secure Session...", 0.05)
         time.sleep(1.5)
 
-        self.typewriter("✔ Logging Enabled\n", 0.05)
+        self.typewriter("✔ Logging Enabled\n", 0.03)
         time.sleep(1)
 
-        self.typewriter(f" 🛡️   🌐 ⚡ YOUR UNIQUE OPERATOR SESSION USERNAME IS: {GLOBAL_OPERATOR}\n", 0.04)
+        self.typewriter(f" 🛡️   🌐 ⚡ UNIQUE OPERATOR SESSION USERNAME: {GLOBAL_OPERATOR}\n", 0.04)
 
         elapsed = time.time() - start_time
         if elapsed < 10:
@@ -1263,69 +1497,69 @@ class SecurityTerminal:
         self.log_file = "security_harden.log"
         self.setup_logging()
 
-        COMMANDS = {
-            "recon": {
-                "-full": None
-            },
-            "net": {
-                "-n": {
-                    "mon": None
-            }
-        },
-        "system": {
-            "scan": {
-                "-All": None
-            }
-        },
-        "nikto": None,
-        "nmap": None,
-        "transfertrace": None,
-        "certcheck": None,
-        "metasploit": None,
-        "msf": None,
-        "sqlmap": None,
-        "torify": None,
-        "crypto-list": None,
-        "crypto-info": None,
-        "crypto-init": None,
-        "crypto-status": None,
-        "crypto-backup": None,
-        "vt-scan": None,
-        "ransomwatch": None,
-        "dnssec": None,
-        "traceroute": None,
-        "exploitcheck": None,
-        "portsweep": None,
-        "hashfile": None,
-        "memdump": None,
-        "sysinfo": None,
-        "killproc": None,
-        "encrypt": None,
-        "decrypt": None,
-        "encrypt-test": None,
-        "encrypt-setup": None,
-        "watchfolder": None,
-        "check": {
-            "integrity": None
-        },
-        "registry": {
-            "-n": {
-                "mon": None
-            }
-        },
-        "clear": None,
-        "cls": None,
-        "clearlogs": None,
-        "update": None,
-        "help": None,
-        "exit": None,
-        "mkdir": None,
-        "cd": None,
-        "touch": None,
-        "cat": None,
-         "certcheck": None
+        # COMMANDS = {
+        #     "recon": {
+        #         "-full": None
+        #     },
+        #     "net": {
+        #         "-n": {
+        #             "mon": None
+        #     }
+        # },
+        # "system": {
+        #     "scan": {
+        #         "-All": None
+        #     }
+        # },
+        # "nikto": None,
+        # "nmap": None,
+        # "transfertrace": None,
+        # "certcheck": None,
+        # "metasploit": None,
+        # "msf": None,
+        # "sqlmap": None,
+        # "torify": None,
+        # "crypto-list": None,
+        # "crypto-info": None,
+        # "crypto-init": None,
+        # "crypto-status": None,
+        # "crypto-backup": None,
+        # "vt-scan": None,
+        # "ransomwatch": None,
+        # "dnssec": None,
+        # "traceroute": None,
+        # "exploitcheck": None,
+        # "portsweep": None,
+        # "hashfile": None,
+        # "memdump": None,
+        # "sysinfo": None,
+        # "killproc": None,
+        # "encrypt": None,
+        # "decrypt": None,
+        # "encrypt-test": None,
+        # "encrypt-setup": None,
+        # "watchfolder": None,
+        # "check": {
+        #     "integrity": None
+        # },
+        # "registry": {
+        #     "-n": {
+        #         "mon": None
+        #     }
+        # },
+        # "clear": None,
+        # "cls": None,
+        # "clearlogs": None,
+        # "update": None,
+        # "help": None,
+        # "exit": None,
+        # "mkdir": None,
+        # "cd": None,
+        # "touch": None,
+        # "cat": None,
+        #  "certcheck": None
             
-        }
+        # }
     
         # self.cipher = Fernet(CONFIG['ENCRYPT_KEY'].encode())
         self.scan_complete = Event()
@@ -1986,9 +2220,8 @@ class SecurityTerminal:
             dry_run = "-t" in args or "--test" in args
             self.harden_system(dry_run=dry_run)
         else:
-            print(f"{Fore.RED}[!] Unknown command: '{command}'. Type 'help' for available commands.{Style.RESET_ALL}")
-
-        return True
+            # print(f"{Fore.RED}[!] Unknown command: '{command}'. Type 'help' for available commands.{Style.RESET_ALL}")
+            return True
 
     def show_help(self):
         """Display help information"""
@@ -2047,60 +2280,211 @@ class SecurityTerminal:
 
 
 # ------added msf impleme
- 
-    def launch_metasploit(self):
-        system = platform.system()
-
-        try:
-            if system == "Linux":
-                subprocess.call(["msfconsole"])
-
-            elif system == "Windows":
-
-                try:
-                    result =subprocess.run(
-                        ["wsl", "bash", "-c", "command -v msfconsole"],
-                        stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE
-                    )
-                    if result.returncode == 0:
-                        return True
-                except Exception as e:
-                    pass
-                return shutil.which("msfconsole") is not None
-
-            elif system == "Darwin":
-                subprocess.call(["msfconsole"])
-
-            else:
-                print("Unsupported OS.")
-
-        except FileNotFoundError:
-            print(f"{Fore.RED}[!] msfconsole not found in PATH{Style.RESET_ALL}")
-
     def check_metasploit_installed(self):
+        """Check if Metasploit is installed on Windows (multiple methods)"""
         system = platform.system()
 
         if system == "Linux":
             return shutil.which("msfconsole") is not None
 
         elif system == "Windows":
-        # Check WSL
+        # Method 1: Check WSL
             try:
                 result = subprocess.run(
                     ["wsl", "which", "msfconsole"],
                     stdout=subprocess.PIPE,
-                    stderr=subprocess.PIPE
+                    stderr=subprocess.PIPE,
+                    timeout=5
                 )
-                return result.returncode == 0
+                if result.returncode == 0:
+                    return True
             except Exception:
-                return False
+                pass
+        
+        # Method 2: Check common installation paths
+            common_paths = [
+                "C:\\metasploit-framework\\bin\\msfconsole.bat",
+                "C:\\metasploit-framework\\bin\\msfconsole",
+                "C:\\metasploit-framework\\msfconsole.bat",
+                "C:\\Program Files\\metasploit-framework\\bin\\msfconsole.bat",
+                "C:\\Program Files (x86)\\metasploit-framework\\bin\\msfconsole.bat"
+            ]
+        
+            for path in common_paths:
+                if os.path.exists(path):
+                    return True
+        
+        # Method 3: Check if msfconsole is in PATH using 'where'
+            try:
+                result = subprocess.run(
+                    ["where", "msfconsole"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=5,
+                    shell=True
+                )
+                if result.returncode == 0:
+                    return True
+            except Exception:
+                pass
+        
+        # Method 4: Check if 'msf' command works
+            try:
+                result = subprocess.run(
+                    ["where", "msf"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=5,
+                    shell=True
+                )
+                if result.returncode == 0:
+                    return True
+            except Exception:
+                pass
+        
+            return False
 
         elif system == "Darwin":  # macOS
             return shutil.which("msfconsole") is not None
 
         return False
+
+    def get_msf_command_path(self):
+        """Get the full path to msfconsole on Windows"""
+        system = platform.system()
     
+        if system == "Windows":
+        # Check common installation paths
+            common_paths = [
+                "C:\\metasploit-framework\\bin\\msfconsole.bat",
+                "C:\\metasploit-framework\\bin\\msfconsole",
+                "C:\\metasploit-framework\\msfconsole.bat",
+                "C:\\Program Files\\metasploit-framework\\bin\\msfconsole.bat",
+                "C:\\Program Files (x86)\\metasploit-framework\\bin\\msfconsole.bat"
+            ]
+        
+            for path in common_paths:
+                if os.path.exists(path):
+                    return path
+        
+        # Try to find via 'where' command
+            try:
+                result = subprocess.run(
+                    ["where", "msfconsole"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=5,
+                    shell=True
+                )
+                if result.returncode == 0:
+                    return result.stdout.decode().strip().split('\n')[0]
+            except Exception:
+                pass
+        
+        # Try 'msf' command
+            try:
+                result = subprocess.run(
+                    ["where", "msf"],
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.PIPE,
+                    timeout=5,
+                    shell=True
+                )
+                if result.returncode == 0:
+                    return result.stdout.decode().strip().split('\n')[0]
+            except Exception:
+                pass
+        
+            return "msfconsole"
+        else:
+            return "msfconsole"
+
+    # def launch_metasploit(self):
+    #     """Launch Metasploit Framework in a separate window"""
+    #     system = platform.system()
+    #     msf_path = self.get_msf_command_path()
+
+    #     try:
+    #         if system == "Linux":
+    #         # Launch in new terminal on Linux
+    #             terminals = ["gnome-terminal", "xterm", "konsole", "terminal"]
+    #             for term in terminals:
+    #                 if shutil.which(term):
+    #                     subprocess.Popen([term, "-e", "msfconsole"])
+    #                     return True
+    #         # Fallback
+    #             subprocess.Popen(["msfconsole"], shell=False)
+    #             return True
+
+    #         elif system == "Windows":
+    #         # Launch in a NEW window on Windows
+    #             methods = [
+    #             # Method 1: Use start command to open new window
+    #                 lambda: subprocess.Popen(["cmd.exe", "/c", "start", "msfconsole"], shell=False),
+    #             # Method 2: Use the full path with start
+    #                 lambda: subprocess.Popen(["cmd.exe", "/c", "start", msf_path], shell=False),
+    #             # Method 3: Use PowerShell to start new window
+    #                 lambda: subprocess.Popen(["powershell", "-Command", f"Start-Process '{msf_path}' -WindowStyle Normal"], shell=False),
+    #             # Method 4: Use os.startfile on Windows
+    #                 lambda: os.startfile(msf_path) if os.path.exists(msf_path) else None,
+    #             ]
+            
+    #             for method in methods:
+    #                 try:
+    #                     result = method()
+    #                     if result is not None:
+    #                     # Give it a moment to start
+    #                         time.sleep(1)
+    #                         return True
+    #                 except Exception as e:
+    #                     continue
+            
+    #             print(f"{Fore.RED}[!] All methods to launch Metasploit failed{Style.RESET_ALL}")
+    #             return False
+
+    #         elif system == "Darwin":  # macOS
+    #         # Launch in new terminal on macOS
+    #             if shutil.which("open"):
+    #                 subprocess.Popen(["open", "-a", "Terminal", "msfconsole"])
+    #                 return True
+    #             subprocess.Popen(["msfconsole"], shell=False)
+    #             return True
+
+    #         else:
+    #             print(f"{Fore.RED}[!] Unsupported OS: {system}{Style.RESET_ALL}")
+    #             return False
+
+    #     except FileNotFoundError as e:
+    #         print(f"{Fore.RED}[!] Metasploit not found: {e}{Style.RESET_ALL}")
+    #         return False
+    #     except Exception as e:
+    #         print(f"{Fore.RED}[!] Failed to launch Metasploit: {e}{Style.RESET_ALL}")
+    #         return False
+    def launch_metasploit(self):
+        """Launch Metasploit Framework in a separate window"""
+        system = platform.system()
+    
+        if system == "Windows":
+            try:
+            # Simply open a new command prompt and run msfconsole
+                subprocess.Popen(
+                    ["cmd.exe", "/c", "start", "cmd.exe", "/k", "msfconsole"],
+                    shell=False
+                )
+                print(f"{Fore.GREEN}[+] Metasploit launching in new window...{Style.RESET_ALL}")
+                return True
+            except Exception as e:
+                print(f"{Fore.RED}[!] Failed to launch: {e}{Style.RESET_ALL}")
+                return False
+        else:
+        # Linux/Mac
+            try:
+                subprocess.Popen(["x-terminal-emulator", "-e", "msfconsole"])
+                return True
+            except:
+                subprocess.Popen(["msfconsole"])
+                return True
+            # =========
     def cinematic_spinner(self, stop_event, message, color=Fore.CYAN):
         """Enhanced spinner with cinematic effects"""
         spinner_chars = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
@@ -2111,7 +2495,7 @@ class SecurityTerminal:
             time.sleep(0.1)
             i = (i + 1) % len(spinner_chars)
         sys.stdout.write("\r" + " " * (len(message) + 20) + "\r")
-    
+
     def typewriter_effect(self, text, delay=0.03, color=Fore.GREEN):
         """Typewriter effect for text output"""
         for char in text:
@@ -2119,7 +2503,7 @@ class SecurityTerminal:
             sys.stdout.flush()
             time.sleep(delay)
         print()
-    
+
     def scan_lines(self, text, line_count=3, delay=0.05):
         """Simulate scanning lines like a terminal"""
         for i in range(line_count):
@@ -2127,11 +2511,11 @@ class SecurityTerminal:
             print(Fore.YELLOW + line, end="\r")
             time.sleep(delay)
         print(" " * 50, end="\r")
-    
+
     def play_beep(self):
         """Play a beep sound (ASCII bell)"""
         print("\a", end="", flush=True)
-    
+
     def animated_progress_bar(self, title, duration=2):
         """Animated progress bar"""
         print(f"\n{title}")
@@ -2153,44 +2537,43 @@ class SecurityTerminal:
             ("Bypassing security protocols", 0.5, Fore.RED),
             ("Setting up payload handlers", 0.6, Fore.CYAN)
         ]
-        
+    
         print("\n" + "="*50)
         print(Fore.RED + "           METASPLOIT FRAMEWORK" + Style.RESET_ALL)
         print("="*50 + "\n")
-        
-        # Simulate system scan
+    
+    # Simulate system scan
         self.scan_lines("Checking system compatibility", 4, 0.1)
-        
+    
         for phase, delay, color in phases:
             sys.stdout.write(f"{color}[+] {phase}")
             sys.stdout.flush()
-            
-            # Add dynamic dots
+        
+        # Add dynamic dots
             for _ in range(3):
                 sys.stdout.write(".")
                 sys.stdout.flush()
                 time.sleep(delay/3)
-            
+        
             print(f" {Fore.GREEN}✓{Style.RESET_ALL}")
-            
-            # Random progress simulation
+        
+        # Random progress simulation
             if "exploit" in phase.lower():
                 self.scan_lines("Verifying exploit integrity", 2, 0.1)
             elif "database" in phase.lower():
                 time.sleep(0.3)
                 print(f"  {Fore.BLUE}>> Database connection established{Style.RESET_ALL}")
-        
-        # Final loading animation
+    
+    # Final loading animation
         print(f"\n{Fore.YELLOW}[*] Finalizing initialization...")
         for i in range(5):
             print(f"  {Fore.YELLOW}▶ Loading component {i+1}/5", end="\r")
             time.sleep(0.2)
-        
+    
         self.play_beep()
 
     def show_metasploit_install_guide(self):
         """Show installation instructions for Metasploit"""
-
         system = platform.system()
 
         print(f"{Fore.RED}[!] Metasploit Framework not detected on this system.{Style.RESET_ALL}\n")
@@ -2199,51 +2582,59 @@ class SecurityTerminal:
             print(Fore.CYAN + "[Linux Installation]" + Style.RESET_ALL)
             print("Recommended installation:")
             print(Fore.YELLOW + "  sudo apt update && sudo apt install metasploit-framework\n" + Style.RESET_ALL)
-
             print("Alternative (official installer):")
             print("  curl https://raw.githubusercontent.com/rapid7/metasploit-framework/master/msfinstall | sudo bash\n")
 
         elif system == "Windows":
-            print(Fore.CYAN + "[Windows Installation]" + Style.RESET_ALL)
-
-            print("Option 1: Install via WSL (Recommended)")
+            print(Fore.CYAN + "[Windows Installation - Metasploit IS installed but not detected]" + Style.RESET_ALL)
+            print(Fore.YELLOW + "\nYour Metasploit appears to be installed at: C:\\metasploit-framework\\" + Style.RESET_ALL)
+            print(Fore.GREEN + "\nTo fix this issue:" + Style.RESET_ALL)
+            print("  1. Add C:\\metasploit-framework\\bin to your system PATH")
+            print("  2. Or run DSTerminal as Administrator")
+            print("  3. Or use the full path: C:\\metasploit-framework\\bin\\msfconsole.bat\n")
+        
+            print(Fore.CYAN + "[Manual Launch Options]:" + Style.RESET_ALL)
+            print(f"  {Fore.YELLOW}msfconsole{Style.RESET_ALL}")
+            print(f"  {Fore.YELLOW}C:\\metasploit-framework\\bin\\msfconsole.bat{Style.RESET_ALL}")
+            print(f"  {Fore.YELLOW}cd C:\\metasploit-framework && bin\\msfconsole.bat{Style.RESET_ALL}\n")
+        
+            print(Fore.CYAN + "[Option 1: Add to PATH]:" + Style.RESET_ALL)
+            print("  1. Open System Properties → Environment Variables")
+            print("  2. Add C:\\metasploit-framework\\bin to Path")
+            print("  3. Restart DSTerminal\n")
+        
+            print(Fore.CYAN + "[Option 2: Use WSL (Alternative)]:" + Style.RESET_ALL)
             print(Fore.YELLOW + "  wsl --install\n" + Style.RESET_ALL)
             print("Then install metasploit inside WSL:")
-
             print(Fore.YELLOW + "  sudo apt install metasploit-framework\n" + Style.RESET_ALL)
-
-            print("Option 2: Use the official Windows installer:")
-            print("  https://www.metasploit.com/download\n")
 
         elif system == "Darwin":
             print(Fore.CYAN + "[macOS Installation]" + Style.RESET_ALL)
-
             print("Install via Homebrew:")
             print(Fore.YELLOW + "  brew install metasploit\n" + Style.RESET_ALL)
-
             print("Official installer:")
             print("  https://www.metasploit.com/download\n")
 
         else:
             print("Unsupported operating system.\n")
 
-        print(Fore.GREEN + "[*] After installation, restart DSTerminal and run 'msf' again." + Style.RESET_ALL)
+        print(Fore.GREEN + "[*] After fixing the PATH or installation, restart DSTerminal and run 'msf' again." + Style.RESET_ALL)
 
     def handle_msf(self, args):
         """Handle Metasploit launch with cinematic effects"""
         if not self.check_metasploit_installed():
             self.show_metasploit_install_guide()
             return
-        
-        # Clear screen for cinematic effect
+    
+    # Clear screen for cinematic effect
         os.system('clear' if os.name == 'posix' else 'cls')
-        
-        # Start cinematic intro
+    
+    # Start cinematic intro
         self.metasploit_intro()
-        
-        # Launch sequence with enhanced spinner
+    
+    # Launch sequence with enhanced spinner
         print(f"\n{Fore.MAGENTA}[*] Starting Metasploit Framework...{Style.RESET_ALL}")
-        
+    
         stop_event = threading.Event()
         spinner_messages = [
             "LAUNCHING MSFCONSOLE",
@@ -2252,7 +2643,7 @@ class SecurityTerminal:
             "LOADING EXPLOIT DATABASE",
             "INITIALIZING SESSION MANAGER"
         ]
-        
+    
         for msg in spinner_messages:
             spinner = threading.Thread(
                 target=self.cinematic_spinner,
@@ -2262,31 +2653,33 @@ class SecurityTerminal:
             spinner.start()
             time.sleep(1.5)
             stop_event.set()
-            spinner.join()
+            spinner.join(timeout=2)
             stop_event.clear()
-        
-        # Countdown effect
+    
+    # Countdown effect
         print(f"\n{Fore.RED}[!] LAUNCHING IN:{Style.RESET_ALL}")
         for i in range(3, 0, -1):
             print(f"  {Fore.RED}{i}...{Style.RESET_ALL}")
             time.sleep(0.5)
-        
-        # Final handoff
+    
+    # Final handoff
         print(f"\n{Fore.GREEN}[+] Handing control to Metasploit Framework...{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}[*] Use 'exit' to return to DSTerminal{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Metasploit is launching in a new window{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Use 'exit' in the Metasploit window to close it{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] You can continue using DSTerminal in this window{Style.RESET_ALL}")
         self.play_beep()
         time.sleep(1)
-        
+    
         try:
-            # Replace current process with msfconsole (REAL TTY)
-            # os.execvp("msfconsole", ["msfconsole"])
-            self.launch_metasploit()
-        except FileNotFoundError:
-            print(f"{Fore.RED}[!] msfconsole not found in PATH{Style.RESET_ALL}")
+            success = self.launch_metasploit()
+            if not success:
+                print(f"{Fore.RED}[!] Failed to launch Metasploit{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[*] Try running 'msfconsole' manually in a new terminal{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.GREEN}[+] Metasploit launched successfully!{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}[*] Check your taskbar for the new Metasploit window{Style.RESET_ALL}")
         except Exception as e:
             print(f"{Fore.RED}[!] Failed to start Metasploit: {e}{Style.RESET_ALL}")
-    
-    # Alternative implementation with ASCII art
     def cinematic_msf_intro_ascii(self):
         """ASCII art cinematic intro for Metasploit"""
         ascii_art = [
@@ -2297,12 +2690,12 @@ class SecurityTerminal:
             r" |_|  |_|\___|\__\__,_|_|  | .__/|_|\__,_|\__|",
             r"                           |_|                "
         ]
-        
+    
         for line in ascii_art:
             self.typewriter_effect(line, 0.02, Fore.RED)
             time.sleep(0.05)
-        
-        # Matrix-like falling code effect
+    
+    # Matrix-like falling code effect
         print(f"\n{Fore.GREEN}")
         matrix_chars = "01█▓▒░█▓▒░"
         for _ in range(10):
@@ -2310,7 +2703,62 @@ class SecurityTerminal:
             print(line, end="\r")
             time.sleep(0.1)
         print(Style.RESET_ALL + " " * 50)
- 
+
+    def debug_metasploit(self):
+        """Debug method to check Metasploit installation details"""
+        print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════╗{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}║         METASPLOIT DEBUG INFORMATION         ║{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}╚══════════════════════════════════════════════╝{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[System Information]{Style.RESET_ALL}")
+        print(f"  OS: {platform.system()} {platform.release()}")
+        print(f"  Architecture: {platform.machine()}")
+    
+        print(f"\n{Fore.YELLOW}[PATH Directories]{Style.RESET_ALL}")
+        path_dirs = os.environ.get('PATH', '').split(';')
+        found_metasploit = False
+        for p in path_dirs:
+            if 'metasploit' in p.lower() or 'framework' in p.lower():
+                print(f"  {Fore.GREEN}✓ {p}{Style.RESET_ALL}")
+                found_metasploit = True
+        if not found_metasploit:
+            print(f"  {Fore.RED}✗ No Metasploit paths found in SYSTEM PATH{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[Common Installation Paths]{Style.RESET_ALL}")
+        common_paths = [
+            "C:\\metasploit-framework\\bin\\msfconsole.bat",
+            "C:\\metasploit-framework\\bin\\msfconsole",
+            "C:\\metasploit-framework\\msfconsole.bat",
+            "C:\\Program Files\\metasploit-framework\\bin\\msfconsole.bat",
+            "C:\\Program Files (x86)\\metasploit-framework\\bin\\msfconsole.bat"
+        ]
+    
+        for path in common_paths:
+            if os.path.exists(path):
+                print(f"  {Fore.GREEN}✓ Found: {path}{Style.RESET_ALL}")
+            else:
+                print(f"  {Fore.RED}✗ Not found: {path}{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[Command Availability]{Style.RESET_ALL}")
+        commands = ["msfconsole", "msfconsole.bat", "msf"]
+        for cmd in commands:
+            result = shutil.which(cmd)
+            if result:
+                print(f"  {Fore.GREEN}✓ '{cmd}' found at: {result}{Style.RESET_ALL}")
+            else:
+                print(f"  {Fore.RED}✗ '{cmd}' not found in PATH{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.YELLOW}[WSL Check]{Style.RESET_ALL}")
+        try:
+            result = subprocess.run(["wsl", "which", "msfconsole"], capture_output=True, timeout=5)
+            if result.returncode == 0:
+                print(f"  {Fore.GREEN}✓ Metasploit found in WSL{Style.RESET_ALL}")
+            else:
+                print(f"  {Fore.RED}✗ Metasploit not found in WSL{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"  {Fore.RED}✗ WSL check failed: {e}{Style.RESET_ALL}")
+    
+        print(f"\n{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
 # ---------========-----------------metasplo ends here from above-----------------------------
     # ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn"}
     # def check_nmap_installed(self):
@@ -2365,9 +2813,7 @@ class SecurityTerminal:
     #         print(f"[!] Nmap failed: {e}")
 
 # Initialize colorama
- 
-    ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn", "-A", "-O", "-sC"}
-
+    ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn", "-A", "-O", "-sC", "-F", "--top-ports"}
 
     def check_nmap_installed(self):
         return shutil.which("nmap") is not None
@@ -2386,8 +2832,8 @@ class SecurityTerminal:
         """Render the terminal/command panel"""
         table = RichTable(show_header=True, header_style="bold green", box=box.HEAVY, padding=(0, 1))
         table.add_column("Command History", style="cyan")
-        
-        # Show last 10 commands/outputs
+    
+    # Show last 10 commands/outputs
         recent_lines = self.output_lines[-10:] if self.output_lines else ["Ready for commands..."]
         for line in recent_lines:
             # Clean the line of any existing Rich markup to prevent conflicts
@@ -2395,7 +2841,7 @@ class SecurityTerminal:
             if len(clean_line) > 60:
                 clean_line = clean_line[:60] + "..."
             table.add_row(clean_line)
-        
+    
         return Panel(
             table,
             title="[bold red]⚡ SOC Terminal ⚡[/bold red]",
@@ -2428,7 +2874,7 @@ class SecurityTerminal:
         status_table.add_row("Target:", f"[bold bright_magenta]{self.current_scan if self.current_scan else 'N/A'}[/bold bright_magenta]")
         status_table.add_row("Progress:", f"[bold bright_green]{self.scan_progress}%[/bold bright_green]")
     
-        # Progress bar with rotating spinner while waiting
+    # Progress bar with rotating spinner while waiting
         progress_width = 40
     
     # Create rotating spinner frames
@@ -2450,39 +2896,34 @@ class SecurityTerminal:
         # Normal progress bar when scan is active
             filled = int((self.scan_progress / 100) * progress_width)
         
-
-    # Enhanced progress bar with gradient effect
-        progress_width = 40  # Wider progress bar
-        filled = int((self.scan_progress / 100) * progress_width)
-    
-    # Create gradient progress bar
-        progress_bar = ""
-        for i in range(progress_width):
-            if i < filled:
-            # Gradient from cyan to green as progress increases
-                if i < progress_width * 0.3:
-                    progress_bar += "█"  # Cyan at start
-                elif i < progress_width * 0.6:
-                    progress_bar += "█"  # Yellow in middle
+        # Create gradient progress bar
+            progress_bar = ""
+            for i in range(progress_width):
+                if i < filled:
+                # Gradient from cyan to green as progress increases
+                    if i < progress_width * 0.3:
+                        progress_bar += "█"  # Cyan at start
+                    elif i < progress_width * 0.6:
+                        progress_bar += "█"  # Yellow in middle
+                    else:
+                        progress_bar += "█"  # Green at end
                 else:
-                    progress_bar += "█"  # Green at end
+                    progress_bar += "░"  # Dim remaining
+        
+        # Add percentage with color based on progress
+            if self.scan_progress < 30:
+                percent_color = "bright_cyan"
+            elif self.scan_progress < 70:
+                percent_color = "bright_yellow"
             else:
-                progress_bar += "░"  # Dim remaining
-    
-    # Add percentage with color based on progress
-        if self.scan_progress < 30:
-            percent_color = "bright_cyan"
-        elif self.scan_progress < 70:
-            percent_color = "bright_yellow"
-        else:
-            percent_color = "bright_green"
-    
-        progress_display = f"[bold {percent_color}]{progress_bar}[/bold {percent_color}] [bold white]{self.scan_progress}%[/bold white]"
-    
-    # Add ETA simulation (optional)
-        if self.scan_status == "Scanning" and self.scan_progress > 0:
-            eta_seconds = int((100 - self.scan_progress) * 0.5)  # Rough estimate
-            progress_display += f"\n[dim white]ETA: {eta_seconds}s[/dim white]"
+                percent_color = "bright_green"
+        
+            progress_display = f"[bold {percent_color}]{progress_bar}[/bold {percent_color}] [bold white]{self.scan_progress}%[/bold white]"
+        
+        # Add ETA simulation (optional)
+            if self.scan_status == "Scanning" and self.scan_progress > 0:
+                eta_seconds = int((100 - self.scan_progress) * 0.5)  # Rough estimate
+                progress_display += f"\n[dim white]ETA: {eta_seconds}s[/dim white]"
     
         progress_panel = Panel(
             Align.center(progress_display),
@@ -2501,7 +2942,7 @@ class SecurityTerminal:
         if self.discovered_ports:
             ports_text = ""
             for i, p in enumerate(self.discovered_ports[-8:]):  # Show more ports
-                # Color code based on port state
+            # Color code based on port state
                 if p['state'] == 'open':
                     port_color = "bright_green"
                     icon = "🔓"
@@ -2555,7 +2996,7 @@ class SecurityTerminal:
                     style=row_style
                 )
         else:
-            # Animated waiting message
+        # Animated waiting message
             waiting_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
             frame = waiting_frames[int(time.time() * 5) % len(waiting_frames)]
             results_table.add_row(
@@ -2598,10 +3039,10 @@ class SecurityTerminal:
             border_style="bright_green"
         )
 
-
     def parse_nmap_output(self, line):
-        """Parse nmap output in real-time"""
-        # Parse port discovery
+        """Parse nmap output in real-time with better progress detection"""
+    
+    # Parse port discovery - more robust pattern
         port_match = re.search(r'(\d+)/(tcp|udp)\s+(\w+)\s+(\w+)\s*(.*)', line)
         if port_match:
             port_info = {
@@ -2611,27 +3052,68 @@ class SecurityTerminal:
                 'service': port_match.group(4),
                 'version': port_match.group(5).strip()
             }
-            
+        
             if not any(p['port'] == port_info['port'] for p in self.discovered_ports):
                 self.discovered_ports.append(port_info)
                 if port_info['state'] == 'open':
                     self.services_found.append(port_info)
-                    self.scan_progress = min(self.scan_progress + 5, 90)
-        
-        # Parse progress indicators
-        if "Scanning" in line:
+                # Update progress when ports are found
+                    self.scan_progress = min(self.scan_progress + 2, 95)
+    
+    # Parse progress indicators - MORE COMPREHENSIVE
+        line_lower = line.lower()
+    
+        if "scanning" in line_lower:
             self.scan_status = "Scanning"
-        elif "Nmap done" in line:
+        # Try to extract percentage from nmap output
+            percent_match = re.search(r'(\d+)%', line)
+            if percent_match:
+                self.scan_progress = int(percent_match.group(1))
+            else:
+                # Increment progress slowly if no percentage
+                if self.scan_progress < 90:
+                    self.scan_progress = min(self.scan_progress + 1, 90)
+                
+        elif "nmap done" in line_lower:
             self.scan_status = "Completed"
             self.scan_progress = 100
-        elif "Initiating" in line:
+        
+        elif "initiating" in line_lower:
+            if "syn stealth" in line_lower:
+                self.scan_progress = 5
+            elif "ping" in line_lower:
+                self.scan_progress = 3
+            
+        elif "stats:" in line_lower:
+            # Nmap statistics line - extract timing info
+            time_match = re.search(r'(\d+:\d+:\d+)', line)
+            percent_match = re.search(r'(\d+)%', line)
+            if percent_match:
+                self.scan_progress = int(percent_match.group(1))
+            
+        elif "host is up" in line_lower:
             self.scan_progress = 10
-        elif "PORT" in line and "STATE" in line:
-            self.scan_progress = 30
-        elif "Service detection" in line:
-            self.scan_progress = 60
-        elif "TRACEROUTE" in line:
+        
+        elif "port" in line_lower and "state" in line_lower:
+        # Header line - scan is progressing
+            if self.scan_progress < 20:
+                self.scan_progress = 20
+            
+        elif "service detection" in line_lower:
+            self.scan_progress = 70
+        
+        elif "traceroute" in line_lower:
             self.scan_progress = 85
+        
+        elif "timing" in line_lower:
+        # Nmap timing information
+            timing_match = re.search(r'about ([\d.]+)%', line)
+            if timing_match:
+                self.scan_progress = int(float(timing_match.group(1)))
+    
+    # Ensure progress doesn't exceed 99 until complete
+        if self.scan_status != "Completed" and self.scan_progress >= 99:
+            self.scan_progress = 95
 
     def handle_nmap(self, args):
         """Main handler for nmap commands"""
@@ -2639,45 +3121,68 @@ class SecurityTerminal:
             print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
             return
 
-        if len(args) < 1 or args[0] != "scan":
-            print(f"{Fore.YELLOW}Usage: nmap scan <target> [flags]{Style.RESET_ALL}")
+    # Allow both "nmap scan <target>" and "nmap <target>" syntax
+        if len(args) >= 1:
+            if args[0] == "scan":
+                if len(args) < 2:
+                    print(f"{Fore.YELLOW}Usage: nmap scan <target> [flags]{Style.RESET_ALL}")
+                    return
+                target = args[1]
+                flags = args[2:] if len(args) > 2 else []
+            else:
+            # Direct nmap command: nmap <target> [flags]
+                target = args[0]
+                flags = args[1:] if len(args) > 1 else []
+        else:
+            print(f"{Fore.YELLOW}Usage: nmap scan <target> [flags] or nmap <target>{Style.RESET_ALL}")
             return
-
-        target = args[1]
-        flags = args[2:] if len(args) > 2 else []
-        
-        # Start scan in background thread
+    
+    # Add -F flag for faster scan if no port range specified
+        has_port_flag = any(f.startswith('-p') for f in flags)
+        if not has_port_flag and '-F' not in flags:
+            print(f"{Fore.YELLOW}[*] No port range specified, using fast scan (-F){Style.RESET_ALL}")
+            flags.append('-F')
+    
+    # Start scan in background thread
         scan_thread = threading.Thread(
             target=self.run_nmap_scan,
             args=(target, flags)
         )
         scan_thread.daemon = True
         scan_thread.start()
-        
-        # Start the live display
+    
+    # Start the live display
         self.start_live_display()
 
     def run_nmap_scan(self, target, flags):
         """Run nmap scan with real-time progress updates"""
+        # Record start time
+        scan_start_time = datetime.now()
         cmd = ["nmap"]
     
     # Validate flags
         for f in flags:
             if f.startswith("-"):
-                if f not in self.ALLOWED_NMAP_FLAGS:
+            # Check if flag is allowed or is a port specification
+                flag_base = f.split('=')[0]  # Handle -p 80,443 format
+                if flag_base not in self.ALLOWED_NMAP_FLAGS and not flag_base.startswith('-p'):
                     self.output_lines.append(f"[!] Flag not allowed: {f}")
                     return
                 cmd.append(f)
     
         cmd.append(target)
     
+    # Add timing template for faster scanning (if not specified)
+        has_timing = any(f.startswith('-T') for f in flags)
+        if not has_timing:
+            cmd.append('-T4')  # Aggressive timing template
+    
     # Create scans directory
         scans_dir = os.path.join(self.workspace_root, "scans")
         os.makedirs(scans_dir, exist_ok=True)
-
+    
         reports_dir = os.path.join(self.workspace_root, "reports")
-        os.makedirs(reports_dir, exist_ok=True) 
-
+        os.makedirs(reports_dir, exist_ok=True)
     
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
         safe_target = target.replace('.', '_').replace('/', '_').replace(':', '_')
@@ -2696,6 +3201,7 @@ class SecurityTerminal:
         self.output_lines.append(f"[+] Running nmap scan on {target}...")
         self.output_lines.append(f"[+] Command: {' '.join(cmd)}")
         self.output_lines.append(f"[+] Output → scans/{os.path.basename(output_file)}")
+        self.output_lines.append(f"[+] This may take 30-60 seconds...")
     
         try:
             process = subprocess.Popen(
@@ -2707,12 +3213,15 @@ class SecurityTerminal:
                 universal_newlines=True
             )
         
+            line_count = 0
             for line in process.stdout:
-                line = line.strip()
+                line = line.rstrip()
                 if line:
                     self.output_lines.append(line)
                     self.parse_nmap_output(line)
+                    line_count += 1
                 
+                # Keep output lines manageable
                     if len(self.output_lines) > 100:
                         self.output_lines = self.output_lines[-100:]
         
@@ -2722,38 +3231,110 @@ class SecurityTerminal:
                 self.scan_status = "Completed"
                 self.scan_progress = 100
                 self.output_lines.append("[+] Scan completed successfully!")
-            
+
+                scan_end_time = datetime.now()
+                self.scan_duration = str(scan_end_time - scan_start_time).split('.')[0]
+    
             # Save results to file
                 self.save_scan_results(output_file)
             else:
                 self.scan_status = "Failed"
                 self.output_lines.append(f"[!] Nmap failed with code {process.returncode}")
-            
+        
         except Exception as e:
             self.scan_status = "Failed"
             self.output_lines.append(f"[!] Scan error: {str(e)}")
     
-    # Keep nmap_mode active to show results
-    # The user will press Enter to exit via show_final_results()
-
+          
     def save_scan_results(self, output_file):
-        """Save formatted scan results to file"""
+        """Save formatted scan results to workspace/scans directory"""
         try:
-            with open(output_file.replace('.txt', '_formatted.txt'), 'w') as f:
-                f.write("=" * 60 + "\n")
-                f.write(f"NMAP SCAN RESULTS - {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write("=" * 60 + "\n\n")
+        # Ensure the scans directory exists in workspace
+            scans_dir = os.path.join(self.workspace_root, "scans")
+            os.makedirs(scans_dir, exist_ok=True)
+        
+        # Create formatted filename in the scans directory
+            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+            safe_target = self.current_scan.replace('.', '_').replace('/', '_').replace(':', '_')
+            formatted_file = os.path.join(scans_dir, f"nmap_{safe_target}_{timestamp}_results.txt")
+        
+            with open(formatted_file, 'w', encoding='utf-8') as f:
+                f.write("=" * 70 + "\n")
+                f.write(f"NMAP SCAN RESULTS - DSTERMINAL\n")
+                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
+                f.write("=" * 70 + "\n\n")
                 f.write(f"Target: {self.current_scan}\n")
                 f.write(f"Status: {self.scan_status}\n")
-                f.write(f"Open Ports: {len([p for p in self.discovered_ports if p['state'] == 'open'])}\n\n")
+                f.write(f"Scan Duration: {self.scan_duration if hasattr(self, 'scan_duration') else 'N/A'}\n\n")
             
-                f.write("DISCOVERED PORTS:\n")
-                f.write("-" * 40 + "\n")
-                for port in self.discovered_ports:
-                    if port['state'] == 'open':
-                        f.write(f"{port['port']}/{port['protocol']} - {port['service']} - {port['version']}\n")
-        except:
-            pass
+            # Write statistics
+                open_ports = len([p for p in self.discovered_ports if p.get('state') == 'open'])
+                filtered_ports = len([p for p in self.discovered_ports if p.get('state') == 'filtered'])
+                closed_ports = len([p for p in self.discovered_ports if p.get('state') == 'closed'])
+            
+                f.write("-" * 70 + "\n")
+                f.write("SCAN STATISTICS\n")
+                f.write("-" * 70 + "\n")
+                f.write(f"Open Ports:     {open_ports}\n")
+                f.write(f"Filtered Ports: {filtered_ports}\n")
+                f.write(f"Closed Ports:   {closed_ports}\n")
+                f.write(f"Total Findings: {len(self.discovered_ports)}\n\n")
+            
+            # Write discovered ports
+                f.write("-" * 70 + "\n")
+                f.write("DISCOVERED PORTS\n")
+                f.write("-" * 70 + "\n")
+            
+                if self.discovered_ports:
+                    for port in self.discovered_ports:
+                        if port.get('state') == 'open':
+                            f.write(f"  [+] {port['port']}/{port.get('protocol', 'tcp')} - {port.get('service', 'unknown')}\n")
+                            if port.get('version'):
+                                f.write(f"      Version: {port['version']}\n")
+                        elif port.get('state') == 'filtered':
+                            f.write(f"  [?] {port['port']}/{port.get('protocol', 'tcp')} - FILTERED\n")
+                        else:
+                            f.write(f"  [-] {port['port']}/{port.get('protocol', 'tcp')} - {port.get('state', 'closed')}\n")
+                else:
+                    f.write("  No ports discovered\n")
+            
+            # Write services found
+                if self.services_found:
+                    f.write("\n" + "-" * 70 + "\n")
+                    f.write("OPEN SERVICES\n")
+                    f.write("-" * 70 + "\n")
+                    for service in self.services_found:
+                        f.write(f"  Port: {service['port']}/{service.get('protocol', 'tcp')}\n")
+                        f.write(f"  Service: {service.get('service', 'unknown')}\n")
+                        if service.get('version'):
+                            f.write(f"  Version: {service['version']}\n")
+                        f.write("\n")
+            
+            # Write all output lines
+                f.write("\n" + "-" * 70 + "\n")
+                f.write("COMPLETE SCAN OUTPUT\n")
+                f.write("-" * 70 + "\n")
+                for line in self.output_lines:
+                    f.write(line + "\n")
+        
+        # Also save a copy of the raw nmap output
+            if output_file and os.path.exists(output_file):
+                import shutil
+                raw_copy = os.path.join(scans_dir, f"nmap_{safe_target}_{timestamp}_raw.txt")
+                shutil.copy2(output_file, raw_copy)
+                self.output_lines.append(f"[+] Raw output saved to: {raw_copy}")
+        
+            self.output_lines.append(f"[+] Results saved to: {formatted_file}")
+            print(f"{Fore.GREEN}[+] Scan results saved to: {formatted_file}{Style.RESET_ALL}")
+        
+            return formatted_file
+        
+        except Exception as e:
+            self.output_lines.append(f"[!] Could not save results: {str(e)}")
+            print(f"{Fore.RED}[!] Failed to save results: {str(e)}{Style.RESET_ALL}")
+            return None
+    
+    
     def start_live_display(self):
         """Start the live three-column display with persistent results after completion"""
         self.nmap_mode = True
@@ -2762,7 +3343,7 @@ class SecurityTerminal:
         try:
         # Increased refresh rate for smoother progress
             with Live(console=self.console, refresh_per_second=10, screen=True) as live:
-                while self.nmap_mode or self.scan_status == "Completed":
+                while self.nmap_mode:
                 # Create a new layout for each update
                     layout = Layout()
                     layout.split_row(
@@ -2772,17 +3353,25 @@ class SecurityTerminal:
                     )
                 
                     live.update(layout)
-                    time.sleep(0.05)  # Faster updates (50ms instead of 100ms)
+                    time.sleep(0.05)  # Faster updates
                 
-                # If scan is complete, wait for user input to exit
-                    if self.scan_status == "Completed" and self.nmap_mode:
-                    # Still show the display but allow exit on keypress
-                        pass
+                # Exit loop when scan is completed
+                    if self.scan_status == "Completed":
+                    # Show completed status for a few seconds
+                        for _ in range(30):  # Wait 3 seconds (30 * 0.1s)
+                            live.update(layout)
+                            time.sleep(0.5)
+                        break
                     
+                    if self.scan_status == "Failed":
+                        break
+                    
+        except KeyboardInterrupt:
+            print(f"\n{Fore.YELLOW}[!] Display interrupted{Style.RESET_ALL}")
         except Exception as e:
             print(f"{Fore.RED}[!] Display error: {str(e)}{Style.RESET_ALL}")
         finally:
-            # Show final results and prompt to return
+        # Show final results and prompt to return
             self.show_final_results()
 
     def show_final_results(self):
@@ -2799,6 +3388,7 @@ class SecurityTerminal:
     
         self.console.print(final_layout)
         input()  # Wait for user to press Enter
+        self.nmap_mode = False
 # =====================end nmap here----
 
     def handle_ls(self):
@@ -6380,7 +6970,32 @@ class SecurityTerminal:
             cmd += f" -o {output_file}"
         result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
         return result.stdout
+# ================================for trufflehog==================
+    def trufflehog_scan_git(self, git_url):
+        """Scan GitHub repository for secrets using trufflehog"""
+        try:
+            cmd = f"trufflehog git {git_url} --no-update"
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            if result.returncode == 0:
+                return result.stdout
+            else:
+                return f"[!] Scan failed: {result.stderr}"
+        except Exception as e:
+            return f"[!] Error running trufflehog: {e}"
 
+    def trufflehog_scan_filesystem(self, fs_path):
+        """Scan filesystem for secrets using trufflehog"""
+        try:
+            cmd = f"trufflehog filesystem {fs_path} --no-update"
+            result = subprocess.run(cmd, shell=True, capture_output=True, text=True)
+            if result.returncode == 0:
+                return result.stdout
+            else:
+                return f"[!] Scan failed: {result.stderr}"
+        except Exception as e:
+            return f"[!] Error running trufflehog: {e}"
+
+# ============end trufflehog=============================
     def legitify_scan_github(self, org_or_repo, token=None):
         """Scan a GitHub org/repo for security issues."""
         cmd = f"legitify scan --github {org_or_repo}"
@@ -6411,7 +7026,8 @@ class SecurityTerminal:
 
         original_cmd = cmd
         parts = cmd.split()
-        cmd = parts[0].lower()
+        # cmd = parts[0].lower()
+        command = parts[0].lower()
         args = parts[1:] if len(parts) > 1 else []
 
 
@@ -6450,24 +7066,59 @@ class SecurityTerminal:
             self.cmd_refresh()
             return
 
-# Add this temporary debug command
-    
-        elif cmd == "recon":
-            if len(args) == 0:
-                print("Usage: recon <target> OR recon -full <target>")
-                return
+#  =====================for recon & recon_full command parser=============================
+# Inside your command handler method (where you process user input)
+ # Inside handle_command method, replace the recon section with:
 
-            if args[0] == "-full":
-                if len(args) < 2:
-                    print("Usage: recon -full <target>")
-                    return
-                target = args[1]
-                # Use sys.executable for cross-platform Python call
-                subprocess.run([sys.executable, "recon_full.py", target])
+        # =====================for recon & recon_full command parser=============================
+        elif command == 'recon' or command == 'recon.py':
+            if RECON_AVAILABLE:
+                # Check which functions are available
+                if 'recon_menu' in globals() and recon_menu:
+                    recon_menu()
+                elif 'run_recon' in globals() and run_recon:
+                    run_recon()
+                else:
+                    print(f"{Fore.YELLOW}Recon function not available. Check recon.py imports.{Style.RESET_ALL}")
             else:
-                target = args[0]
-                subprocess.run([sys.executable, "recon.py", target])
- 
+                print(f"{Fore.RED}Recon module not available. Make sure recon.py is in: {BASE_PATH}{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}Files in directory: {os.listdir(BASE_PATH)}{Style.RESET_ALL}")
+    
+        elif command == 'recon_full' or command == 'recon-full' or command == 'recon_full.py':
+            if RECON_FULL_AVAILABLE:
+                if 'full_recon_menu' in globals() and full_recon_menu:
+                    full_recon_menu()
+                elif 'run_full_recon' in globals() and run_full_recon:
+                    run_full_recon()
+                else:
+                    print(f"{Fore.YELLOW}Full Recon function not available. Check recon_full.py imports.{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.RED}Full Recon module not available. Make sure recon_full.py is in: {BASE_PATH}{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}Files in directory: {os.listdir(BASE_PATH)}{Style.RESET_ALL}")
+    
+        # Shortcut aliases
+        elif command == 'r1' or command == 'rec':
+            if RECON_AVAILABLE:
+                if 'recon_menu' in globals() and recon_menu:
+                    recon_menu()
+                elif 'run_recon' in globals() and run_recon:
+                    run_recon()
+                else:
+                    print(f"{Fore.RED}Recon module not properly loaded{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.RED}Recon module not available{Style.RESET_ALL}")
+    
+        elif command == 'r2' or command == 'recf':
+            if RECON_FULL_AVAILABLE:
+                if 'full_recon_menu' in globals() and full_recon_menu:
+                    full_recon_menu()
+                elif 'run_full_recon' in globals() and run_full_recon:
+                    run_full_recon()
+                else:
+                    print(f"{Fore.RED}Full Recon module not properly loaded{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.RED}Full Recon module not available{Style.RESET_ALL}")
+#  ========================================end of recon and recon_full from above========================================
         elif parts[0] == "pwd":
             self.pwd()
             return
@@ -6954,6 +7605,8 @@ class SecurityTerminal:
                 self.show_tip(cmd)
             else:
                 self.check_ssl()  # Will prompt for domain inside the method
+        elif cmd == "msf-debug" or cmd == "msfdebug":
+            self.debug_metasploit()
 
         elif cmd == "memdump": 
             self.dump_memory()
@@ -6984,74 +7637,10 @@ class SecurityTerminal:
             print("\n[*] Exiting Defensive Security Terminal")
             sys.exit(0)
         else: 
-            print("[!] Unknown command. Type 'help' for more command options.")
-            self.show_tip(cmd)
+            # print("[!] Unknown command. Type 'help' for more command options.")
+            return
 
-    def _run_recon_script(self, target, full=False):
-        """Run the recon script with proper path handling"""
-        try:
-        # Determine the script to run
-            script_name = "recon_full.py" if full else "recon.py"
-        
-        # Find the script in various possible locations
-            possible_paths = []
-        
-        # Check in the bundled executable's temp folder
-            if getattr(sys, 'frozen', False):
-                if hasattr(sys, '_MEIPASS'):
-                    possible_paths.append(os.path.join(sys._MEIPASS, script_name))
-                possible_paths.append(os.path.join(os.path.dirname(sys.executable), script_name))
-        
-        # Check in current directory
-            possible_paths.append(os.path.join(os.getcwd(), script_name))
-        
-        # Check in the script directory
-            possible_paths.append(os.path.join(BASE_PATH, script_name))
-        
-            script_path = None
-            for path in possible_paths:
-                if os.path.exists(path):
-                    script_path = path
-                    break
-        
-            if not script_path:
-                print(f"[!] Could not find {script_name}")
-                print(f"    Searched in: {possible_paths}")
-                return
-        
-            print(f"[+] Running recon on {target}...")
-        
-        # Run the script with the target
-            if full:
-                cmd = [sys.executable, script_path, "-full", target]
-            else:
-                cmd = [sys.executable, script_path, target]
-        
-        # Run the script and show output
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1
-            )
-        
-        # Print output in real-time
-            for line in process.stdout:
-                print(line, end='')
-        
-            process.wait()
-        
-            if process.returncode == 0:
-                print(f"[+] Recon completed successfully")
-            else:
-                print(f"[!] Recon failed with exit code: {process.returncode}")
-            
-        except Exception as e:
-            print(f"[!] Error running recon: {e}")
-            import traceback
-            traceback.print_exc()
-
+# =====================for recon & recon_full command parser=============================
 # ===============================added vtscan upgrade
     def run_vt_module(self):
         """Launch VirusTotal SOC module"""
@@ -7090,6 +7679,7 @@ class SecurityTerminal:
                 ("nikto --url <TARGET>", "Web vulnerability scan"),
                 ("legitify --github <ORG/REPO>", "Scan GitHub for misconfigs"),
                 ("msfconsole", "Launch Metasploit Framework console"),
+                ("msf-debug", "Debug Metasploit installation issues"),
                 ("msf -h", "Metasploit help and options"),
                 ("nmap -sV <TARGET>", "Service/version detection scan"),
                 ("nmap -A <TARGET>", "Aggressive OS and service detection"),
@@ -7313,24 +7903,6 @@ class SecurityTerminal:
 
 # --------------------help menu ends here from above========================
 # =============================END==========================================
-#     def run(self):
-#             self.print_banner()
-#             while True:
-#                 try:
-#                         prompt_text = HTML('<ansigreen><b>[-- DFFENEX</b></ansigreen>'
-#                                '<ansiblue>@</ansiblue>'
-#                                '<ansigreen><b>DSTerminal</b></ansigreen> '
-#                                '<ansired>]-[]</ansired> ')
-#                         user_input = self.session.prompt(prompt_text)
-#                         self.handle_command(user_input.strip())
-#                 except KeyboardInterrupt:
-#                     print("\n[*] Use 'exit' to quit")
-#                 except Exception as e:
-#                     print(f"[!] Error: {str(e)}")
-
-# if __name__ == "__main__":
-#     terminal = SecurityTerminal()
-#     terminal.run()
 
     def run(self):
         self.initialize_operator_session()   # ← ADD THIS

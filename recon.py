@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+"""
+DSTerminal Reconnaissance Module
+Usage: python recon.py <target>
+       Or import as module: from recon import run_recon, recon_menu
+"""
 
 import os
 import sys
@@ -53,35 +58,44 @@ BLUE = '\033[94m'
 MAGENTA = '\033[95m'
 
 # -------------------------------
-# TARGET VALIDATION
+# GLOBAL VARIABLES FOR MODULE EXPORT
 # -------------------------------
 
-if len(sys.argv) < 2:
-    print(f"{BOLD}╔════════════════════════════════════╗{RESET}")
-    print(f"{BOLD}║     USAGE: python recon.py <target>    ║{RESET}")
-    print(f"{BOLD}╚════════════════════════════════════╝{RESET}")
-    sys.exit(1)
+# These will be set when the module is imported
+current_target = None
+current_dashboard = None
 
-target = sys.argv[1]
+# -------------------------------
+# TARGET VALIDATION (only when run as script)
+# -------------------------------
+
+def get_target_from_args():
+    """Get target from command line arguments"""
+    if len(sys.argv) < 2:
+        return None
+    return sys.argv[1]
 
 # -------------------------------
 # SCAN DIRECTORY STRUCTURE
 # -------------------------------
 
-# Create scan directory in workspace
-SCAN_ROOT = WORKSPACE / "scans"
-SCAN_ROOT.mkdir(exist_ok=True)
-
-# Create target-specific directory with sanitized name (remove special chars)
-safe_target = "".join(c for c in target if c.isalnum() or c in '.-_')
-TARGET_DIR = SCAN_ROOT / safe_target
-TARGET_DIR.mkdir(exist_ok=True)
-
-timestamp = time.strftime("%Y%m%d_%H%M%S")
-
-# Create session directory for this scan run
-SESSION_DIR = TARGET_DIR / f"scan_{timestamp}"
-SESSION_DIR.mkdir(exist_ok=True)
+def init_scan_directories(target):
+    """Initialize scan directories for a specific target"""
+    SCAN_ROOT = WORKSPACE / "scans"
+    SCAN_ROOT.mkdir(exist_ok=True)
+    
+    # Create target-specific directory with sanitized name (remove special chars)
+    safe_target = "".join(c for c in target if c.isalnum() or c in '.-_')
+    TARGET_DIR = SCAN_ROOT / safe_target
+    TARGET_DIR.mkdir(exist_ok=True)
+    
+    timestamp = time.strftime("%Y%m%d_%H%M%S")
+    
+    # Create session directory for this scan run
+    SESSION_DIR = TARGET_DIR / f"scan_{timestamp}"
+    SESSION_DIR.mkdir(exist_ok=True)
+    
+    return SESSION_DIR, timestamp
 
 # -------------------------------
 # ASCII ART & STYLING
@@ -151,12 +165,12 @@ def matrix_rain_effect(lines=3):
         print(line)
         time.sleep(0.03)
 
-def save_output_to_file(scan_name, output_lines):
+def save_output_to_file(session_dir, timestamp, scan_name, output_lines):
     """Save scan output to workspace file"""
-    output_file = SESSION_DIR / f"{scan_name}_{timestamp}.txt"
+    output_file = session_dir / f"{scan_name}_{timestamp}.txt"
     with open(output_file, 'w', encoding='utf-8') as f:
         f.write(f"DSTerminal Recon Scan - {scan_name.upper()}\n")
-        f.write(f"Target: {target}\n")
+        f.write(f"Target: {current_target if current_target else 'Unknown'}\n")
         f.write(f"Timestamp: {datetime.now().isoformat()}\n")
         f.write("="*60 + "\n\n")
         for line in output_lines:
@@ -194,14 +208,15 @@ class SOCDashboard:
     def update_metric(self, scan_name, progress=None, status=None, findings=None, output_line=None):
         """Update a specific metric"""
         with self.lock:
-            if progress is not None:
-                self.scan_metrics[scan_name]['progress'] = progress
-            if status is not None:
-                self.scan_metrics[scan_name]['status'] = status
-            if findings is not None:
-                self.scan_metrics[scan_name]['findings'] = findings
-            if output_line is not None:
-                self.scan_metrics[scan_name]['output'].append(output_line)
+            if scan_name in self.scan_metrics:
+                if progress is not None:
+                    self.scan_metrics[scan_name]['progress'] = progress
+                if status is not None:
+                    self.scan_metrics[scan_name]['status'] = status
+                if findings is not None:
+                    self.scan_metrics[scan_name]['findings'] = findings
+                if output_line is not None:
+                    self.scan_metrics[scan_name]['output'].append(output_line)
     
     def get_status_color(self, status):
         """Get color based on status"""
@@ -264,6 +279,16 @@ class SOCDashboard:
             # Update frame indices
             self.circle_index += 1
             self.bar_index = (self.bar_index + 1) % len(PROGRESS_BARS)
+    
+    def get_summary(self):
+        """Get summary of all scan metrics"""
+        return {
+            name: {
+                'status': metrics['status'],
+                'findings': metrics['findings']
+            }
+            for name, metrics in self.scan_metrics.items()
+        }
 
 # -------------------------------
 # CINEMATIC SPINNER WITH DASHBOARD
@@ -332,7 +357,7 @@ class CinematicSpinner:
 # SCAN ENGINE
 # -------------------------------
 
-def run_cinematic_scan(label, command, scan_name, dashboard):
+def run_cinematic_scan(label, command, scan_name, dashboard, session_dir, timestamp, target):
     """Execute scan with cinematic effects and dashboard updates"""
     
     # Initialize scan in dashboard
@@ -340,6 +365,7 @@ def run_cinematic_scan(label, command, scan_name, dashboard):
     
     spinner = CinematicSpinner(dashboard, scan_name)
     t = threading.Thread(target=spinner.animate_with_dashboard)
+    t.daemon = True
     t.start()
     
     output_lines = []
@@ -378,7 +404,7 @@ def run_cinematic_scan(label, command, scan_name, dashboard):
         
     except KeyboardInterrupt:
         spinner.stop_event.set()
-        t.join()
+        t.join(timeout=1)
         dashboard.update_metric(scan_name, status='ERROR')
         return []
     
@@ -388,18 +414,20 @@ def run_cinematic_scan(label, command, scan_name, dashboard):
     
     finally:
         spinner.stop_event.set()
-        t.join()
+        t.join(timeout=1)
     
     # Save output to file
     if output_lines:
-        output_file = save_output_to_file(scan_name, output_lines)
+        output_file = save_output_to_file(session_dir, timestamp, scan_name, output_lines)
         
         # Display limited results
         print()
         center_text(f"{BOLD}{GREEN}═════ SCAN RESULTS: {scan_name.upper()} ═════{RESET}")
         for line in output_lines[:15]:  # Show first 15 lines
             if line.strip():
-                center_text(f"  {line[:80]}")  # Truncate long lines
+                # Truncate long lines and clean for display
+                display_line = line[:80] if len(line) > 80 else line
+                center_text(f"  {display_line}")
         if len(output_lines) > 15:
             center_text(f"  ... and {len(output_lines) - 15} more lines")
         center_text(f"{BOLD}{CYAN}Results saved to: {output_file}{RESET}")
@@ -408,141 +436,226 @@ def run_cinematic_scan(label, command, scan_name, dashboard):
     return output_lines
 
 # -------------------------------
-# MAIN EXECUTION
+# MAIN RECON FUNCTION
 # -------------------------------
 
-clear()
-
-# Matrix rain intro
-matrix_rain_effect(5)
-time.sleep(0.5)
-
-# Animated logo
-center_text(f"{BOLD}{CYAN}")
-for line in ASCII_LOGO.split('\n'):
-    if line.strip():
-        center_text(f"{CYAN}{line}{RESET}")
-        time.sleep(0.05)
-
-time.sleep(0.5)
-
-# Initialize dashboard
-dashboard = SOCDashboard()
-
-# Initial dashboard render
-center_text(f"{BOLD}{CYAN}╔══════════════════════════════════════════════════════════════════╗{RESET}")
-center_text(f"{BOLD}{CYAN}║                    🎯 REAL-TIME SOC DASHBOARD 🎯                 ║{RESET}")
-center_text(f"{BOLD}{CYAN}╚══════════════════════════════════════════════════════════════════╝{RESET}")
-
-# Initial three-column circles
-dashboard.render_three_column_circles()
-center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
-
-# Target display
-target_text = f"🎯 TARGET ACQUIRED: {target.upper()} 🎯"
-center_text(f"{BOLD}{GREEN}{target_text}{RESET}")
-center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
-print()
-center_text(f"{BOLD}{YELLOW}📁 SCAN DIRECTORY: {SESSION_DIR}{RESET}")
-print()
-
-time.sleep(1)
-
-# -------------------------------
-# SCAN LIST
-# -------------------------------
-
-scans = [
-    ("🔍 PORT SCAN", f"nmap -F {target}", "ports"),
-    ("🌐 DNS RESOLUTION", f"nslookup {target}", "dns"),
-    ("📋 WHOIS LOOKUP", f"whois {target}", "whois"),
-]
-
-# -------------------------------
-# RUN SCANS
-# -------------------------------
-
-for label, cmd, scan_name in scans:
-    print()
-    center_text(f"{BOLD}{MAGENTA}{label}{RESET}")
-    print()
+def run_recon(target=None):
+    """Main reconnaissance function - can be called from other modules"""
+    global current_target, current_dashboard
     
-    # Check if command exists before running
-    cmd_name = cmd.split()[0]
-    if check_command_exists(cmd_name) or cmd_name in ['nslookup', 'whois']:
-        run_cinematic_scan(label, cmd, scan_name, dashboard)
-    else:
-        center_text(f"{BOLD}{YELLOW}⚠ {cmd_name} not found - skipping{RESET}")
-        dashboard.update_metric(scan_name, status='ERROR', findings=0)
+    # Use provided target or get from args
+    if target is None:
+        target = get_target_from_args()
     
-    # Brief pause between scans
+    if target is None:
+        print(f"{RED}[!] No target specified. Usage: run_recon('<target>'){RESET}")
+        return False
+    
+    current_target = target
+    
+    clear()
+    
+    # Matrix rain intro
+    matrix_rain_effect(5)
     time.sleep(0.5)
-    matrix_rain_effect(1)
-
-# -------------------------------
-# METASPLOIT SEARCH (optional - only if msfconsole is available)
-# -------------------------------
-
-# Check if metasploit is available using cross-platform function
-if check_command_exists("msfconsole"):
-    run_cinematic_scan(
-        "💀 METASPLOIT SEARCH",
-        f'msfconsole -q -x "search {target}; exit"',
-        "metasploit",
-        dashboard
-    )
-else:
-    center_text(f"{BOLD}{YELLOW}⚠ Metasploit not found - skipping{RESET}")
-    dashboard.update_metric('metasploit', status='ERROR', findings=0)
-
-# -------------------------------
-# CREATE SUMMARY REPORT
-# -------------------------------
-
-summary_file = SESSION_DIR / f"summary_{timestamp}.txt"
-with open(summary_file, 'w', encoding='utf-8') as f:
-    f.write("="*60 + "\n")
-    f.write("DSTERMINAL RECONNAISSANCE SUMMARY\n")
-    f.write("="*60 + "\n\n")
-    f.write(f"Target: {target}\n")
-    f.write(f"Scan Time: {datetime.now().isoformat()}\n")
-    f.write(f"Workspace: {WORKSPACE}\n")
-    f.write(f"Session Directory: {SESSION_DIR}\n\n")
-    f.write("-"*60 + "\n")
-    f.write("SCAN RESULTS SUMMARY\n")
-    f.write("-"*60 + "\n\n")
     
-    for scan_name, metrics in dashboard.scan_metrics.items():
-        f.write(f"{scan_name.upper()}:\n")
-        f.write(f"  Status: {metrics['status']}\n")
-        f.write(f"  Findings: {metrics['findings']}\n")
-        output_file = SESSION_DIR / f"{scan_name}_{timestamp}.txt"
-        if output_file.exists():
-            f.write(f"  Output: {output_file}\n")
-        f.write("\n")
+    # Animated logo
+    center_text(f"{BOLD}{CYAN}")
+    for line in ASCII_LOGO.split('\n'):
+        if line.strip():
+            center_text(f"{CYAN}{line}{RESET}")
+            time.sleep(0.05)
+    
+    time.sleep(0.5)
+    
+    # Initialize scan directories
+    session_dir, timestamp = init_scan_directories(target)
+    
+    # Initialize dashboard
+    dashboard = SOCDashboard()
+    current_dashboard = dashboard
+    
+    # Initial dashboard render
+    center_text(f"{BOLD}{CYAN}╔══════════════════════════════════════════════════════════════════╗{RESET}")
+    center_text(f"{BOLD}{CYAN}║                    🎯 REAL-TIME SOC DASHBOARD 🎯                 ║{RESET}")
+    center_text(f"{BOLD}{CYAN}╚══════════════════════════════════════════════════════════════════╝{RESET}")
+    
+    # Initial three-column circles
+    dashboard.render_three_column_circles()
+    center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
+    
+    # Target display
+    target_text = f"🎯 TARGET ACQUIRED: {target.upper()} 🎯"
+    center_text(f"{BOLD}{GREEN}{target_text}{RESET}")
+    center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
+    print()
+    center_text(f"{BOLD}{YELLOW}📁 SCAN DIRECTORY: {session_dir}{RESET}")
+    print()
+    
+    time.sleep(1)
+    
+    # -------------------------------
+    # SCAN LIST
+    # -------------------------------
+    
+    scans = [
+        ("🔍 PORT SCAN", f"nmap -F {target}", "ports"),
+        ("🌐 DNS RESOLUTION", f"nslookup {target}", "dns"),
+        ("📋 WHOIS LOOKUP", f"whois {target}", "whois"),
+    ]
+    
+    # -------------------------------
+    # RUN SCANS
+    # -------------------------------
+    
+    for label, cmd, scan_name in scans:
+        print()
+        center_text(f"{BOLD}{MAGENTA}{label}{RESET}")
+        print()
+        
+        # Check if command exists before running
+        cmd_name = cmd.split()[0]
+        if check_command_exists(cmd_name) or cmd_name in ['nslookup', 'whois']:
+            run_cinematic_scan(label, cmd, scan_name, dashboard, session_dir, timestamp, target)
+        else:
+            center_text(f"{BOLD}{YELLOW}⚠ {cmd_name} not found - skipping{RESET}")
+            dashboard.update_metric(scan_name, status='ERROR', findings=0)
+        
+        # Brief pause between scans
+        time.sleep(0.5)
+        matrix_rain_effect(1)
+    
+    # -------------------------------
+    # METASPLOIT SEARCH (optional - only if msfconsole is available)
+    # -------------------------------
+    
+    # Check if metasploit is available using cross-platform function
+    if check_command_exists("msfconsole"):
+        run_cinematic_scan(
+            "💀 METASPLOIT SEARCH",
+            f'msfconsole -q -x "search {target}; exit"',
+            "metasploit",
+            dashboard,
+            session_dir,
+            timestamp,
+            target
+        )
+    else:
+        center_text(f"{BOLD}{YELLOW}⚠ Metasploit not found - skipping{RESET}")
+        dashboard.update_metric('metasploit', status='ERROR', findings=0)
+    
+    # -------------------------------
+    # CREATE SUMMARY REPORT
+    # -------------------------------
+    
+    summary_file = session_dir / f"summary_{timestamp}.txt"
+    with open(summary_file, 'w', encoding='utf-8') as f:
+        f.write("="*60 + "\n")
+        f.write("DSTERMINAL RECONNAISSANCE SUMMARY\n")
+        f.write("="*60 + "\n\n")
+        f.write(f"Target: {target}\n")
+        f.write(f"Scan Time: {datetime.now().isoformat()}\n")
+        f.write(f"Workspace: {WORKSPACE}\n")
+        f.write(f"Session Directory: {session_dir}\n\n")
+        f.write("-"*60 + "\n")
+        f.write("SCAN RESULTS SUMMARY\n")
+        f.write("-"*60 + "\n\n")
+        
+        summary = dashboard.get_summary()
+        for scan_name, metrics in summary.items():
+            f.write(f"{scan_name.upper()}:\n")
+            f.write(f"  Status: {metrics['status']}\n")
+            f.write(f"  Findings: {metrics['findings']}\n")
+            output_file = session_dir / f"{scan_name}_{timestamp}.txt"
+            if output_file.exists():
+                f.write(f"  Output: {output_file}\n")
+            f.write("\n")
+    
+    # -------------------------------
+    # FINAL DASHBOARD
+    # -------------------------------
+    
+    print("\n" * 2)
+    center_text(f"{BOLD}{GREEN}╔══════════════════════════════════════════════════════════════════╗{RESET}")
+    center_text(f"{BOLD}{GREEN}║                    🏁 INFORMATION GATHERING COMPLETE 🏁           ║{RESET}")
+    center_text(f"{BOLD}{GREEN}╚══════════════════════════════════════════════════════════════════╝{RESET}")
+    
+    # Final three-column summary
+    dashboard.render_three_column_circles()
+    
+    # Summary statistics
+    summary = dashboard.get_summary()
+    total_findings = sum(m['findings'] for m in summary.values())
+    center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
+    center_text(f"{BOLD}{YELLOW}TOTAL FINDINGS: {total_findings}{RESET}")
+    center_text(f"{BOLD}{YELLOW}SCAN SESSION: {session_dir}{RESET}")
+    center_text(f"{BOLD}{YELLOW}SUMMARY REPORT: {summary_file}{RESET}")
+    center_text(f"{BOLD}{GREEN}{'═' * 50}{RESET}")
+    
+    # Matrix rain outro
+    matrix_rain_effect(2)
+    print()
+    center_text(f"{BOLD}{CYAN}⚡ DSTERMINAL SOC - RECONNAISSANCE COMPLETE ⚡{RESET}")
+    print()
+    
+    return True
 
 # -------------------------------
-# FINAL DASHBOARD
+# RECON MENU FUNCTION
 # -------------------------------
 
-print("\n" * 2)
-center_text(f"{BOLD}{GREEN}╔══════════════════════════════════════════════════════════════════╗{RESET}")
-center_text(f"{BOLD}{GREEN}║                    🏁 INFORMATION GATHERING COMPLETE 🏁           ║{RESET}")
-center_text(f"{BOLD}{GREEN}╚══════════════════════════════════════════════════════════════════╝{RESET}")
+def recon_menu():
+    """Interactive menu for reconnaissance"""
+    print(f"{BOLD}{CYAN}╔══════════════════════════════════════════════╗{RESET}")
+    print(f"{BOLD}{CYAN}║           RECONNAISSANCE MENU                ║{RESET}")
+    print(f"{BOLD}{CYAN}╚══════════════════════════════════════════════╝{RESET}")
+    print()
+    print(f"{GREEN}1. Quick Scan (Ports, DNS, WHOIS){RESET}")
+    print(f"{GREEN}2. Full Scan (with Metasploit){RESET}")
+    print(f"{GREEN}3. Custom Target{RESET}")
+    print(f"{RED}0. Exit{RESET}")
+    print()
+    
+    choice = input(f"{YELLOW}Select option: {RESET}").strip()
+    
+    if choice == "1":
+        target = input(f"{CYAN}Enter target (IP or domain): {RESET}").strip()
+        if target:
+            run_recon(target)
+        else:
+            print(f"{RED}[!] No target specified{RESET}")
+    
+    elif choice == "2":
+        target = input(f"{CYAN}Enter target (IP or domain): {RESET}").strip()
+        if target:
+            run_recon(target)
+        else:
+            print(f"{RED}[!] No target specified{RESET}")
+    
+    elif choice == "3":
+        target = input(f"{CYAN}Enter target (IP or domain): {RESET}").strip()
+        if target:
+            run_recon(target)
+        else:
+            print(f"{RED}[!] No target specified{RESET}")
+    
+    elif choice == "0":
+        print(f"{YELLOW}[*] Exiting recon menu{RESET}")
+        return
+    
+    else:
+        print(f"{RED}[!] Invalid option{RESET}")
 
-# Final three-column summary
-dashboard.render_three_column_circles()
+# -------------------------------
+# MAIN EXECUTION (when run as script)
+# -------------------------------
 
-# Summary statistics
-total_findings = sum(m['findings'] for m in dashboard.scan_metrics.values())
-center_text(f"{BOLD}{CYAN}{'─' * 50}{RESET}")
-center_text(f"{BOLD}{YELLOW}TOTAL FINDINGS: {total_findings}{RESET}")
-center_text(f"{BOLD}{YELLOW}SCAN SESSION: {SESSION_DIR}{RESET}")
-center_text(f"{BOLD}{YELLOW}SUMMARY REPORT: {summary_file}{RESET}")
-center_text(f"{BOLD}{GREEN}{'═' * 50}{RESET}")
-
-# Matrix rain outro
-matrix_rain_effect(2)
-print()
-center_text(f"{BOLD}{CYAN}⚡ DSTERMINAL SOC - RECONNAISSANCE COMPLETE ⚡{RESET}")
-print()
+if __name__ == "__main__":
+    target = get_target_from_args()
+    
+    if target:
+        # Run recon directly with target from command line
+        run_recon(target)
+    else:
+        # Show menu if no target provided
+        recon_menu()
