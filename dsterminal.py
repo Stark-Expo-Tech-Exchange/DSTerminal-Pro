@@ -37,6 +37,11 @@ def show_version():
     print(DESCRIPTION)
     print(f"Developed by {AUTHOR}")
 
+def run_terminal():
+    """Initialize and run the security terminal"""
+    terminal = SecurityTerminal()
+    terminal.run()
+
 def main():
     if len(sys.argv) > 1:
         arg = sys.argv[1].lower()
@@ -140,7 +145,9 @@ try:
         SystemIntegrityMonitor = integrity_monitor.SystemIntegrityMonitor
         AlertManager = integrity_monitor.AlertManager
         ForensicAnalyzer = integrity_monitor.ForensicAnalyzer
-        
+        AutoRemediation = integrity_monitor.AutoRemediation
+        RealTimeHandler = integrity_monitor.RealTimeHandler
+
         INTEGRITY_AVAILABLE = True
         if COLORS_AVAILABLE:
             print(f"{Fore.GREEN}✓ Integrity Monitor loaded successfully{Style.RESET_ALL}")
@@ -184,6 +191,42 @@ except Exception as e:
     print(f"⚠ Crypto engine import error: {e}")
     crypto_engine = None
 
+
+# ========try import vt_scan here=============
+# =================================
+# Import VirusTotal Scanner Module (vt_scan.py)
+try:
+    from vt_scan import VirusTotalScanner, sync_operator_session
+    VT_AVAILABLE = True
+except ImportError:
+    print("⚠ VT module not found")
+    VT_AVAILABLE = False
+
+try:
+    vt_scan_path = os.path.join(BASE_PATH, 'vt_scan.py')
+
+    if os.path.exists(vt_scan_path):
+        import importlib.util
+
+        spec = importlib.util.spec_from_file_location("vt_scan", vt_scan_path)
+        vt_scan_module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(vt_scan_module)
+
+        # Import required classes/functions
+        VirusTotalScanner = vt_scan_module.VirusTotalScanner
+        vt_scan_menu = vt_scan_module.vt_scan_menu
+
+        VT_AVAILABLE = True
+        print(f"{Fore.GREEN}✓ VirusTotal module loaded successfully{Style.RESET_ALL}")
+
+    else:
+        VT_AVAILABLE = False
+        print(f"{Fore.YELLOW}⚠ vt_scan.py not found at: {vt_scan_path}{Style.RESET_ALL}")
+
+except Exception as e:
+    VT_AVAILABLE = False
+    print(f"{Fore.RED}⚠ VirusTotal module import error: {e}{Style.RESET_ALL}")
+# ===============================
 # Import edu_typing_engine
 try:
     edu_path = os.path.join(BASE_PATH, 'edu_typing_engine.py')
@@ -771,7 +814,17 @@ class SecurityTerminal:
                 os.makedirs(dir_path, exist_ok=True)
             except Exception as e:
                 print(f"{Fore.YELLOW}⚠ Could not create {dir_path}: {e}{Style.RESET_ALL}")
-    
+    # initialize vt_scan module
+    # ======================
+
+        self.vt_scanner = None
+
+        if VT_AVAILABLE:
+            try:
+                self.vt_scanner = VirusTotalScanner()
+            except Exception as e:
+                print(f"[!] Failed to initialize VT Scanner: {e}")
+    # ================================
     # Initialize integrity monitor
         self.integrity = None
         self.alert_manager = None
@@ -813,10 +866,10 @@ class SecurityTerminal:
                     print(f"{Fore.YELLOW}⚠ Alert Manager initialization failed: {e}{Style.RESET_ALL}")
                     self.alert_manager = None
                 
-                if COLORS_AVAILABLE:
-                    print(f"{Fore.GREEN}✓ Integrity Monitor initialized{Style.RESET_ALL}")
-                else:
-                    print("✓ Integrity Monitor initialized")
+                # if COLORS_AVAILABLE:
+                #     print(f"{Fore.GREEN}✓ Integrity Monitor initialized{Style.RESET_ALL}")
+                # else:
+                #     print("✓ Integrity Monitor initialized")
                 
             except ImportError as e:
                 print(f"{Fore.RED}✗ Failed to import Integrity Monitor modules: {e}{Style.RESET_ALL}")
@@ -942,15 +995,30 @@ class SecurityTerminal:
 # ====================== SESSION INITIALIZATION ======================
 
     def initialize_operator_session(self):
+        import uuid
+        import random
+        import socket
+        from datetime import datetime
 
         operators_root = os.path.join(self.workspace_root, "operators")
         os.makedirs(operators_root, exist_ok=True)
 
-    # Generate unique operator identity
-        username = "OP-" + uuid.uuid4().hex[:6].upper()
-        self.session_id = "SOC-" + uuid.uuid4().hex[:5].upper()
+    # ✅ Generate ONE global operator identity (USED EVERYWHERE)
+        self.operator_username = f"OP-{uuid.uuid4().hex[:6].upper()}"
+        self.session_id = f"SESSION-{uuid.uuid4().hex[:5].upper()}"
+        try:
+            from vt_scan import sync_operator_session
+            sync_operator_session(self.operator_username, self.session_id)
+        except Exception as e:
+            print(f"⚠ VT sync failed: {e}")
 
-        operator_dir = os.path.join(operators_root, username)
+    # ✅ OPTIONAL: also expose globally (for VT module sync)
+        global GLOBAL_OPERATOR, GLOBAL_SESSION
+        GLOBAL_OPERATOR = self.operator_username
+        GLOBAL_SESSION = self.session_id
+
+    # Create operator directory
+        operator_dir = os.path.join(operators_root, self.operator_username)
         os.makedirs(operator_dir, exist_ok=True)
 
         log_file = os.path.join(operator_dir, "session_log.txt")
@@ -959,11 +1027,10 @@ class SecurityTerminal:
         self.session_start = datetime.now()
 
         with open(log_file, "w", encoding="utf-8") as f:
-
             f.write("╔══════════════════════════════════════════════╗\n")
             f.write("║       DSTerminal Operator Security Audit Log ║\n")
             f.write("╠══════════════════════════════════════════════╣\n")
-            f.write(f"║ Operator   : {username}\n")
+            f.write(f"║ Operator   : {self.operator_username}\n")
             f.write(f"║ Session ID : {self.session_id}\n")
             f.write(f"║ Host       : {socket.gethostname()}\n")
             f.write(f"║ Start Time : {self.session_start.strftime('%Y-%m-%d %H:%M:%S')}\n")
@@ -971,10 +1038,16 @@ class SecurityTerminal:
             f.write("║ Command Activity                             ║\n")
             f.write("╠══════════════════════════════════════════════╣\n")
 
-        self.operator_username = username
+    # Save references
         self.operator_dir = operator_dir
         self.log_file = log_file
 
+        # ✅ Sync with VT module
+        if 'sync_operator_session' in globals():
+            try:
+                sync_operator_session(self.operator_username, self.session_id)
+            except Exception as e:
+                print(f"⚠ VT sync failed: {e}")
     # ================= CINEMATIC INITIALIZATION =================
 
         start_time = time.time()
@@ -989,7 +1062,7 @@ class SecurityTerminal:
         self.typewriter("✔ Logging Enabled\n", 0.05)
         time.sleep(1)
 
-        self.typewriter(f" 🛡️, 🌐 ⚡ YOUR UNIQUE OPERATOR SESSION USERNAME IS: {username}\n", 0.04)
+        self.typewriter(f" 🛡️   🌐 ⚡ YOUR UNIQUE OPERATOR SESSION USERNAME IS: {GLOBAL_OPERATOR}\n", 0.04)
 
         elapsed = time.time() - start_time
         if elapsed < 10:
@@ -5578,316 +5651,290 @@ class SecurityTerminal:
             console.print("[yellow]Unsupported OS for shutdown command.[/yellow]")
 
 # shutting down ends here
-    # def clear_terminal(self):
-    #     console = Console()
-
-    #     panel = Panel(
-    #         Align.center("[cyan]Resetting interface...[/cyan]", vertical="middle"),
-    #         title="[bold white]TERMINAL WIPE[/bold white]",
-    #         border_style="bright_cyan",
-    #         padding=(1, 2),
-    #         width=50
-    #     )
-
-    #     with Live(console=console, refresh_per_second=5, screen=True) as live:
-    #         for i in range(10):
-    #             live.update(Panel(f"[cyan]Wiping in progress... {10 - i}[/cyan]", title="[bold]CLEANING TERMINAL[/bold]", border_style="bright_cyan", width=50))
-    #             time.sleep(1)
-
-    #     os.system("clear" if platform.system() != "Windows" else "cls")
-
-    #     banner = """
-    #         ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗
-    #         ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝
-    #         ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝ 
-    #         ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗ 
-    #         ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗
-    #         ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝
-    #     """
-    #     centered_banner = Align.center(f"[bold cyan]{banner}[/bold cyan]", vertical="middle")
-    #     console.print(centered_banner)
-
-
+ 
 # =======testing code from above ends here for shutdown command
-    def vt_scan_menu(self):
-        """Enhanced VirusTotal scanning interface"""
-        print("\n[VirusTotal Scanner]")
-        print("1. Hash lookup")
-        print("2. File scan")
-        print("3. Bulk scan folder")
-        print("4. Check previous scan")
-        choice = input("Select option: ")
+    # def vt_scan_menu(self):
+    #     """Enhanced VirusTotal scanning interface"""
+    #     print("\n[VirusTotal Scanner]")
+    #     print("1. Hash lookup")
+    #     print("2. File scan")
+    #     print("3. Bulk scan folder")
+    #     print("4. Check previous scan")
+    #     choice = input("Select option: ")
         
-        if choice == "1":
-            file_hash = input("Enter file hash (MD5/SHA1/SHA256): ").strip()
-            self.vt_hash_lookup(file_hash)
-        elif choice == "2":
-            file_path = input("File path to scan: ").strip()
-            self.vt_file_scan(file_path)
-        elif choice == "3":
-            folder_path = input("Folder path to scan: ").strip()
-            max_files = input("Max files to scan (default 10): ").strip() or 10
-            self.vt_bulk_scan(folder_path, int(max_files))
-        elif choice == "4":
-            scan_id = input("Enter previous scan ID: ").strip()
-            self.check_scan_result(scan_id)
-        else:
-            print("[!] Invalid choice")
+    #     if choice == "1":
+    #         file_hash = input("Enter file hash (MD5/SHA1/SHA256): ").strip()
+    #         self.vt_hash_lookup(file_hash)
+    #     elif choice == "2":
+    #         file_path = input("File path to scan: ").strip()
+    #         self.vt_file_scan(file_path)
+    #     elif choice == "3":
+    #         folder_path = input("Folder path to scan: ").strip()
+    #         max_files = input("Max files to scan (default 10): ").strip() or 10
+    #         self.vt_bulk_scan(folder_path, int(max_files))
+    #     elif choice == "4":
+    #         scan_id = input("Enter previous scan ID: ").strip()
+    #         self.check_scan_result(scan_id)
+    #     else:
+    #         print("[!] Invalid choice")
 
-    def vt_hash_lookup(self, file_hash):
-        """Enhanced hash lookup with detailed results"""
-        if not self._validate_vt_api():
-            return
+    # def vt_hash_lookup(self, file_hash):
+    #     """Enhanced hash lookup with detailed results"""
+    #     if not self._validate_vt_api():
+    #         return
 
-        try:
-            url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
-            headers = {"x-apikey": CONFIG['VT_API_KEY']}
+    #     try:
+    #         url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
+    #         headers = {"x-apikey": CONFIG['VT_API_KEY']}
             
-            print(f"\n[+] Checking hash: {file_hash}...")
-            response = requests.get(url, headers=headers)
+    #         print(f"\n[+] Checking hash: {file_hash}...")
+    #         response = requests.get(url, headers=headers)
             
-            if response.status_code == 200:
-                result = response.json()
-                attrs = result['data']['attributes']
+    #         if response.status_code == 200:
+    #             result = response.json()
+    #             attrs = result['data']['attributes']
                 
-                # Detailed report
-                print(f"\n╔{'═'*60}╗")
-                print(f"║ {'VirusTotal Report':^58} ║")
-                print(f"╠{'═'*60}╣")
-                print(f"║ {'Detection:':<15} {attrs['last_analysis_stats']['malicious']}/{sum(attrs['last_analysis_stats'].values())} ║")
-                print(f"║ {'First Seen:':<15} {attrs['first_submission_date']} ║")
-                print(f"║ {'File Type:':<15} {attrs.get('type_tag', 'Unknown')} ║")
+    #             # Detailed report
+    #             print(f"\n╔{'═'*60}╗")
+    #             print(f"║ {'VirusTotal Report':^58} ║")
+    #             print(f"╠{'═'*60}╣")
+    #             print(f"║ {'Detection:':<15} {attrs['last_analysis_stats']['malicious']}/{sum(attrs['last_analysis_stats'].values())} ║")
+    #             print(f"║ {'First Seen:':<15} {attrs['first_submission_date']} ║")
+    #             print(f"║ {'File Type:':<15} {attrs.get('type_tag', 'Unknown')} ║")
                 
-                # Top detections
-                malicious = [k for k,v in attrs['last_analysis_results'].items() if v['category'] == 'malicious']
-                if malicious:
-                    print(f"╠{'═'*60}╣")
-                    print(f"║ {'Top Detections:':<58} ║")
-                    for engine in malicious[:3]:
-                        print(f"║ - {engine:<55} ║")
-                print(f"╚{'═'*60}╝")
+    #             # Top detections
+    #             malicious = [k for k,v in attrs['last_analysis_results'].items() if v['category'] == 'malicious']
+    #             if malicious:
+    #                 print(f"╠{'═'*60}╣")
+    #                 print(f"║ {'Top Detections:':<58} ║")
+    #                 for engine in malicious[:3]:
+    #                     print(f"║ - {engine:<55} ║")
+    #             print(f"╚{'═'*60}╝")
                 
-                # Auto-quarantine recommendation
-                if attrs['last_analysis_stats']['malicious'] > 0:
-                    print("\n[!] MALICIOUS FILE DETECTED!")
-                    if input("Quarantine file? (y/N): ").lower() == 'y':
-                        self.quarantine_file(None, file_hash=file_hash)
-            else:
-                print("[!] Hash not found in VirusTotal")
-        except Exception as e:
-            print(f"[!] Error: {e}")
+    #             # Auto-quarantine recommendation
+    #             if attrs['last_analysis_stats']['malicious'] > 0:
+    #                 print("\n[!] MALICIOUS FILE DETECTED!")
+    #                 if input("Quarantine file? (y/N): ").lower() == 'y':
+    #                     self.quarantine_file(None, file_hash=file_hash)
+    #         else:
+    #             print("[!] Hash not found in VirusTotal")
+    #     except Exception as e:
+    #         print(f"[!] Error: {e}")
   
 
-    def vt_file_scan(self, file_path):
-        """Upload file to VirusTotal with debug output"""
-        print(f"\n[DEBUG] Starting scan for: {file_path}")  # Debug line
+    # def vt_file_scan(self, file_path):
+    #     """Upload file to VirusTotal with debug output"""
+    #     print(f"\n[DEBUG] Starting scan for: {file_path}")  # Debug line
     
-        if not os.path.exists(file_path):
-            print("[!] Error: File not found")
-            print(f"[DEBUG] Resolved path: {os.path.abspath(file_path)}")  # Debug line
-            return
+    #     if not os.path.exists(file_path):
+    #         print("[!] Error: File not found")
+    #         print(f"[DEBUG] Resolved path: {os.path.abspath(file_path)}")  # Debug line
+    #         return
 
-            print("[DEBUG] File exists check passed")  # Debug line
+    #         print("[DEBUG] File exists check passed")  # Debug line
     
-        if not self._validate_vt_api():
-            print("[!] Error: VirusTotal API validation failed")
-            print(f"[DEBUG] API Key: {'Set' if CONFIG.get('VT_API_KEY') else 'Not Set'}")  # Debug line
-            return
+    #     if not self._validate_vt_api():
+    #         print("[!] Error: VirusTotal API validation failed")
+    #         print(f"[DEBUG] API Key: {'Set' if CONFIG.get('VT_API_KEY') else 'Not Set'}")  # Debug line
+    #         return
 
-        print("[DEBUG] API validation passed")  # Debug line
+    #     print("[DEBUG] API validation passed")  # Debug line
     
-        MAX_SIZE = 32 * 1024 * 1024  # 32MB
-        file_size = os.path.getsize(file_path)
-        print(f"[DEBUG] File size: {file_size} bytes")  # Debug line
+    #     MAX_SIZE = 32 * 1024 * 1024  # 32MB
+    #     file_size = os.path.getsize(file_path)
+    #     print(f"[DEBUG] File size: {file_size} bytes")  # Debug line
 
-        if file_size > MAX_SIZE:
-            print(f"[!] Error: File too large ({file_size/1024/1024:.2f}MB > 32MB)")
-            return
+    #     if file_size > MAX_SIZE:
+    #         print(f"[!] Error: File too large ({file_size/1024/1024:.2f}MB > 32MB)")
+    #         return
 
-        print("[DEBUG] Size check passed")  # Debug line
+    #     print("[DEBUG] Size check passed")  # Debug line
     
-        try:
-            print(f"\n[+] Analyzing {os.path.basename(file_path)}...")
-            print(f"  ↳ Size: {file_size/1024:.2f}KB")
-            print("  ↳ Uploading...", end='', flush=True)
+    #     try:
+    #         print(f"\n[+] Analyzing {os.path.basename(file_path)}...")
+    #         print(f"  ↳ Size: {file_size/1024:.2f}KB")
+    #         print("  ↳ Uploading...", end='', flush=True)
         
-            with open(file_path, 'rb') as f:
-                files = {'file': (os.path.basename(file_path), f)}
-                headers = {"x-apikey": CONFIG['VT_API_KEY']}
-                print(f"\n[DEBUG] Sending request to VirusTotal...")  # Debug line
-                response = requests.post(
-                    "https://www.virustotal.com/api/v3/files",
-                    headers=headers,
-                    files=files,
-                    timeout=30
-                )
-            print(" Done!")
+    #         with open(file_path, 'rb') as f:
+    #             files = {'file': (os.path.basename(file_path), f)}
+    #             headers = {"x-apikey": CONFIG['VT_API_KEY']}
+    #             print(f"\n[DEBUG] Sending request to VirusTotal...")  # Debug line
+    #             response = requests.post(
+    #                 "https://www.virustotal.com/api/v3/files",
+    #                 headers=headers,
+    #                 files=files,
+    #                 timeout=30
+    #             )
+    #         print(" Done!")
 
-            print(f"[DEBUG] Response status: {response.status_code}")  # Debug line
-            if response.status_code == 200:
-                result = response.json()
-                scan_id = result['data']['id']
-                print(f"\n[+] Scan ID: {scan_id}")
-                print(f"[+] Report URL: https://www.virustotal.com/gui/file/{scan_id}")
-                self._cache_scan_id(file_path, scan_id)
-            else:
-                print(f"[!] Error: Upload failed (HTTP {response.status_code})")
-                print(f"[DEBUG] Response text: {response.text}")  # Debug line
+    #         print(f"[DEBUG] Response status: {response.status_code}")  # Debug line
+    #         if response.status_code == 200:
+    #             result = response.json()
+    #             scan_id = result['data']['id']
+    #             print(f"\n[+] Scan ID: {scan_id}")
+    #             print(f"[+] Report URL: https://www.virustotal.com/gui/file/{scan_id}")
+    #             self._cache_scan_id(file_path, scan_id)
+    #         else:
+    #             print(f"[!] Error: Upload failed (HTTP {response.status_code})")
+    #             print(f"[DEBUG] Response text: {response.text}")  # Debug line
 
-        except Exception as e:
-            print(f"\n[!] Critical Error: {str(e)}")
-            print("[DEBUG] Exception occurred during upload")  # Debug line
+    #     except Exception as e:
+    #         print(f"\n[!] Critical Error: {str(e)}")
+    #         print("[DEBUG] Exception occurred during upload")  # Debug line
 
-        if response.status_code == 200:
-            result = response.json()
-            scan_id = result['data']['id']
-            print(f"\n[+] Scan ID: {scan_id}")
+    #     if response.status_code == 200:
+    #         result = response.json()
+    #         scan_id = result['data']['id']
+    #         print(f"\n[+] Scan ID: {scan_id}")
         
-        # Start polling in background
-        Thread(target=self._poll_results, args=(scan_id, file_path), daemon=True).start()
+    #     # Start polling in background
+    #     Thread(target=self._poll_results, args=(scan_id, file_path), daemon=True).start()
  
-    def _cache_scan_id(self, file_path, scan_id):
-        """Store scan IDs for future reference"""
-        cache_file = os.path.expanduser("~/.dstenex_scans.log")
-        with open(cache_file, "a") as f:
-            f.write(f"{file_path}|{scan_id}|{datetime.now()}\n")
+    # def _cache_scan_id(self, file_path, scan_id):
+    #     """Store scan IDs for future reference"""
+    #     cache_file = os.path.expanduser("~/.dstenex_scans.log")
+    #     with open(cache_file, "a") as f:
+    #         f.write(f"{file_path}|{scan_id}|{datetime.now()}\n")
 
-    def vt_bulk_scan(self, folder_path, max_files=10):
-        """Scan multiple files in a folder"""
-        if not os.path.isdir(folder_path):
-            print("[!] Invalid folder path")
-            return
+    # def vt_bulk_scan(self, folder_path, max_files=10):
+    #     """Scan multiple files in a folder"""
+    #     if not os.path.isdir(folder_path):
+    #         print("[!] Invalid folder path")
+    #         return
             
-        print(f"\n[+] Scanning up to {max_files} files in {folder_path}...")
-        scanned = 0
+    #     print(f"\n[+] Scanning up to {max_files} files in {folder_path}...")
+    #     scanned = 0
         
-        for root, _, files in os.walk(folder_path):
-            for file in files:
-                if scanned >= max_files:
-                    break
+    #     for root, _, files in os.walk(folder_path):
+    #         for file in files:
+    #             if scanned >= max_files:
+    #                 break
                     
-                file_path = os.path.join(root, file)
-                print(f"\n[File {scanned+1}/{max_files}] {file}")
+    #             file_path = os.path.join(root, file)
+    #             print(f"\n[File {scanned+1}/{max_files}] {file}")
                 
-                # First try local scan
-                local_result = self.local_scan(file_path, silent=True)
-                if local_result and local_result['infected']:
-                    print("[!] LOCAL SCAN DETECTED THREAT!")
-                    self.quarantine_file(file_path)
-                    scanned += 1
-                    continue
+    #             # First try local scan
+    #             local_result = self.local_scan(file_path, silent=True)
+    #             if local_result and local_result['infected']:
+    #                 print("[!] LOCAL SCAN DETECTED THREAT!")
+    #                 self.quarantine_file(file_path)
+    #                 scanned += 1
+    #                 continue
                 
-                # Fall back to VT if file < 32MB
-                if os.path.getsize(file_path) <= 32 * 1024 * 1024:
-                    self.vt_file_scan(file_path)
-                else:
-                    print("[!] File too large for VT, skipped")
+    #             # Fall back to VT if file < 32MB
+    #             if os.path.getsize(file_path) <= 32 * 1024 * 1024:
+    #                 self.vt_file_scan(file_path)
+    #             else:
+    #                 print("[!] File too large for VT, skipped")
                 
-                scanned += 1
-                time.sleep(15)  # Respect VT API rate limits
+    #             scanned += 1
+    #             time.sleep(15)  # Respect VT API rate limits
         
-        print("\n[+] Bulk scan completed")
+    #     print("\n[+] Bulk scan completed")
 
-    def _poll_results(self, scan_id, original_path=None):
-        """Background result polling"""
-        url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
-        headers = {"x-apikey": CONFIG['VT_API_KEY']}
+    # def _poll_results(self, scan_id, original_path=None):
+    #     """Background result polling"""
+    #     url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
+    #     headers = {"x-apikey": CONFIG['VT_API_KEY']}
         
-        print("\n[+] Waiting for results... (Ctrl+C to check later)")
-        try:
-            for _ in range(10):  # Max 10 checks
-                time.sleep(30)
-                response = requests.get(url, headers=headers)
-                if response.status_code == 200:
-                    result = response.json()
-                    status = result['data']['attributes']['status']
+    #     print("\n[+] Waiting for results... (Ctrl+C to check later)")
+    #     try:
+    #         for _ in range(10):  # Max 10 checks
+    #             time.sleep(30)
+    #             response = requests.get(url, headers=headers)
+    #             if response.status_code == 200:
+    #                 result = response.json()
+    #                 status = result['data']['attributes']['status']
                     
-                    if status == 'completed':
-                        stats = result['data']['attributes']['stats']
-                        print(f"\n[+] Final Results: {stats['malicious']} malicious / {stats['harmless']} clean")
+    #                 if status == 'completed':
+    #                     stats = result['data']['attributes']['stats']
+    #                     print(f"\n[+] Final Results: {stats['malicious']} malicious / {stats['harmless']} clean")
                         
-                        if stats['malicious'] > 0 and original_path:
-                            self.quarantine_file(original_path)
-                        return
-                    else:
-                        print(f"\r  ↳ Status: {status}...", end='', flush=True)
-        except Exception:
-            print("\n[!] Polling interrupted. Check later with 'check_result'")
+    #                     if stats['malicious'] > 0 and original_path:
+    #                         self.quarantine_file(original_path)
+    #                     return
+    #                 else:
+    #                     print(f"\r  ↳ Status: {status}...", end='', flush=True)
+    #     except Exception:
+    #         print("\n[!] Polling interrupted. Check later with 'check_result'")
 
-    def check_scan_result(self, scan_id):
-        """Check existing scan results"""
-        url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
-        headers = {"x-apikey": CONFIG['VT_API_KEY']}
+    # def check_scan_result(self, scan_id):
+    #     """Check existing scan results"""
+    #     url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
+    #     headers = {"x-apikey": CONFIG['VT_API_KEY']}
         
-        try:
-            response = requests.get(url, headers=headers)
-            if response.status_code == 200:
-                result = response.json()
-                stats = result['data']['attributes']['stats']
-                print(f"\n[+] Results: {stats['malicious']} malicious / {stats['harmless']} clean")
+    #     try:
+    #         response = requests.get(url, headers=headers)
+    #         if response.status_code == 200:
+    #             result = response.json()
+    #             stats = result['data']['attributes']['stats']
+    #             print(f"\n[+] Results: {stats['malicious']} malicious / {stats['harmless']} clean")
                 
-                if stats['malicious'] > 0:
-                    print("[!] MALICIOUS CONTENT DETECTED")
-            else:
-                print("[!] Results not available yet")
-        except Exception as e:
-            print(f"[!] Error checking results: {e}")
+    #             if stats['malicious'] > 0:
+    #                 print("[!] MALICIOUS CONTENT DETECTED")
+    #         else:
+    #             print("[!] Results not available yet")
+    #     except Exception as e:
+    #         print(f"[!] Error checking results: {e}")
 
-    def local_scan(self, file_path, silent=False):
-        """Integrate ClamAV for local scanning"""
-        try:
-            import pyclamd
-            cd = pyclamd.ClamdAgnostic()
-            scan_result = cd.scan_file(file_path)
+    # def local_scan(self, file_path, silent=False):
+    #     """Integrate ClamAV for local scanning"""
+    #     try:
+    #         import pyclamd
+    #         cd = pyclamd.ClamdAgnostic()
+    #         scan_result = cd.scan_file(file_path)
             
-            if scan_result and scan_result.get(file_path) == 'OK':
-                if not silent:
-                    print("[+] Local scan: Clean")
-                return {'infected': False}
-            else:
-                if not silent:
-                    print("[!] Local scan: Infected!")
-                    print(f"Detection: {scan_result.get(file_path, 'Unknown threat')}")
-                return {'infected': True, 'threat': scan_result.get(file_path)}
+    #         if scan_result and scan_result.get(file_path) == 'OK':
+    #             if not silent:
+    #                 print("[+] Local scan: Clean")
+    #             return {'infected': False}
+    #         else:
+    #             if not silent:
+    #                 print("[!] Local scan: Infected!")
+    #                 print(f"Detection: {scan_result.get(file_path, 'Unknown threat')}")
+    #             return {'infected': True, 'threat': scan_result.get(file_path)}
                 
-        except ImportError:
-            if not silent:
-                print("[!] ClamAV not installed (pip install pyclamd)")
-        except Exception as e:
-            if not silent:
-                print(f"[!] Local scan failed: {e}")
-        return None
+    #     except ImportError:
+    #         if not silent:
+    #             print("[!] ClamAV not installed (pip install pyclamd)")
+    #     except Exception as e:
+    #         if not silent:
+    #             print(f"[!] Local scan failed: {e}")
+    #     return None
 
-    def quarantine_file(self, file_path, file_hash=None):
-        """Move dangerous files to quarantine"""
-        quarantine_dir = os.path.join(os.path.expanduser("~"), "quarantine")
-        os.makedirs(quarantine_dir, exist_ok=True)
+    # def quarantine_file(self, file_path, file_hash=None):
+    #     """Move dangerous files to quarantine"""
+    #     quarantine_dir = os.path.join(os.path.expanduser("~"), "quarantine")
+    #     os.makedirs(quarantine_dir, exist_ok=True)
         
-        try:
-            if file_path:
-                filename = os.path.basename(file_path)
-                new_path = os.path.join(quarantine_dir, f"quarantined_{filename}")
-                shutil.move(file_path, new_path)
-                print(f"[+] File moved to quarantine: {new_path}")
-            elif file_hash:
-                with open(os.path.join(quarantine_dir, "quarantined_hashes.txt"), "a") as f:
-                    f.write(f"{file_hash}\n")
-                print("[+] Malicious hash recorded")
-        except Exception as e:
-            print(f"[!] Quarantine failed: {e}")
+    #     try:
+    #         if file_path:
+    #             filename = os.path.basename(file_path)
+    #             new_path = os.path.join(quarantine_dir, f"quarantined_{filename}")
+    #             shutil.move(file_path, new_path)
+    #             print(f"[+] File moved to quarantine: {new_path}")
+    #         elif file_hash:
+    #             with open(os.path.join(quarantine_dir, "quarantined_hashes.txt"), "a") as f:
+    #                 f.write(f"{file_hash}\n")
+    #             print("[+] Malicious hash recorded")
+    #     except Exception as e:
+    #         print(f"[!] Quarantine failed: {e}")
 
-    def _validate_vt_api(self):
-        """Check if API key is configured"""
-        if not CONFIG.get('VT_API_KEY') or CONFIG['VT_API_KEY'] == 'YOUR_VIRUSTOTAL_API_KEY':
-            print("[!] Configure VirusTotal API key first:")
-            print("1. Get key from: https://www.virustotal.com/gui/join-us")
-            print("2. Edit CONFIG['VT_API_KEY'] in your code")
-            return False
-        return True
+    # def _validate_vt_api(self):
+    #     """Check if API key is configured"""
+    #     if not CONFIG.get('VT_API_KEY') or CONFIG['VT_API_KEY'] == 'YOUR_VIRUSTOTAL_API_KEY':
+    #         print("[!] Configure VirusTotal API key first:")
+    #         print("1. Get key from: https://www.virustotal.com/gui/join-us")
+    #         print("2. Edit CONFIG['VT_API_KEY'] in your code")
+    #         return False
+    #     return True
 
 
-        # go up to change
+    #     # go up to change
 
+
+# ================================================
+# ================================================
     def monitor_registry(self):
         """Monitor Windows registry changes"""
         if platform.system() != "Windows":
@@ -6918,8 +6965,11 @@ class SecurityTerminal:
             print(f"\n[+] {self.check_updates()}")
             self.show_tip(cmd)
         elif cmd == "vt-scan": 
-            self.vt_scan_menu()
+            self.run_vt_module()
             self.show_tip(cmd)
+
+        elif command in ["vt", "virustotal", "scan-vt"]:
+            self.run_vt_module()
             # return
         elif original_cmd.lower() == "registry -n mon": 
             print(self.monitor_registry())
@@ -6936,6 +6986,7 @@ class SecurityTerminal:
         else: 
             print("[!] Unknown command. Type 'help' for more command options.")
             self.show_tip(cmd)
+
     def _run_recon_script(self, target, full=False):
         """Run the recon script with proper path handling"""
         try:
@@ -7001,6 +7052,19 @@ class SecurityTerminal:
             import traceback
             traceback.print_exc()
 
+# ===============================added vtscan upgrade
+    def run_vt_module(self):
+        """Launch VirusTotal SOC module"""
+        if not VT_AVAILABLE:
+            print(f"{Fore.RED}[!] VirusTotal module not available{Style.RESET_ALL}")
+            input("Press Enter to continue...")
+            return
+
+        try:
+            vt_scan_menu(self.operator_username, self.session_id)  # launches full cinematic SOC system
+        except Exception as e:
+            print(f"{Fore.RED}[!] Error running VT module: {e}{Style.RESET_ALL}")
+            input("Press Enter to continue...")
 # ==================== HELP MENU ====================
 
     def show_help(self):
