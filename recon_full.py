@@ -27,18 +27,6 @@ def get_workspace_dir() -> Path:
     workspace = home / "dsterminal_workspace"
     workspace.mkdir(exist_ok=True)
     
-    # Create subdirectories for different report types
-    (workspace / "integrity_reports").mkdir(exist_ok=True)
-    (workspace / "network_reports").mkdir(exist_ok=True)
-    (workspace / "compliance_reports").mkdir(exist_ok=True)
-    (workspace / "logs").mkdir(exist_ok=True)
-    (workspace / "baselines").mkdir(exist_ok=True)
-    (workspace / "alerts").mkdir(exist_ok=True)
-    (workspace / "quarantine").mkdir(exist_ok=True)
-    (workspace / "forensic").mkdir(exist_ok=True)
-    (workspace / "auto_quarantine").mkdir(exist_ok=True)
-    (workspace / "scans").mkdir(exist_ok=True)
-    
     return workspace
 
 WORKSPACE = get_workspace_dir()

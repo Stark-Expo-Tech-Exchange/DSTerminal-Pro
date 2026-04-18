@@ -4,7 +4,21 @@ DSTerminal Integrity Monitor Module
 Comprehensive system integrity monitoring with real-time alerts
 All reports saved to DSTerminal workspace
 """
+# At the VERY TOP of integrity_monitor.py, add:
+# CRITICAL FIX: Import colorama FIRST
+from colorama import Fore, Style, init as colorama_init
+colorama_init(autoreset=True)
 
+# Then continue with your existing imports...
+try:
+    from fpdf import FPDF
+    from datetime import datetime
+    import textwrap
+    PDF_AVAILABLE = True
+except ImportError:
+    PDF_AVAILABLE = False
+import os
+import sys
 # Add these imports at the top of your file
 try:
     from fpdf import FPDF
@@ -15,8 +29,7 @@ except ImportError:
     PDF_AVAILABLE = False
     print("Warning: fpdf not installed. PDF reports will not be available.")
     print("Install with: pip install fpdf")
-import os
-import sys
+
 import json
 from pathlib import Path
 import hashlib
@@ -27,7 +40,7 @@ import threading
 import glob
 from datetime import datetime, timedelta
 import psutil  # You'll need to install: pip install psutil
-
+# At the top of integrity_monitor.py, after the other imports, add:
 # ==============================
 # WORKSPACE MANAGEMENT
 # ==============================
@@ -1337,12 +1350,18 @@ class RealTimeHandler(FileSystemEventHandler):
         
     def on_modified(self, event):
         if not event.is_directory:
+            # Ignore alert files to prevent recursive alerts
+            if 'alerts.json' in event.src_path or '.tmp' in event.src_path or '.fallback' in event.src_path:
+                return
             self._check_file(event.src_path, 'MODIFIED')
-    
+
     def on_created(self, event):
         if not event.is_directory:
+        # Ignore alert files
+            if 'alerts.json' in event.src_path or '.tmp' in event.src_path or '.fallback' in event.src_path:
+                return
             self._check_file(event.src_path, 'CREATED')
-    
+
     def on_deleted(self, event):
         if not event.is_directory:
             self._check_file(event.src_path, 'DELETED')
@@ -1427,6 +1446,9 @@ class AlertManager:
         self.running = False
         self.observer = None
         self.monitored_paths = []
+        self._saving = False  # Add this flag
+        self._printing_error = False  # Add this flag
+
         self.alerts_file = os.path.join("data", "alerts", "alerts.json")
         self.colorama_available = integrity_monitor.colorama_available
         
@@ -1461,8 +1483,13 @@ class AlertManager:
     
     def _save_alerts(self):
         """Save alerts to file with proper JSON serialization and atomic write"""
+        # Add this flag to prevent recursive saves
+        if hasattr(self, '_saving'):
+            return
+        self._saving = True
+    
         try:
-        # Create safe copy for JSON serialization
+            # Create safe copy for JSON serialization
             safe_alerts = []
             for alert in self.alerts:
                 safe_alert = {}
@@ -1477,23 +1504,29 @@ class AlertManager:
                         safe_alert[key] = str(value)
                 safe_alerts.append(safe_alert)
         
+        # Ensure directory exists
+            os.makedirs(os.path.dirname(self.alerts_file), exist_ok=True)
+        
         # Write to a temporary file first, then rename (atomic operation)
             temp_file = self.alerts_file + '.tmp'
             with open(temp_file, 'w', encoding='utf-8') as f:
                 json.dump(safe_alerts, f, indent=2, ensure_ascii=False, default=str)
-        
-        # Sync to disk
-            f.flush()
-            os.fsync(f.fileno())
+                f.flush()
+                os.fsync(f.fileno())
         
         # Atomic rename (prevents partial writes)
             os.replace(temp_file, self.alerts_file)
         
         except Exception as e:
-            if self.colorama_available:
-                print(f"{Fore.RED}Failed to save alerts: {e}{Style.RESET_ALL}")
-            else:
-                print(f"Failed to save alerts: {e}")
+        # Don't print during recursive calls
+            if not hasattr(self, '_printing_error'):
+                self._printing_error = True
+                if self.colorama_available:
+                    print(f"{Fore.RED}Failed to save alerts: {e}{Style.RESET_ALL}")
+                else:
+                    print(f"Failed to save alerts: {e}")
+                self._printing_error = False
+        
         # Write to fallback file
             fallback_file = self.alerts_file + ".fallback"
             try:
@@ -1501,7 +1534,9 @@ class AlertManager:
                     f.write(f"{self.alerts[-1] if self.alerts else 'No alerts'}\n")
             except:
                 pass
-
+        finally:
+            self._saving = False
+    # =======================
     def start_monitoring(self, paths=None):
         """Start real-time monitoring"""
         if not WATCHDOG_AVAILABLE:

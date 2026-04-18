@@ -28,16 +28,16 @@ def get_workspace_dir() -> Path:
     workspace.mkdir(exist_ok=True)
     
     # Create subdirectories for different report types
-    (workspace / "integrity_reports").mkdir(exist_ok=True)
-    (workspace / "network_reports").mkdir(exist_ok=True)
-    (workspace / "compliance_reports").mkdir(exist_ok=True)
-    (workspace / "logs").mkdir(exist_ok=True)
-    (workspace / "baselines").mkdir(exist_ok=True)
-    (workspace / "alerts").mkdir(exist_ok=True)
-    (workspace / "quarantine").mkdir(exist_ok=True)
-    (workspace / "forensic").mkdir(exist_ok=True)
-    (workspace / "auto_quarantine").mkdir(exist_ok=True)
-    (workspace / "scans").mkdir(exist_ok=True)
+    # (workspace / "integrity_reports").mkdir(exist_ok=True)
+    # (workspace / "network_reports").mkdir(exist_ok=True)
+    # (workspace / "compliance_reports").mkdir(exist_ok=True)
+    # (workspace / "logs").mkdir(exist_ok=True)
+    # (workspace / "baselines").mkdir(exist_ok=True)
+    # (workspace / "alerts").mkdir(exist_ok=True)
+    # (workspace / "quarantine").mkdir(exist_ok=True)
+    # (workspace / "forensic").mkdir(exist_ok=True)
+    # (workspace / "auto_quarantine").mkdir(exist_ok=True)
+    # (workspace / "scans").mkdir(exist_ok=True)
     
     return workspace
 
@@ -624,7 +624,7 @@ def recon_menu():
             run_recon(target)
         else:
             print(f"{RED}[!] No target specified{RESET}")
-    
+        
     elif choice == "2":
         target = input(f"{CYAN}Enter target (IP or domain): {RESET}").strip()
         if target:

@@ -83,11 +83,6 @@ else:
     import termios
 
 
-# Define global variables at module level
-INTEGRITY_AVAILABLE = False
-COLORS_AVAILABLE = False
-
-# Try to import colorama
 try:
     from colorama import init, Fore, Back, Style
     init(autoreset=True)
@@ -112,68 +107,45 @@ except ImportError:
             pass
     
     COLORS_AVAILABLE = False
- 
-# Try to import integrity monitor with proper path handling
+# ===========import integrity_monitor======
+# =================================
+# Import Integrity Monitor Module
+# =================================
 try:
-    # Check multiple possible locations
-    possible_paths = []
-    
-    if getattr(sys, 'frozen', False):
-        if hasattr(sys, '_MEIPASS'):
-            possible_paths.append(os.path.join(sys._MEIPASS, 'integrity_monitor.py'))
-        possible_paths.append(os.path.join(os.path.dirname(sys.executable), 'integrity_monitor.py'))
+    from integrity_monitor import (
+        SystemIntegrityMonitor,
+        AlertManager,
+        ForensicAnalyzer,
+        AutoRemediation,
+        RealTimeHandler
+    )
+    INTEGRITY_AVAILABLE = True
+    if COLORS_AVAILABLE:
+        print(f"{Fore.GREEN}✓ Integrity Monitor loaded successfully{Style.RESET_ALL}")
     else:
-        possible_paths.append(os.path.join(BASE_PATH, 'integrity_monitor.py'))
-    
-    # Also check current directory
-    possible_paths.append('integrity_monitor.py')
-    
-    integrity_path = None
-    for path in possible_paths:
-        if os.path.exists(path):
-            integrity_path = path
-            break
-    
-    if integrity_path and os.path.exists(integrity_path):
-        # Import from the file
-        import importlib.util
-        spec = importlib.util.spec_from_file_location("integrity_monitor", integrity_path)
-        integrity_monitor = importlib.util.module_from_spec(spec)
-        spec.loader.exec_module(integrity_monitor)
-        
-        # Get the classes
-        SystemIntegrityMonitor = integrity_monitor.SystemIntegrityMonitor
-        AlertManager = integrity_monitor.AlertManager
-        ForensicAnalyzer = integrity_monitor.ForensicAnalyzer
-        AutoRemediation = integrity_monitor.AutoRemediation
-        RealTimeHandler = integrity_monitor.RealTimeHandler
-
-        INTEGRITY_AVAILABLE = True
-        if COLORS_AVAILABLE:
-            print(f"{Fore.GREEN}✓ Integrity Monitor loaded successfully{Style.RESET_ALL}")
-        else:
-            print("✓ Integrity Monitor loaded successfully")
-    else:
-        INTEGRITY_AVAILABLE = False
-        if COLORS_AVAILABLE:
-            print(f"{Fore.YELLOW}⚠ integrity monitor not found{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}  Searched in: {possible_paths}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}  Current directory: {os.getcwd()}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}  Files in directory: {os.listdir('.')}{Style.RESET_ALL}")
-        else:
-            print(f"⚠ integrity monitor not found")
-            print(f"  Searched in: {possible_paths}")
-            print(f"  Files in directory: {os.listdir('.')}")
-            
+        print("✓ Integrity Monitor loaded successfully")
 except ImportError as e:
     INTEGRITY_AVAILABLE = False
     if COLORS_AVAILABLE:
-        print(f"{Fore.YELLOW}⚠ Integrity Monitor import error: {e}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}⚠ Integrity Monitor not found: {e}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}  Make sure integrity_monitor.py is in the same directory{Style.RESET_ALL}")
     else:
-        print(f"⚠ Integrity Monitor import error: {e}")
-    import traceback
-    traceback.print_exc()
-# =================================
+        print(f"⚠ Integrity Monitor not found: {e}")
+except Exception as e:
+    INTEGRITY_AVAILABLE = False
+    if COLORS_AVAILABLE:
+        print(f"{Fore.RED}⚠ Integrity Monitor error: {e}{Style.RESET_ALL}")
+    else:
+        print(f"⚠ Integrity Monitor error: {e}")
+# =================ends here============
+# Import Financial Forensics Module
+try:
+    from financial_forensics import financial_forensics_menu
+    FINANCIAL_FORENSICS_AVAILABLE = True
+    print(f"{Fore.GREEN}✓ Financial Forensics module loaded successfully{Style.RESET_ALL}")
+except ImportError as e:
+    FINANCIAL_FORENSICS_AVAILABLE = False
+    print(f"{Fore.YELLOW}⚠ Financial Forensics module not found: {e}{Style.RESET_ALL}")
 # Import crypto_engine
 try:
     crypto_path = os.path.join(BASE_PATH, 'crypto_engine.py')
@@ -432,7 +404,7 @@ def init_workspace():
         print(f"{Fore.RED}[!] Failed to initialize workspace: {e}{Style.RESET_ALL}")
         sys.exit(1) 
 # Initialize workspace safely
-# WORKSPACE = init_workspace()
+WORKSPACE = init_workspace()
 def get_workspace_dir() -> Path:
     """Get the DSTerminal workspace directory"""
     home = Path.home()
@@ -883,7 +855,6 @@ class SecurityTerminal:
 
     def __init__(self, workspace_root="."):
         self.workspace = str(WORKSPACE)
-        self.report_dir = os.path.join(self.workspace, "integrity_reports")
         self.crypto = CryptoEngine(os.getcwd())
     
 
@@ -901,24 +872,44 @@ class SecurityTerminal:
         os.makedirs(self.scans_dir, exist_ok=True)
     # ==========================
     # Use the global variable
-        global INTEGRITY_AVAILABLE
-    
-    # Create required directories first
-        data_dirs = [
-            "data/baselines",
-            "data/integrity_reports", 
-            "data/quarantine",
-            "data/alerts"
-        ]
-    
-        for dir_path in data_dirs:
+     # Initialize integrity monitor
+        self.integrity = None
+        self.alert_manager = None
+        self.forensic = None
+        
+        if INTEGRITY_AVAILABLE:
             try:
-                os.makedirs(dir_path, exist_ok=True)
+                # Initialize integrity monitor
+                self.integrity = SystemIntegrityMonitor()
+                
+                # Initialize alert manager
+                self.alert_manager = AlertManager(self.integrity)
+                self.alert_manager.alerts = []
+                
+                # Initialize forensic analyzer
+                self.forensic = ForensicAnalyzer(self.integrity)
+                # initialize autoremediation
+                self.autoremediation = AutoRemediation(self.integrity)  
+
+                if COLORS_AVAILABLE:
+                    print(f"{Fore.GREEN}✓ Integrity Monitor initialized{Style.RESET_ALL}")
+                else:
+                    print("✓ Integrity Monitor initialized")
+                    
             except Exception as e:
-                print(f"{Fore.YELLOW}⚠ Could not create {dir_path}: {e}{Style.RESET_ALL}")
+                if COLORS_AVAILABLE:
+                    print(f"{Fore.RED}✗ Failed to initialize Integrity Monitor: {e}{Style.RESET_ALL}")
+                else:
+                    print(f"✗ Failed to initialize Integrity Monitor: {e}")
+                self.integrity = None
+                self.alert_manager = None
+        else:
+            if COLORS_AVAILABLE:
+                print(f"{Fore.YELLOW}⚠ Integrity Monitor disabled{Style.RESET_ALL}")
+            else:
+                print("⚠ Integrity Monitor disabled")
     # initialize vt_scan module
     # ======================
-
         self.vt_scanner = None
 
         if VT_AVAILABLE:
@@ -928,68 +919,7 @@ class SecurityTerminal:
                 print(f"[!] Failed to initialize VT Scanner: {e}")
     # ================================
     # Initialize integrity monitor
-        self.integrity = None
-        self.alert_manager = None
-    
-        if INTEGRITY_AVAILABLE:
-            try:
-                from integrity_monitor import SystemIntegrityMonitor, AlertManager, ForensicAnalyzer
-            
-            # Initialize integrity monitor
-                self.integrity = SystemIntegrityMonitor()
-            
-            # Initialize alert manager with better error handling
-                try:
-                    self.alert_manager = AlertManager(self.integrity)
-                    self.alert_manager.alerts = []  # Initialize alerts list
-                
-                # Load existing alerts if any
-                    alerts_file = os.path.join("data", "alerts", "alerts.json")
-                    if os.path.exists(alerts_file):
-                        try:
-                            with open(alerts_file, 'r', encoding='utf-8') as f:
-                                content = f.read()
-                                if content.strip():
-                                    self.alert_manager.alerts = json.loads(content)
-                        except json.JSONDecodeError as e:
-                            print(f"{Fore.YELLOW}⚠ Corrupted alerts file, starting fresh: {e}{Style.RESET_ALL}")
-                        # Backup corrupted file
-                            backup_file = alerts_file + ".backup"
-                            if os.path.exists(alerts_file):
-                                import shutil
-                                shutil.copy2(alerts_file, backup_file)
-                                print(f"{Fore.YELLOW}⚠ Backed up corrupted alerts to {backup_file}{Style.RESET_ALL}")
-                            self.alert_manager.alerts = []
-                        except Exception as e:
-                            print(f"{Fore.YELLOW}⚠ Error loading alerts: {e}{Style.RESET_ALL}")
-                            self.alert_manager.alerts = []
-                        
-                except Exception as e:
-                    print(f"{Fore.YELLOW}⚠ Alert Manager initialization failed: {e}{Style.RESET_ALL}")
-                    self.alert_manager = None
-                
-                # if COLORS_AVAILABLE:
-                #     print(f"{Fore.GREEN}✓ Integrity Monitor initialized{Style.RESET_ALL}")
-                # else:
-                #     print("✓ Integrity Monitor initialized")
-                
-            except ImportError as e:
-                print(f"{Fore.RED}✗ Failed to import Integrity Monitor modules: {e}{Style.RESET_ALL}")
-                self.integrity = None
-                self.alert_manager = None
-                INTEGRITY_AVAILABLE = False
-            
-            except Exception as e:
-                print(f"{Fore.RED}✗ Failed to initialize Integrity Monitor: {e}{Style.RESET_ALL}")
-                self.integrity = None
-                self.alert_manager = None
-                INTEGRITY_AVAILABLE = False
-        else:
-            if COLORS_AVAILABLE:
-                print(f"{Fore.YELLOW}⚠ Integrity Monitor disabled{Style.RESET_ALL}")
-            else:
-                print("⚠ Integrity Monitor disabled")
-    
+
     # Initialize other components
         self.console = Console()
         self.scan_queue = queue.Queue()
@@ -1024,49 +954,8 @@ class SecurityTerminal:
         self.ensure_vfs()
 
     # =========initializing operator workspace and username and session logging===========
-    def _safe_save_alert(self, alert):
-        """Safely save alert with proper JSON serialization"""
-        if not self.alert_manager:
-            return False
-    
-        try:
-        # Ensure alert data is JSON serializable
-            safe_alert = {}
-            for key, value in alert.items():
-                if hasattr(value, 'isoformat'):
-                    safe_alert[key] = value.isoformat()
-                elif isinstance(value, bytes):
-                    safe_alert[key] = value.decode('utf-8', errors='replace')
-                elif isinstance(value, (str, int, float, bool, list, dict, type(None))):
-                    safe_alert[key] = value
-                else:
-                    safe_alert[key] = str(value)
-        
-        # Add to alerts list
-            self.alert_manager.alerts.append(safe_alert)
-        
-        # Keep only last 1000 alerts
-            if len(self.alert_manager.alerts) > 1000:
-                self.alert_manager.alerts = self.alert_manager.alerts[-1000:]
-        
-        # Save to file
-            alerts_file = os.path.join("data", "alerts", "alerts.json")
-            with open(alerts_file, 'w', encoding='utf-8') as f:
-                json.dump(self.alert_manager.alerts, f, indent=2, ensure_ascii=False, default=str)
-        
-            return True
-        
-        except Exception as e:
-            print(f"Failed to save alert: {e}")
-        # Write to fallback file
-            fallback_file = os.path.join("data", "alerts", "alerts_fallback.txt")
-            try:
-                with open(fallback_file, 'a', encoding='utf-8') as f:
-                    f.write(f"{alert}\n")
-            except:
-                pass
-            return False
-# =====================recon & recon_full fallback
+
+    # =====================recon & recon_full fallback
     def run_recon_basic(self, target=None):
         """Fallback basic recon if recon.py not available"""
         print(f"\n{Fore.CYAN}╔══════════════════════════════════════════════╗")
@@ -1174,18 +1063,7 @@ class SecurityTerminal:
     
         print(f"\n{Fore.YELLOW}[!] Full recon module not available. Install recon_full.py for advanced features.{Style.RESET_ALL}")
 
-# =================================
-    def _check_integrity_available(self):
-        """Check if integrity monitor is available and show helpful message if not"""
-        if not hasattr(self, 'integrity') or self.integrity is None:
-            print(f"{Fore.RED}Integrity monitor not initialized.{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}Possible reasons:{Style.RESET_ALL}")
-            print(f"  {Fore.CYAN}• integrity_monitor.py file not found{Style.RESET_ALL}")
-            print(f"  {Fore.CYAN}• Missing dependencies: pip install watchdog{Style.RESET_ALL}")
-            print(f"  {Fore.CYAN}• Check that the file exists in: {os.getcwd()}{Style.RESET_ALL}")
-            return False
-        return True
-    
+ 
     def typewriter(self, text, delay=0.03):
         """Simulate typing animation"""
         for char in text:
@@ -1194,30 +1072,6 @@ class SecurityTerminal:
             time.sleep(delay)
         print()
    
-    # ======================check integrity mwthod=============below
-    def check_integrity(self):
-        """Check system integrity"""
-        if not self._check_integrity_available():
-            return
-    
-        print(f"{Fore.CYAN}Starting integrity check...{Style.RESET_ALL}")
-    
-        if hasattr(self, 'integrity') and self.integrity:
-            try:
-                scan_results = self.integrity.scan_system()
-                changes = self.integrity.check_integrity(scan_results)
-            
-                if changes and any(changes.values()):
-                    print(f"{Fore.RED}[!] Integrity violations detected!{Style.RESET_ALL}")
-                    if hasattr(self.integrity, '_display_changes'):
-                        self.integrity._display_changes(changes)
-                else:
-                    print(f"{Fore.GREEN}[✓] System integrity verified{Style.RESET_ALL}")
-            except Exception as e:
-                print(f"{Fore.RED}[!] Integrity check failed: {e}{Style.RESET_ALL}")
-        else:
-            print(f"{Fore.YELLOW}[!] Integrity monitor not available{Style.RESET_ALL}")
-
 # Example neon style constants
     NEON_HEADER = "╔══════════════════════════════════════════════╗"
     NEON_FOOTER = "╚══════════════════════════════════════════════╝"
@@ -1497,69 +1351,6 @@ class SecurityTerminal:
         self.log_file = "security_harden.log"
         self.setup_logging()
 
-        # COMMANDS = {
-        #     "recon": {
-        #         "-full": None
-        #     },
-        #     "net": {
-        #         "-n": {
-        #             "mon": None
-        #     }
-        # },
-        # "system": {
-        #     "scan": {
-        #         "-All": None
-        #     }
-        # },
-        # "nikto": None,
-        # "nmap": None,
-        # "transfertrace": None,
-        # "certcheck": None,
-        # "metasploit": None,
-        # "msf": None,
-        # "sqlmap": None,
-        # "torify": None,
-        # "crypto-list": None,
-        # "crypto-info": None,
-        # "crypto-init": None,
-        # "crypto-status": None,
-        # "crypto-backup": None,
-        # "vt-scan": None,
-        # "ransomwatch": None,
-        # "dnssec": None,
-        # "traceroute": None,
-        # "exploitcheck": None,
-        # "portsweep": None,
-        # "hashfile": None,
-        # "memdump": None,
-        # "sysinfo": None,
-        # "killproc": None,
-        # "encrypt": None,
-        # "decrypt": None,
-        # "encrypt-test": None,
-        # "encrypt-setup": None,
-        # "watchfolder": None,
-        # "check": {
-        #     "integrity": None
-        # },
-        # "registry": {
-        #     "-n": {
-        #         "mon": None
-        #     }
-        # },
-        # "clear": None,
-        # "cls": None,
-        # "clearlogs": None,
-        # "update": None,
-        # "help": None,
-        # "exit": None,
-        # "mkdir": None,
-        # "cd": None,
-        # "touch": None,
-        # "cat": None,
-        #  "certcheck": None
-            
-        # }
     
         # self.cipher = Fernet(CONFIG['ENCRYPT_KEY'].encode())
         self.scan_complete = Event()
@@ -1745,12 +1536,7 @@ class SecurityTerminal:
         except ImportError:
             print("  Info: Install 'netifaces' for network details")
     
-    # Python environment
-        print(f"\n🐍 [PYTHON ENVIRONMENT]")
-        print(f"  Version: {platform.python_version()}")
-        print(f"  Implementation: {platform.python_implementation()}")
-        print(f"  Virtual Env: {'Yes' if hasattr(sys, 'real_prefix') or (hasattr(sys, 'base_prefix') and sys.base_prefix != sys.prefix) else 'No'}")
-    
+ 
     # Security recommendations
         print(f"\n📋 [RECOMMENDATIONS]")
         if not self.is_admin():
@@ -1778,15 +1564,7 @@ class SecurityTerminal:
                     vertical="middle",
                 )
             )
-        # displaying education tips code ends here
-
-
-# ---------------------folder or dir creation for safe environment running
-    # def safe_path(self, path):
-    #     full_path = os.path.abspath(os.path.join(self.current_dir, path))
-    #     if not full_path.startswith(self.workspace_root):
-    #         raise PermissionError("Access outside workspace is not allowed")
-    #     return full_path
+  
     def safe_path(self, path):
         """Ensure path is within workspace"""
     # Handle paths starting with ~
@@ -1806,9 +1584,7 @@ class SecurityTerminal:
     
         return full_path
 # --------------------------------------------creating dir/folder
- 
-# ---viewing a file
-
+  
 # Initialize colorama for Windows compatibility
 
     def _get_terminal_width(self):
@@ -2205,17 +1981,17 @@ class SecurityTerminal:
             content = self.safe_read_file(filepath)
             print(content)
   
-    # In your command handler, update the integrity section:
  
-# =====================debug===================
-# Add this temporary debug command in your command handler
-        elif cmd == "debug":
-            print(f"Current directory: {self.current_dir}")
-            print(f"Workspace root: {self.workspace_root}")
-            print(f"Trying to write: {os.path.join(self.current_dir, 'test.txt')}")
-# --------------------ends debug---------------
-       
 # refresh command=================
+# Financial Forensics Commands
+        elif command in ['fraud', 'financial', 'forensics', 'investigate', 'trace']:
+            if FINANCIAL_FORENSICS_AVAILABLE:
+                financial_forensics_menu()
+                
+            else:
+                print(f"{Fore.RED}[!] Financial Forensics module not available{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[*] Make sure financial_forensics.py is in the same directory{Style.RESET_ALL}")
+        # =================================
         elif command == "harden":
             dry_run = "-t" in args or "--test" in args
             self.harden_system(dry_run=dry_run)
@@ -2398,68 +2174,7 @@ class SecurityTerminal:
             return "msfconsole"
         else:
             return "msfconsole"
-
-    # def launch_metasploit(self):
-    #     """Launch Metasploit Framework in a separate window"""
-    #     system = platform.system()
-    #     msf_path = self.get_msf_command_path()
-
-    #     try:
-    #         if system == "Linux":
-    #         # Launch in new terminal on Linux
-    #             terminals = ["gnome-terminal", "xterm", "konsole", "terminal"]
-    #             for term in terminals:
-    #                 if shutil.which(term):
-    #                     subprocess.Popen([term, "-e", "msfconsole"])
-    #                     return True
-    #         # Fallback
-    #             subprocess.Popen(["msfconsole"], shell=False)
-    #             return True
-
-    #         elif system == "Windows":
-    #         # Launch in a NEW window on Windows
-    #             methods = [
-    #             # Method 1: Use start command to open new window
-    #                 lambda: subprocess.Popen(["cmd.exe", "/c", "start", "msfconsole"], shell=False),
-    #             # Method 2: Use the full path with start
-    #                 lambda: subprocess.Popen(["cmd.exe", "/c", "start", msf_path], shell=False),
-    #             # Method 3: Use PowerShell to start new window
-    #                 lambda: subprocess.Popen(["powershell", "-Command", f"Start-Process '{msf_path}' -WindowStyle Normal"], shell=False),
-    #             # Method 4: Use os.startfile on Windows
-    #                 lambda: os.startfile(msf_path) if os.path.exists(msf_path) else None,
-    #             ]
-            
-    #             for method in methods:
-    #                 try:
-    #                     result = method()
-    #                     if result is not None:
-    #                     # Give it a moment to start
-    #                         time.sleep(1)
-    #                         return True
-    #                 except Exception as e:
-    #                     continue
-            
-    #             print(f"{Fore.RED}[!] All methods to launch Metasploit failed{Style.RESET_ALL}")
-    #             return False
-
-    #         elif system == "Darwin":  # macOS
-    #         # Launch in new terminal on macOS
-    #             if shutil.which("open"):
-    #                 subprocess.Popen(["open", "-a", "Terminal", "msfconsole"])
-    #                 return True
-    #             subprocess.Popen(["msfconsole"], shell=False)
-    #             return True
-
-    #         else:
-    #             print(f"{Fore.RED}[!] Unsupported OS: {system}{Style.RESET_ALL}")
-    #             return False
-
-    #     except FileNotFoundError as e:
-    #         print(f"{Fore.RED}[!] Metasploit not found: {e}{Style.RESET_ALL}")
-    #         return False
-    #     except Exception as e:
-    #         print(f"{Fore.RED}[!] Failed to launch Metasploit: {e}{Style.RESET_ALL}")
-    #         return False
+ 
     def launch_metasploit(self):
         """Launch Metasploit Framework in a separate window"""
         system = platform.system()
@@ -2760,57 +2475,6 @@ class SecurityTerminal:
     
         print(f"\n{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
 # ---------========-----------------metasplo ends here from above-----------------------------
-    # ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn"}
-    # def check_nmap_installed(self):
-    #     return shutil.which("nmap") is not None
-
-
-    # def handle_nmap(self, args):
-    #     if not self.check_nmap_installed():
-    #         print("[!] Nmap is not installed on this system")
-    #         return
-
-    #     if len(args) < 2 or args[0] != "scan":
-    #         print("Usage: nmap scan <target> [flags]")
-    #         return
-
-    #     target = args[1]
-    #     flags = args[2:]
-
-    #     cmd = ["nmap"]
-
-    #     for f in flags:
-    #         if f.startswith("-"):
-    #             if f not in self.ALLOWED_NMAP_FLAGS:
-    #                 print(f"[!] Flag not allowed: {f}")
-    #                 return
-    #         cmd.append(f)
-
-    #     cmd.append(target)
-
-    # # Ensure scans directory exists
-    #     scans_dir = os.path.join(self.workspace_root, "scans")
-    #     os.makedirs(scans_dir, exist_ok=True)
-
-    #     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    #     output_file = os.path.join(
-    #         scans_dir,
-    #         f"nmap_{target}_{timestamp}.txt"
-    #     )
-
-    #     cmd.extend(["-oN", output_file])
-
-    #     print(f"[+] Running nmap scan on {target}...")
-    #     print(f"[+] Output → scans/{os.path.basename(output_file)}")
-
-    #     try:
-    #         subprocess.run(
-    #             cmd,
-    #             shell=self.is_windows(),
-    #             check=True
-    #         )
-    #     except subprocess.CalledProcessError as e:
-    #         print(f"[!] Nmap failed: {e}")
 
 # Initialize colorama
     ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn", "-A", "-O", "-sC", "-F", "--top-ports"}
@@ -4258,474 +3922,62 @@ class SecurityTerminal:
 
 
 # FINANCIAL SECTION
-    def financial_simulator(self):
-        """Interactive financial attack simulator with real-time money transfer animations"""
-        console = Console()
-    
-    # Financial database
-        BANKS = {
-            "SWIFT": ["JPMorgan", "HSBC", "BankofAmerica", "StandardChartered"],
-            "Crypto": ["Binance", "Coinbase", "Kraken"],
-            "Payment": ["Visa", "Mastercard", "PayPal"]
-        }
-
-        def create_panel(content, title="", border_style="blue", width=40):
-            return Panel(
-                content,
-                title=title,
-                border_style=border_style,
-                width=width,
-                padding=(1, 1)
-            )
-
-    # Animation frames for money transfer
-        MONEY_FRAMES = [
-            "▁▂▃▄▅▆▇█",
-            "▁▂▃▄▅▆▇▆▅▄▃▂▁",
-            "←══════✪══════→",
-            "▰▰▰▰▰▰▰▰▰▰",
-            "[green]$$$[/][yellow]$$[/][red]$$[/]"
-        ]
-
-    # Get user input
-        console.print(Panel.fit("[bold red]FINANCIAL SIMULATOR[/]", border_style="red"))
-    
-    # Bank selection
-        bank_type = console.input("\n[bold cyan]Enter bank type (SWIFT/Crypto/Payment): [/]").strip()
-        if bank_type not in BANKS:
-            console.print(Panel("[red]Invalid bank type![/]", border_style="red"))
-            return
-    
-        bank = random.choice(BANKS[bank_type])
-        amount = console.input("[bold cyan]Enter amount to transfer: [/]").strip()
-        recipient = console.input("[bold cyan]Enter recipient account: [/]").strip()
-
-    # Transaction simulation
-        try:
-            layout = Layout()
-            layout.split(
-                Layout(name="header", size=3),
-                Layout(name="main", ratio=1),
-                Layout(name="footer", size=7)
-            )
-        
-        # Create panels
-            transaction_panel = create_panel(
-                f"[bold]From:[/] DSTerminal_Acct\n"
-                f"[bold]To:[/] {recipient}\n"
-                f"[bold]Bank:[/] {bank}\n"
-                f"[bold]Amount:[/] [green]{amount}[/]",
-                title="[blue]TRANSACTION[/]",
-                border_style="blue",
-                width=45
-            )
-        
-            network_panel = create_panel(
-                f"[bold]Network:[/] {bank_type}\n"
-                f"[bold]Status:[/] [yellow]Pending[/]\n"
-                f"[bold]Fee:[/] ${random.uniform(0.1, 5.0):.2f}",
-                title="[yellow]NETWORK[/]",
-                border_style="yellow",
-                width=45
-            )
-
-        # Animation function
-            def generate_frame(frame_num):
-                animation = MONEY_FRAMES[frame_num % len(MONEY_FRAMES)]
-                return create_panel(
-                    f"\n\n[bold]{animation}[/]\n\n"
-                    f"[dim]Encrypting transaction...[/]",
-                    title="[red]TRANSFER IN PROGRESS[/]",
-                    border_style="red",
-                    width=50
-                )
-
-        # Live progress display
-            with Live(layout, refresh_per_second=10, screen=True) as live:
-            # Header
-                layout["header"].update(
-                    Panel.fit(
-                        f"[bold]Simulating {bank_type} Transfer[/] → [green]{amount}[/]",
-                        border_style="green"
-                    )
-                )
-            
-            # Main content
-                layout["main"].update(Columns([transaction_panel, network_panel]))
-            
-            # Animated transfer
-                for i in range(1, 101):
-                    layout["footer"].update(generate_frame(i))
-                
-                # Update status at different stages
-                    if i == 30:
-                        network_panel.border_style = "green"
-                        network_panel.title = "[green]NETWORK[/]"
-                        network_panel.renderable = network_panel.renderable.replace(
-                            "[yellow]Pending[/]", 
-                            "[green]Processing[/]"
-                        )
-                
-                    if i == 70:
-                        network_panel.renderable = network_panel.renderable.replace(
-                            "[green]Processing[/]", 
-                            "[blue]Verifying[/]"
-                        )
-                
-                    time.sleep(0.08)
-                    live.refresh()
-
-            # Completion
-                layout["footer"].update(
-                    create_panel(
-                        f"[bold green]✓ TRANSFER COMPLETE[/]\n\n"
-                        f"[dim]Confirmation: DST-{random.randint(10000,99999)}[/]",
-                        title="[green]SUCCESS[/]",
-                        border_style="green",
-                        width=50
-                    )
-                )
-                network_panel.renderable = network_panel.renderable.replace(
-                    "[blue]Verifying[/]", 
-                    "[green]Completed[/]"
-                )
-                live.refresh()
-                time.sleep(2)
-
-        # Generate report
-            console.print(Panel(
-                f"[bold]Transaction Report[/]\n\n"
-                f"• Amount: [green]{amount}[/]\n"
-                f"• Bank: {bank}\n"
-                f"• Recipient: {recipient}\n"
-                f"• Timestamp: {time.strftime('%Y-%m-%d %H:%M:%S')}\n"
-                f"• Network: {bank_type}\n"
-                f"• Status: [green]Verified[/]",
-                title="Receipt",
-                border_style="bright_white"
-            ))
-
-        except KeyboardInterrupt:
-            console.print(Panel("[yellow]Transfer cancelled by user[/]", border_style="yellow"))
-    
-        console.print("\n[bold]Press Enter to return to menu...[/]", end="")
-        input()
-
+    def financial_forensics_menu():
+        """Launch the financial forensics suite"""
+        forensics = FinancialForensics()
+        forensics.cinematic_fraud_investigation()
 # FINANCIAL SECTION ENDS HERE
-# ==================integrity implementation line for status and like-----
-    def display_alerts(self, alerts):
-        """Display alerts in formatted way"""
-        if not alerts:
-            print(f"{Fore.GREEN}No alerts found{Style.RESET_ALL}")
-            return
+# =================for integrity check
+    def _check_integrity_available(self):
+        """Check if integrity monitor is available"""
+        if not INTEGRITY_AVAILABLE:
+            print(f"{Fore.RED}Integrity monitor not available.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Make sure integrity_monitor.py is in the same directory{Style.RESET_ALL}")
+            return False
+        if self.integrity is None:
+            print(f"{Fore.RED}Integrity monitor not initialized.{Style.RESET_ALL}")
+            return False
+        return True
     
-        terminal_width = shutil.get_terminal_size().columns
-    
-        print(f"\n{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}")
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}{'RECENT ALERTS'.center(terminal_width)}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}\n")
-    
-        for alert in alerts[-20:]:  # Show last 20
-            severity_colors = {
-                'CRITICAL': Fore.RED + Style.BRIGHT,
-                'HIGH': Fore.YELLOW + Style.BRIGHT,
-                'MEDIUM': Fore.CYAN,
-                'LOW': Fore.GREEN
-            }
-            color = severity_colors.get(alert.get('severity', 'LOW'), Fore.WHITE)
-        
-            time_str = alert.get('timestamp', 'Unknown')[:19] if alert.get('timestamp') else 'Unknown'
-            alert_type = alert.get('type', 'unknown')
-            path = alert.get('path', alert.get('src_path', 'Unknown'))
-        
-            print(f"{color}[{alert.get('severity', 'UNKNOWN')}]{Style.RESET_ALL} "
-                f"{time_str} - {alert_type.upper()}: {os.path.basename(path)}")
-        
-            if alert.get('type') == 'moved':
-                print(f"      From: {os.path.basename(alert.get('src_path', ''))}")
-                print(f"      To: {os.path.basename(alert.get('dest_path', ''))}")
-    
-        print(f"\n{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}")
-
-    def display_timeline(self, timeline):
-        """Display forensic timeline"""
-        if not timeline:
-            print(f"{Fore.GREEN}No events in timeline{Style.RESET_ALL}")
-            return
-    
-        terminal_width = shutil.get_terminal_size().columns
-    
-        print(f"\n{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}")
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}{'FORENSIC TIMELINE'.center(terminal_width)}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}\n")
-    
-        for event in timeline:
-            time_str = event['time'].strftime('%Y-%m-%d %H:%M:%S') if hasattr(event['time'], 'strftime') else str(event['time'])
-        
-            if event['type'] == 'alert':
-                print(f"{Fore.RED}{time_str} - ALERT [{event['data'].get('severity', 'UNKNOWN')}]{Style.RESET_ALL}")
-                print(f"      {event['data'].get('type', 'unknown')}: {event['data'].get('path', 'Unknown')}")
-        
-            elif event['type'] == 'baseline_change':
-                print(f"{Fore.YELLOW}{time_str} - BASELINE CHANGE{Style.RESET_ALL}")
-                changes = event['data']
-                if changes.get('added'):
-                    print(f"      + Added: {len(changes['added'])} files")
-                if changes.get('removed'):
-                    print(f"      - Removed: {len(changes['removed'])} files")
-                if changes.get('modified'):
-                    print(f"      * Modified: {len(changes['modified'])} files")
-        
-            print()
-
     def show_integrity_help(self):
-        """Show integrity monitor help"""
-        terminal_width = shutil.get_terminal_size().columns
-    
-        print(f"\n{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}")
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}{'INTEGRITY MONITOR COMMANDS'.center(terminal_width)}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}\n")
-    
-        help_sections = [
-            ("CORE COMMANDS", [
-                ("integrity scan", "Full system integrity check"),
-                ("integrity baseline", "Create new system baseline"),
-                ("integrity compare <file>", "Compare with specific baseline"),
-                ("integrity status", "Show integrity monitor status"),
-            ]),
-            ("INVENTORY COMMANDS", [
-                ("integrity list", "List all files"),
-                ("integrity list critical", "List critical system files"),
-                ("integrity list configs", "List configuration files"),
-                ("integrity list logs", "List log files"),
-                ("integrity list databases", "List database files"),
-                ("integrity list user", "List user files"),
-            ]),
-            ("REPORT COMMANDS", [
-                ("integrity report", "Generate TXT report"),
-                ("integrity report latest", "Show latest TXT report"),
-                ("integrity report json", "Generate JSON format report"),
-                ("integrity report pdf", "Generate PDF format report (with logo)"),
-                ("integrity report all", "Generate all report formats"),
-            ]),
-            ("REAL-TIME MONITORING", [
-                ("integrity monitor", "Start real-time monitoring"),
-                ("integrity monitor stop", "Stop real-time monitoring"),
-                ("integrity alerts", "Show recent alerts"),
-                ("integrity alerts show [severity]", "Filter alerts by severity"),
-                ("integrity alerts clear", "Clear all alerts"),
-            ]),
-            ("FORENSIC ANALYSIS", [
-                ("integrity forensic timeline [file] [days]", "Show change timeline"),
-                ("integrity forensic report [file] [days]", "Generate forensic report"),
-            ]),
-            ("INCIDENT RESPONSE", [
-                ("integrity quarantine <file>", "Quarantine suspicious file"),
-                ("integrity restore <file>", "Restore from quarantine"),
-            ]),
-        ]
-    
-        for section_title, commands in help_sections:
-            print(f"{Fore.YELLOW}{section_title}:{Style.RESET_ALL}")
-            for cmd, desc in commands:
-                print(f"  {Fore.GREEN}{cmd:<35}{Style.RESET_ALL} - {desc}")
-            print()
-    
-        print(f"{Fore.CYAN}{'=' * terminal_width}{Style.RESET_ALL}")
-
-    def show_integrity_status(self):
-        """Show integrity monitor status"""
-        print(f"\n{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}{'INTEGRITY MONITOR STATUS'.center(60)}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}\n")
-    
-    # Check baseline
-        baseline_dir = "data/baselines"
-        if os.path.exists(baseline_dir):
-            baselines = [f for f in os.listdir(baseline_dir) if f.endswith('.json')]
-            if baselines:
-                latest = max([os.path.join(baseline_dir, f) for f in baselines], key=os.path.getctime)
-                latest_time = datetime.fromtimestamp(os.path.getctime(latest))
-                print(f"{Fore.GREEN}✅ Baseline:{Style.RESET_ALL} Found ({len(baselines)} total)")
-                print(f"   Latest: {latest_time.strftime('%Y-%m-%d %H:%M:%S')}")
-            else:
-                print(f"{Fore.YELLOW}⚠️ Baseline:{Style.RESET_ALL} No baselines found")
-        else:
-            print(f"{Fore.RED}❌ Baseline:{Style.RESET_ALL} Directory not found")
-    
-    # Check reports
-        report_dir = "data/integrity_reports"
-        if os.path.exists(report_dir):
-            reports = [f for f in os.listdir(report_dir) if f.endswith(('.txt', '.json'))]
-            print(f"{Fore.GREEN}✅ Reports:{Style.RESET_ALL} {len(reports)} reports available")
-        else:
-            print(f"{Fore.YELLOW}⚠️ Reports:{Style.RESET_ALL} No reports found")
-    
-    # Check monitoring status
-        if hasattr(self, 'alert_manager') and hasattr(self.alert_manager, 'running') and self.alert_manager.running:
-            print(f"{Fore.GREEN}✅ Monitoring:{Style.RESET_ALL} Active")
-            if hasattr(self.alert_manager, 'alerts'):
-                print(f"   Alerts: {len(self.alert_manager.alerts)}")
-        else:
-            print(f"{Fore.YELLOW}⚠️ Monitoring:{Style.RESET_ALL} Inactive (use 'integrity monitor' to start)")
-    
-        print(f"\n{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
-
-    def compare_with_baseline(self, baseline_file):
-        """Compare current state with a specific baseline"""
-        if not os.path.exists(baseline_file):
-            print(f"{Fore.RED}Baseline file not found: {baseline_file}{Style.RESET_ALL}")
-            return
-    
-        try:
-            with open(baseline_file, 'r') as f:
-                baseline = json.load(f)
-        
-            print(f"{Fore.CYAN}Comparing with baseline from: {baseline.get('created', 'Unknown')}{Style.RESET_ALL}")
-        
-        # Scan current system
-            scan_results = self.integrity.scan_system()
-        
-        # Perform comparison
-            changes = self.integrity.check_integrity(scan_results)
-        
-            if changes and any(changes.values()):
-                if hasattr(self.integrity, '_display_changes'):
-                    self.integrity._display_changes(changes)
-                else:
-                    print(f"{Fore.YELLOW}Changes detected. Run 'integrity scan' for details.{Style.RESET_ALL}")
-            else:
-                print(f"{Fore.GREEN}No changes detected since baseline.{Style.RESET_ALL}")
-            
-        except Exception as e:
-            print(f"{Fore.RED}Error comparing with baseline: {e}{Style.RESET_ALL}")
-
-    def show_latest_report(self):
-        """Show the latest integrity report"""
-        report_dir = "data/integrity_reports"
-        if not os.path.exists(report_dir):
-            print(f"{Fore.RED}No reports directory found.{Style.RESET_ALL}")
-            return
-    
-    # Look for report files
-        report_files = glob.glob(os.path.join(report_dir, 'report_*.txt'))
-        if not report_files:
-            print(f"{Fore.RED}No reports found.{Style.RESET_ALL}")
-            return
-    
-    # Get the most recent report
-        latest_report = max(report_files, key=os.path.getctime)
-    
-        print(f"\n{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
-        print(f"{Fore.MAGENTA}{Style.BRIGHT}{'LATEST INTEGRITY REPORT'.center(60)}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}File: {latest_report}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'-' * 60}{Style.RESET_ALL}\n")
-    
-        try:
-            with open(latest_report, 'r') as f:
-                content = f.read()
-                print(content)
-        except Exception as e:
-            print(f"{Fore.RED}Error reading report: {e}{Style.RESET_ALL}")
-    
-        print(f"\n{Fore.CYAN}{'=' * 60}{Style.RESET_ALL}")
-    # ================
-    def quarantine_file(self, file_path):
-        """Quarantine a suspicious file"""
-        if not os.path.exists(file_path):
-            print(f"{Fore.RED}File not found: {file_path}{Style.RESET_ALL}")
-            return
-    
-        quarantine_dir = os.path.join("data", "quarantine")
-        os.makedirs(quarantine_dir, exist_ok=True)
-    
-    # Create quarantine filename with timestamp
-        filename = os.path.basename(file_path)
-        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        quarantine_path = os.path.join(quarantine_dir, f"{timestamp}_{filename}.quarantine")
-    
-        try:
-            # Move file to quarantine
-            shutil.move(file_path, quarantine_path)
-        
-        # Log quarantine action
-            quarantine_log = os.path.join(quarantine_dir, 'quarantine_log.json')
-        
-            log_entry = {
-                'timestamp': datetime.now().isoformat(),
-                'original_path': file_path,
-                'quarantine_path': quarantine_path,
-                'action': 'quarantined'
-            }
-        
-            if os.path.exists(quarantine_log):
-                with open(quarantine_log, 'r') as f:
-                    log = json.load(f)
-            else:
-                log = []
-        
-            log.append(log_entry)
-        
-            with open(quarantine_log, 'w') as f:
-                json.dump(log, f, indent=2)
-        
-            print(f"{Fore.GREEN}✅ File quarantined: {quarantine_path}{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}   Original location: {file_path}{Style.RESET_ALL}")
-        
-        except Exception as e:
-            print(f"{Fore.RED}Failed to quarantine file: {e}{Style.RESET_ALL}")
-
-    def restore_from_quarantine(self, file_path):
-        """Restore file from quarantine"""
-        quarantine_dir = os.path.join("data", "quarantine")
-        quarantine_log = os.path.join(quarantine_dir, 'quarantine_log.json')
-    
-        if not os.path.exists(quarantine_log):
-            print(f"{Fore.RED}No quarantine log found{Style.RESET_ALL}")
-            return
-    
-        try:
-            with open(quarantine_log, 'r') as f:
-                log = json.load(f)
-        
-        # Find matching entry
-            matching_entries = [entry for entry in log 
-                            if entry['original_path'] == file_path or 
-                            entry['quarantine_path'] == file_path]
-        
-            if not matching_entries:
-                print(f"{Fore.RED}No quarantine entry found for: {file_path}{Style.RESET_ALL}")
-                return
-        
-            entry = matching_entries[-1]
-            quarantine_path = entry['quarantine_path']
-        
-            if not os.path.exists(quarantine_path):
-                print(f"{Fore.RED}Quarantine file not found: {quarantine_path}{Style.RESET_ALL}")
-                return
-        
-        # Create backup directory if original path doesn't exist
-            original_dir = os.path.dirname(entry['original_path'])
-            if not os.path.exists(original_dir):
-                os.makedirs(original_dir, exist_ok=True)
-        
-        # Restore file
-            shutil.move(quarantine_path, entry['original_path'])
-        
-        # Update log
-            entry['restored_at'] = datetime.now().isoformat()
-            entry['action'] = 'restored'
-        
-            with open(quarantine_log, 'w') as f:
-                json.dump(log, f, indent=2)
-        
-            print(f"{Fore.GREEN}✅ File restored to: {entry['original_path']}{Style.RESET_ALL}")
-        
-        except Exception as e:
-            print(f"{Fore.RED}Failed to restore file: {e}{Style.RESET_ALL}")
-        # ================================================
-# ---------------------ends here---------------
+        """Display integrity monitor help"""
+        help_text = f"""
+{Fore.CYAN}╔══════════════════════════════════════════════════════════════╗
+║              INTEGRITY MONITOR COMMANDS                         ║
+╠════════════════════════════════════════════════════════════════╣
+║  {Fore.YELLOW}CORE COMMANDS:{Fore.CYAN}                                                 ║
+║    integrity scan              - Full system integrity check    ║
+║    integrity baseline          - Create new system baseline     ║
+║    integrity status            - Show monitor status            ║
+║                                                               ║
+║  {Fore.YELLOW}REPORT COMMANDS:{Fore.CYAN}                                               ║
+║    integrity report            - Generate TXT report            ║
+║    integrity report json       - Generate JSON report           ║
+║    integrity report pdf        - Generate PDF report            ║
+║    integrity report all        - Generate all report formats    ║
+║                                                               ║
+║  {Fore.YELLOW}REAL-TIME MONITORING:{Fore.CYAN}                                          ║
+║    integrity monitor           - Start real-time monitoring     ║
+║    integrity monitor stop      - Stop real-time monitoring      ║
+║    integrity alerts            - Show recent alerts             ║
+║                                                               ║
+║  {Fore.YELLOW}FORENSIC ANALYSIS:{Fore.CYAN}                                             ║
+║    integrity forensic timeline  - Show change timeline          ║
+║    integrity forensic report    - Generate forensic report      ║
+║    integrity list                 - Show summary of all files   ║
+║    integrity list critical        - List critical system files       ║
+║    integrity list configs         - List configuration files         ║
+║    integrity list logs            - List log files                   ║
+║    integrity list databases       - List database files
+║    integrity list user            - List user files                       ║
+║    integrity forensic timeline  - Show change timeline                    ║
+║    integrity forensic report    - Generate forensic report           ║
+║    integrity quarantine <file>    - Quarantine a suspicious file     ║
+║    integrity restore <file>       - Restore from quarantine          ║
+╚════════════════════════════════════════════════════════════════╝{Style.RESET_ALL}
+"""
+        print(help_text)
+# ================ends here integ=======
     def watch_folder(self, path):
         """Monitor a folder for changes"""
         if not os.path.exists(path):
@@ -7062,16 +6314,14 @@ class SecurityTerminal:
             return
         
 
-        elif cmd == "refresh" or cmd == "reload":
+        elif cmd == "dst-refresh" or cmd == "dst-reload":
             self.cmd_refresh()
             return
 
 #  =====================for recon & recon_full command parser=============================
-# Inside your command handler method (where you process user input)
- # Inside handle_command method, replace the recon section with:
-
+ 
         # =====================for recon & recon_full command parser=============================
-        elif command == 'recon' or command == 'recon.py':
+        elif command == 'dst-recon' or command == 'recon.py':
             if RECON_AVAILABLE:
                 # Check which functions are available
                 if 'recon_menu' in globals() and recon_menu:
@@ -7084,7 +6334,7 @@ class SecurityTerminal:
                 print(f"{Fore.RED}Recon module not available. Make sure recon.py is in: {BASE_PATH}{Style.RESET_ALL}")
                 print(f"{Fore.YELLOW}Files in directory: {os.listdir(BASE_PATH)}{Style.RESET_ALL}")
     
-        elif command == 'recon_full' or command == 'recon-full' or command == 'recon_full.py':
+        elif command == 'recon_full' or command == 'dst-recon-full' or command == 'recon_full.py':
             if RECON_FULL_AVAILABLE:
                 if 'full_recon_menu' in globals() and full_recon_menu:
                     full_recon_menu()
@@ -7118,7 +6368,227 @@ class SecurityTerminal:
                     print(f"{Fore.RED}Full Recon module not properly loaded{Style.RESET_ALL}")
             else:
                 print(f"{Fore.RED}Full Recon module not available{Style.RESET_ALL}")
-#  ========================================end of recon and recon_full from above========================================
+#  ========================================end of recon and recon_full from above================
+        # ========== INTEGRITY MONITOR COMMANDS ==========
+        elif command in ['integrity', 'integ', 'int']:
+            if not self._check_integrity_available():
+                return True
+            
+            if not args:
+                self.show_integrity_help()
+                return True
+            
+            subcmd = args[0].lower()
+            
+            # integrity scan
+            if subcmd == 'scan':
+                print(f"{Fore.CYAN}[*] Starting integrity scan...{Style.RESET_ALL}")
+                try:
+                    scan_results = self.integrity.scan_system()
+                    changes = self.integrity.check_integrity(scan_results)
+                    if changes and any(changes.values()):
+                        print(f"{Fore.RED}[!] Integrity violations detected!{Style.RESET_ALL}")
+                        self.integrity.generate_report(changes, scan_results)
+                    else:
+                        print(f"{Fore.GREEN}[✓] No integrity violations found{Style.RESET_ALL}")
+                except Exception as e:
+                    print(f"{Fore.RED}[!] Scan failed: {e}{Style.RESET_ALL}")
+            
+            # integrity baseline
+            elif subcmd == 'baseline':
+                print(f"{Fore.CYAN}[*] Creating system baseline...{Style.RESET_ALL}")
+                try:
+                    self.integrity.create_baseline()
+                except Exception as e:
+                    print(f"{Fore.RED}[!] Failed to create baseline: {e}{Style.RESET_ALL}")
+            
+            # integrity status
+            elif subcmd == 'status':
+                print(f"\n{Fore.CYAN}Integrity Monitor Status:{Style.RESET_ALL}")
+                print(f"  Status: {'Active' if self.integrity else 'Inactive'}")
+                print(f"  Workspace: {self.integrity.workspace if self.integrity else 'N/A'}")
+                if self.alert_manager:
+                    print(f"  Alerts: {len(self.alert_manager.alerts)}")
+            
+            # integrity report
+            elif subcmd == 'report':
+                report_type = args[1] if len(args) > 1 else 'txt'
+                print(f"{Fore.CYAN}[*] Generating {report_type.upper()} report...{Style.RESET_ALL}")
+                try:
+                    scan_results = self.integrity.scan_system()
+                    if report_type == 'json':
+                        self.integrity.generate_json_report(None, scan_results)
+                    elif report_type == 'pdf':
+                        self.integrity.generate_pdf_report(None, scan_results)
+                    elif report_type == 'all':
+                        self.integrity.generate_all_reports(None, scan_results)
+                    else:
+                        self.integrity.generate_report(None, scan_results)
+                except Exception as e:
+                    print(f"{Fore.RED}[!] Report generation failed: {e}{Style.RESET_ALL}")
+            
+            # integrity monitor
+            elif subcmd == 'monitor':
+                if len(args) > 1 and args[1] == 'stop':
+                    if self.alert_manager:
+                        self.alert_manager.stop_monitoring()
+                        print(f"{Fore.GREEN}[✓] Monitoring stopped{Style.RESET_ALL}")
+                else:
+                    if self.alert_manager:
+                        self.alert_manager.start_monitoring()
+                        print(f"{Fore.GREEN}[✓] Real-time monitoring started{Style.RESET_ALL}")
+            
+            # integrity alerts
+            elif subcmd == 'alerts':
+                if self.alert_manager:
+                    alerts = self.alert_manager.get_alerts()
+                    if alerts:
+                        print(f"\n{Fore.CYAN}Recent Alerts:{Style.RESET_ALL}")
+                        for alert in alerts[-10:]:
+                            print(f"  [{alert.get('severity', 'LOW')}] {alert.get('timestamp', '')}: {alert.get('path', 'Unknown')}")
+                    else:
+                        print(f"{Fore.GREEN}No alerts{Style.RESET_ALL}")
+             # integrity list
+            elif subcmd == 'list':
+                try:
+                    # Get scan results
+                    scan_results = self.integrity.scan_system()
+                    
+                    # Determine which category to list
+                    category = args[1] if len(args) > 1 else 'all'
+                    
+                    if category == 'all':
+                        total_files = (len(scan_results.get('critical_files', [])) + 
+                                      len(scan_results.get('configs', [])) + 
+                                      len(scan_results.get('logs', [])) + 
+                                      len(scan_results.get('databases', [])) + 
+                                      len(scan_results.get('files', [])))
+                        print(f"\n{Fore.CYAN}File Inventory Summary:{Style.RESET_ALL}")
+                        print(f"  Critical System Files: {len(scan_results.get('critical_files', []))}")
+                        print(f"  Configuration Files: {len(scan_results.get('configs', []))}")
+                        print(f"  Log Files: {len(scan_results.get('logs', []))}")
+                        print(f"  Databases: {len(scan_results.get('databases', []))}")
+                        print(f"  User Files: {len(scan_results.get('files', []))}")
+                        print(f"  {Fore.GREEN}Total: {total_files}{Style.RESET_ALL}")
+                    
+                    elif category == 'critical':
+                        files = scan_results.get('critical_files', [])
+                        print(f"\n{Fore.RED}Critical System Files ({len(files)}):{Style.RESET_ALL}")
+                        for f in files[:20]:  # Show first 20
+                            print(f"  {f.get('path', 'Unknown')}")
+                        if len(files) > 20:
+                            print(f"  ... and {len(files) - 20} more")
+                    
+                    elif category == 'configs':
+                        files = scan_results.get('configs', [])
+                        print(f"\n{Fore.YELLOW}Configuration Files ({len(files)}):{Style.RESET_ALL}")
+                        for f in files[:20]:
+                            print(f"  {f.get('path', 'Unknown')}")
+                        if len(files) > 20:
+                            print(f"  ... and {len(files) - 20} more")
+                    
+                    elif category == 'logs':
+                        files = scan_results.get('logs', [])
+                        print(f"\n{Fore.BLUE}Log Files ({len(files)}):{Style.RESET_ALL}")
+                        for f in files[:20]:
+                            print(f"  {f.get('path', 'Unknown')}")
+                        if len(files) > 20:
+                            print(f"  ... and {len(files) - 20} more")
+                    
+                    elif category == 'databases':
+                        files = scan_results.get('databases', [])
+                        print(f"\n{Fore.MAGENTA}Database Files ({len(files)}):{Style.RESET_ALL}")
+                        for f in files[:20]:
+                            print(f"  {f.get('path', 'Unknown')}")
+                        if len(files) > 20:
+                            print(f"  ... and {len(files) - 20} more")
+                    
+                    elif category == 'user':
+                        files = scan_results.get('files', [])
+                        print(f"\n{Fore.GREEN}User Files ({len(files)}):{Style.RESET_ALL}")
+                        for f in files[:20]:
+                            print(f"  {f.get('path', 'Unknown')}")
+                        if len(files) > 20:
+                            print(f"  ... and {len(files) - 20} more")
+                    
+                    else:
+                        print(f"{Fore.RED}[!] Unknown category: {category}{Style.RESET_ALL}")
+                        print(f"{Fore.YELLOW}Valid categories: all, critical, configs, logs, databases, user{Style.RESET_ALL}")
+                
+                except Exception as e:
+                    print(f"{Fore.RED}[!] Failed to list files: {e}{Style.RESET_ALL}")
+            # integrity quarantine
+            elif subcmd == 'quarantine':
+                if len(args) > 1:
+                    file_path = args[1]
+                    print(f"{Fore.CYAN}[*] Quarantining file: {file_path}{Style.RESET_ALL}")
+                    try:
+                        if hasattr(self.integrity, 'quarantine_file'):
+                            self.integrity.quarantine_file(file_path)
+                        else:
+                            # Fallback quarantine
+                            import shutil
+                            quarantine_dir = os.path.join(self.integrity.workspace, "quarantine")
+                            os.makedirs(quarantine_dir, exist_ok=True)
+                            filename = os.path.basename(file_path)
+                            timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+                            dest = os.path.join(quarantine_dir, f"{timestamp}_{filename}")
+                            shutil.move(file_path, dest)
+                            print(f"{Fore.GREEN}[✓] File quarantined to: {dest}{Style.RESET_ALL}")
+                    except Exception as e:
+                        print(f"{Fore.RED}[!] Failed to quarantine: {e}{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.YELLOW}Usage: integrity quarantine <file_path>{Style.RESET_ALL}")
+            
+            # integrity restore
+            elif subcmd == 'restore':
+                if len(args) > 1:
+                    file_path = args[1]
+                    print(f"{Fore.CYAN}[*] Restoring from quarantine: {file_path}{Style.RESET_ALL}")
+                    try:
+                        if hasattr(self.integrity, 'restore_from_quarantine'):
+                            self.integrity.restore_from_quarantine(file_path)
+                        else:
+                            print(f"{Fore.YELLOW}[!] Restore feature not implemented{Style.RESET_ALL}")
+                    except Exception as e:
+                        print(f"{Fore.RED}[!] Failed to restore: {e}{Style.RESET_ALL}")
+                else:
+                    print(f"{Fore.YELLOW}Usage: integrity restore <file_path>{Style.RESET_ALL}")
+            
+            # integrity report
+            elif subcmd == 'report':
+                report_type = args[1] if len(args) > 1 else 'txt'
+                print(f"{Fore.CYAN}[*] Generating {report_type.upper()} report...{Style.RESET_ALL}")
+                try:
+                    scan_results = self.integrity.scan_system()
+                    if report_type == 'json':
+                        self.integrity.generate_json_report(None, scan_results)
+                    elif report_type == 'pdf':
+                        self.integrity.generate_pdf_report(None, scan_results)
+                    elif report_type == 'all':
+                        self.integrity.generate_all_reports(None, scan_results)
+                    else:
+                        self.integrity.generate_report(None, scan_results)
+                except Exception as e:
+                    print(f"{Fore.RED}[!] Report generation failed: {e}{Style.RESET_ALL}")
+# ==================================================================================================
+            # integrity forensic
+            elif subcmd == 'forensic':
+                if len(args) > 1:
+                    if args[1] == 'timeline':
+                        if self.forensic:
+                            timeline = self.forensic.analyze_timeline()
+                            print(f"{Fore.CYAN}[*] Timeline has {len(timeline)} events{Style.RESET_ALL}")
+                    elif args[1] == 'report':
+                        if self.forensic:
+                            self.forensic.generate_forensic_report()
+                else:
+                    print(f"{Fore.YELLOW}Usage: integrity forensic <timeline|report>{Style.RESET_ALL}")
+            
+            else:
+                print(f"{Fore.RED}[!] Unknown integrity command: {subcmd}{Style.RESET_ALL}")
+                self.show_integrity_help()
+# ====================font integrity=================ends here========
         elif parts[0] == "pwd":
             self.pwd()
             return
@@ -7205,11 +6675,6 @@ class SecurityTerminal:
         # ===================================
     #  for clear command to clean terminal
     # Add to  command handler:
-        elif cmd == "transfertrace":
-            self.financial_simulator()
-            # Add to your command handler:
-        elif original_cmd.lower() == "extract -money":
-            self.financial_simulator()
         elif original_cmd.lower() == "clear terminal":
             self.clear_terminal()
             self.show_tip(cmd)
@@ -7237,269 +6702,7 @@ class SecurityTerminal:
         elif cmd == "clearlogs": 
             self.clear_logs()
             self.show_tip(cmd)
-
-
-        # ------------integrity section===========
-            # Handle integrity commands (with typo tolerance)
-        elif cmd in ['integrity', 'integrit', 'integ', 'int']:
-            # check if integrity monitor is avilable
-            if not self._check_integrity_available():
-                return True
-            if len(args) > 0:
-                subcmd = args[0].lower()
-            
-            # integrity help
-                if subcmd == "help":
-                    self.show_integrity_help()
-                    self.show_tip(cmd)
-            
-            # integrity scan
-                elif subcmd == "scan":
-                    print(f"{Fore.CYAN}Starting full system integrity scan...{Style.RESET_ALL}")
-                    if hasattr(self, 'integrity') and self.integrity:
-                        self.integrity.full_integrity_check()
-                    else:
-                        print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity baseline
-                elif subcmd == "baseline":
-                    print(f"{Fore.CYAN}Creating new system baseline...{Style.RESET_ALL}")
-                    if hasattr(self, 'integrity') and self.integrity:
-                        self.integrity.create_baseline()
-                    else:
-                        print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity compare <file>
-                elif subcmd == "compare":
-                    if len(args) < 2:
-                        print(f"{Fore.RED}[!] Usage: integrity compare <baseline_file>{Style.RESET_ALL}")
-                    else:
-                        self.compare_with_baseline(args[1])
-                    self.show_tip(cmd)
-            
-            # integrity list [category]
-                elif subcmd == "list":
-                    category = args[1] if len(args) > 1 else 'all'
-                    valid_categories = ['all', 'critical', 'configs', 'logs', 'databases', 'user', 'system']
-                
-                    if category not in valid_categories:
-                        print(f"{Fore.RED}Invalid category. Valid: {', '.join(valid_categories)}{Style.RESET_ALL}")
-                    elif hasattr(self, 'integrity') and self.integrity:
-                        self.integrity.list_all_files(category)
-                    else:
-                        print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity report [latest]
-                elif subcmd == "report":
-                    if len(args) > 1:
-                        if args[1] == "latest":
-                            self.show_latest_report()
-                        elif args[1] == "json":
-                            print(f"{Fore.CYAN}Generating JSON report...{Style.RESET_ALL}")
-                            if hasattr(self, 'integrity') and self.integrity:
-                                scan_results = self.integrity.scan_system()
-                                changes = self.integrity.check_integrity(scan_results)
-                                self.integrity.generate_json_report(changes, scan_results)
-                            else:
-                                print(f"{Fore.RED}Integrity monitor not initalized{Style.RESET_ALL}") 
-                        elif args[1] == "pdf":
-                            print(f"{Fore.CYAN}Generating PDF report...{Style.RESET_ALL}")
-                            if hasattr(self, 'integrity') and self.integrity:
-                                scan_results = self.integrity.scan_system()
-                                changes = self.integrity.check_integrity(scan_results)
-                                self.integrity.generate_pdf_report(changes, scan_results)
-                            else:
-                                print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-
-                        elif args[1] == "all":
-                            print(f"{Fore.CYAN}Generating all report formats...{Style.RESET_ALL}")
-                            if hasattr(self, 'integrity') and self.integrity:
-                                scan_results = self.integrity.scan_system()
-                                changes = self.integrity.check_integrity(scan_results)
-                                self.integrity.generate_all_reports(changes, scan_results)
-                            else:
-                                print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-                        else:
-                            print(f"{Fore.RED}Unknown report type. Use: latest, json, pdf, all{Style.RESET_ALL}")
-            # ====
-                    else:
-                        print(f"{Fore.CYAN}Generating comprehensive report...{Style.RESET_ALL}")
-                        if hasattr(self, 'integrity') and self.integrity:
-                            scan_results = self.integrity.scan_system()
-                            changes = self.integrity.check_integrity(scan_results)
-                            self.integrity.generate_report(changes, scan_results)
-                        else:
-                            print(f"{Fore.RED}Integrity monitor not initialized{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-                
-            
-            # integrity monitor [stop]
-                elif subcmd == "monitor":
-                    if len(args) > 1 and args[1] == "stop":
-                        if hasattr(self, 'alert_manager') and self.alert_manager:
-                            self.alert_manager.stop_monitoring()
-                            print(f"{Fore.GREEN}Real-time monitoring stopped{Style.RESET_ALL}")
-                        else:
-                            print(f"{Fore.RED}Alert manager not initialized{Style.RESET_ALL}")
-                    else:
-                    # Start real-time monitoring
-                        if not hasattr(self, 'alert_manager') or not self.alert_manager:
-                            try:
-                                from integrity_monitor import AlertManager
-                                self.alert_manager = AlertManager(self.integrity)
-                            except ImportError:
-                                print(f"{Fore.RED}AlertManager not available{Style.RESET_ALL}")
-                                self.show_tip(cmd)
-                                return True
-                    
-                        paths = args[1:] if len(args) > 1 else None
-                        self.alert_manager.start_monitoring(paths)
-                    self.show_tip(cmd)
-            
-            # integrity alerts [show|clear] [severity]
-                elif subcmd == "alerts":
-                    if len(args) > 1:
-                        if args[1] == "show":
-                            severity = args[2] if len(args) > 2 else None
-                            if hasattr(self, 'alert_manager') and self.alert_manager:
-                                alerts = self.alert_manager.get_alerts(severity)
-                                self.display_alerts(alerts)
-                            else:
-                                print(f"{Fore.RED}Alert manager not initialized{Style.RESET_ALL}")
-                        elif args[1] == "clear":
-                            if hasattr(self, 'alert_manager') and self.alert_manager:
-                                self.alert_manager.alerts = []
-                                print(f"{Fore.GREEN}Alerts cleared{Style.RESET_ALL}")
-                            else:
-                                print(f"{Fore.RED}Alert manager not initialized{Style.RESET_ALL}")
-                        else:
-                            print(f"{Fore.RED}Unknown alerts subcommand. Use: alerts show|clear{Style.RESET_ALL}")
-                    else:
-                    # Show recent alerts
-                        if hasattr(self, 'alert_manager') and self.alert_manager:
-                            alerts = self.alert_manager.get_alerts(limit=20)
-                            self.display_alerts(alerts)
-                        else:
-                            print(f"{Fore.RED}No alerts. Start monitoring with 'integrity monitor'{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity forensic <timeline|report> [file] [days]
-                elif subcmd == "forensic":
-                    if len(args) < 2:
-                        print(f"{Fore.RED}[!] Usage: integrity forensic <timeline|report> [file_path] [days]{Style.RESET_ALL}")
-                        self.show_tip(cmd)
-                        return True
-                
-                    forensic_action = args[1].lower()
-                
-                    try:
-                        from integrity_monitor import ForensicAnalyzer
-                        forensic = ForensicAnalyzer(self.integrity)
-                    except ImportError:
-                        print(f"{Fore.RED}ForensicAnalyzer not available{Style.RESET_ALL}")
-                        self.show_tip(cmd)
-                        return True
-                
-                    if forensic_action == "timeline":
-                        file_path = args[2] if len(args) > 2 else None
-                        days = int(args[3]) if len(args) > 3 else 7
-                        timeline = forensic.analyze_timeline(file_path, days)
-                        self.display_timeline(timeline)
-                
-                    elif forensic_action == "report":
-                        file_path = args[2] if len(args) > 2 else None
-                        days = int(args[3]) if len(args) > 3 else 7
-                        report_file = forensic.generate_forensic_report(file_path, days)
-                        print(f"{Fore.GREEN}Forensic report generated: {report_file}{Style.RESET_ALL}")
-                
-                    else:
-                        print(f"{Fore.RED}Unknown forensic action. Use: timeline|report{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity quarantine <file>
-                elif subcmd == "quarantine":
-                    if len(args) < 2:
-                        print(f"{Fore.RED}[!] Usage: integrity quarantine <file_path>{Style.RESET_ALL}")
-                    else:
-                        self.quarantine_file(args[1])
-                    self.show_tip(cmd)
-            
-            # integrity restore <file>
-                elif subcmd == "restore":
-                    if len(args) < 2:
-                        print(f"{Fore.RED}[!] Usage: integrity restore <file_path>{Style.RESET_ALL}")
-                    else:
-                        self.restore_from_quarantine(args[1])
-                    self.show_tip(cmd)
-            
-            # integrity configure <email|webhook> <options>
-                elif subcmd == "configure":
-                    if len(args) < 2:
-                        print(f"{Fore.RED}[!] Usage: integrity configure <email|webhook> <options>{Style.RESET_ALL}")
-                        self.show_tip(cmd)
-                        return True
-                
-                    config_type = args[1].lower()
-                
-                    if config_type == "email":
-                        if len(args) < 8:
-                            print(f"{Fore.RED}[!] Usage: integrity configure email <smtp_server> <port> <username> <password> <from> <to>{Style.RESET_ALL}")
-                            self.show_tip(cmd)
-                            return True
-                    
-                        if not hasattr(self, 'alert_manager') or not self.alert_manager:
-                            try:
-                                from integrity_monitor import AlertManager
-                                self.alert_manager = AlertManager(self.integrity)
-                            except ImportError:
-                                print(f"{Fore.RED}AlertManager not available{Style.RESET_ALL}")
-                                self.show_tip(cmd)
-                                return True
-                    
-                        self.alert_manager.configure_email(
-                            args[2], int(args[3]), args[4], args[5], args[6], args[7:]
-                        )
-                
-                    elif config_type == "webhook":
-                        if len(args) < 3:
-                            print(f"{Fore.RED}[!] Usage: integrity configure webhook <url>{Style.RESET_ALL}")
-                            self.show_tip(cmd)
-                            return True
-                    
-                        if not hasattr(self, 'alert_manager') or not self.alert_manager:
-                            try:
-                                from integrity_monitor import AlertManager
-                                self.alert_manager = AlertManager(self.integrity)
-                            except ImportError:
-                                print(f"{Fore.RED}AlertManager not available{Style.RESET_ALL}")
-                                self.show_tip(cmd)
-                                return True
-                    
-                        self.alert_manager.configure_webhook(args[2])
-                
-                    else:
-                        print(f"{Fore.RED}Unknown configuration type. Use: email|webhook{Style.RESET_ALL}")
-                    self.show_tip(cmd)
-            
-            # integrity status
-                elif subcmd == "status":
-                    self.show_integrity_status()
-                    self.show_tip(cmd)
-            
-            # Default: show help if unknown subcommand
-                else:
-                    print(f"{Fore.RED}[!] Unknown integrity command: {subcmd}{Style.RESET_ALL}")
-                    self.show_integrity_help()
-                    self.show_tip(cmd)
-        
-            else:
-            # Just 'integrity' with no args shows help
-                self.show_integrity_help()
-                self.show_tip(cmd)
-
+ 
     # portsweep and hashing file commands
         elif cmd.startswith("portsweep"): 
             target = cmd.split()[1] if len(cmd.split()) > 1 else "127.0.0.1"
@@ -7521,12 +6724,6 @@ class SecurityTerminal:
         elif cmd.startswith("killproc"): 
             self.kill_process(int(cmd.split()[1])) if len(cmd.split()) > 1 else print("Usage: killproc PID")
             self.show_tip(cmd)
-
-    # ==================check integrity and encrypt or decrypt files/folders
-        elif original_cmd.lower() == "check integrity": 
-            self.check_integrity()
-            self.show_tip(cmd)
-
     # =====================================
         elif cmd == "crypto-list":
             self.crypto.crypto_list()
@@ -7639,8 +6836,6 @@ class SecurityTerminal:
         else: 
             # print("[!] Unknown command. Type 'help' for more command options.")
             return
-
-# =====================for recon & recon_full command parser=============================
 # ===============================added vtscan upgrade
     def run_vt_module(self):
         """Launch VirusTotal SOC module"""
@@ -7664,7 +6859,7 @@ class SecurityTerminal:
         blink_off = "\033[25m"
     
     # Clear screen and show loading animation
-        self._cinematic_box("LOADING COMMAND DATABASE", seconds=2)
+        self._cinematic_box("LOADING COMMAND DATABASE", seconds=10)
     
         terminal_width = shutil.get_terminal_size((80, 20)).columns
     
@@ -7684,7 +6879,10 @@ class SecurityTerminal:
                 ("nmap -sV <TARGET>", "Service/version detection scan"),
                 ("nmap -A <TARGET>", "Aggressive OS and service detection"),
                 ("nmap -p- <TARGET>", "Scan all 65535 ports"),
-                ("nmap scan <TARGET>", "Nmap scan the target")
+                ("nmap scan <TARGET>", "Nmap scan the target"),
+                ("fraud / financial", "Financial fraud investigation suite"),
+                ("investigate", "Launch financial forensics tools"),
+                ("trace", "Trace suspicious transactions")
             ],
         
             "🌐 NETWORK TOOLS": [
@@ -7925,7 +7123,6 @@ class SecurityTerminal:
             "hashfile": None,
             "sysinfo": None,
             "killproc": None,
-            "check": {"integrity": None},
             "watchfolder": None,
             "traceroute": None,
             "ransomwatch": None,
