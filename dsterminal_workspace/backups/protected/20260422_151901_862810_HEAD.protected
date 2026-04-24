@@ -1,0 +1,33 @@
+0000000000000000000000000000000000000000 cce930ea9763ad6ea9aad70c11cf31bb48d2a132 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772812486 +0200	commit (initial): dsterminal pro modified features
+cce930ea9763ad6ea9aad70c11cf31bb48d2a132 7333cc67cd9c53aec0578c9b4d32f0d2df59b0b4 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772834521 +0200	commit: integrated all features and built the windows installable and executable setup
+7333cc67cd9c53aec0578c9b4d32f0d2df59b0b4 7471cb365839121236ed97a192fd566a475e5910 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772867955 +0200	commit: modified the msf6 features
+7471cb365839121236ed97a192fd566a475e5910 53664ad756b3f2660a077111e0770ddc8cd7a714 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772892971 +0200	commit: added new features and implemented old one
+53664ad756b3f2660a077111e0770ddc8cd7a714 e47f7dca588065df59bacee1c41fb5f9f60185ef Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772894844 +0200	commit: changed the layout of the terminal wiping command
+e47f7dca588065df59bacee1c41fb5f9f60185ef d62a072e3fd1b0055194e274bd89a5677272a255 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772902122 +0200	commit: changelog parsing
+d62a072e3fd1b0055194e274bd89a5677272a255 8f1d08353888acf8bfdd1e1da10112307e6ad97a Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1772913802 +0200	commit: modelled the recon feature
+8f1d08353888acf8bfdd1e1da10112307e6ad97a c3698ba8044de9315b7f24d71a38e2a4a20b69a3 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773004837 +0200	commit: modified the dsterminal version to the latest version
+c3698ba8044de9315b7f24d71a38e2a4a20b69a3 c5d9ff9d13f7c2f8f5945f7fcabe0fbfd8879178 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773014177 +0200	commit: added changelog, templates etc
+c5d9ff9d13f7c2f8f5945f7fcabe0fbfd8879178 b9094e8705de5aea405aa92f8325acfbf0a37dd9 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773014248 +0200	commit: added dsterminal documentation
+b9094e8705de5aea405aa92f8325acfbf0a37dd9 d70e99a5ee36f9d4956772800febefd4e8acbed0 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773017595 +0200	commit: documentation and user guide added
+d70e99a5ee36f9d4956772800febefd4e8acbed0 e66bddb4278c119252d9b11e086ccf2d225b8722 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773175779 +0200	commit: added ne features
+e66bddb4278c119252d9b11e086ccf2d225b8722 b71fb7fc68d0151e39bf4f046460e67292f73e7c Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773333042 +0200	commit: created separate encryption and decryption modules
+b71fb7fc68d0151e39bf4f046460e67292f73e7c 0cfe80e1c3ab85ae6ed3eb1fbb9998ffb6f7a250 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1773402983 +0200	commit: modified integrity feature
+0cfe80e1c3ab85ae6ed3eb1fbb9998ffb6f7a250 dfc0d4eb8ebdca3360d2f16d1c2a9293ff07787e Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774176406 +0200	commit: added integrity files
+dfc0d4eb8ebdca3360d2f16d1c2a9293ff07787e fd022f118a944c6637aca9caeea9991e06548f8b Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774183491 +0200	commit: added integrity files again
+fd022f118a944c6637aca9caeea9991e06548f8b 8169136ca8f0ea4b1445ec54939c7cfd5fe14cec Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774187299 +0200	commit: debugged the % error in the show_help() menu function
+8169136ca8f0ea4b1445ec54939c7cfd5fe14cec 6c70053095c797faeeaa5e71df7aaa5f6f83c5bb Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774188766 +0200	commit: built a dsterminal installer
+6c70053095c797faeeaa5e71df7aaa5f6f83c5bb 42bb42f75d1c5ca366b2c9210040ba03fdf7d303 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774189008 +0200	commit: added an installer.txt steps
+42bb42f75d1c5ca366b2c9210040ba03fdf7d303 bc307dad48265b49502aa0ea1acd3ec393c37010 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774192805 +0200	commit: debugged the integrity monitor function
+bc307dad48265b49502aa0ea1acd3ec393c37010 2dc067fffafe355f9c8cb6bc0f534121b5664fba Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774193614 +0200	commit: debugged the integrity monitor function
+2dc067fffafe355f9c8cb6bc0f534121b5664fba 3a8474302e019d20d093154557f3fae6deeecc54 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774194469 +0200	commit: debugged the integrity monitor function
+3a8474302e019d20d093154557f3fae6deeecc54 c022e7d97d42c9e1e3d3eb20b185129221ac7b10 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774250432 +0200	commit: debugged the integrity monitor function
+c022e7d97d42c9e1e3d3eb20b185129221ac7b10 b44f9f6ba756e5251bbb400a470e1565fcf8e411 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774251217 +0200	commit: Fixed integrity monitor errors and PDF generation
+b44f9f6ba756e5251bbb400a470e1565fcf8e411 ca8039304eef5faaf799280c76197736cebbe739 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774266051 +0200	commit: modified features
+ca8039304eef5faaf799280c76197736cebbe739 0717e89ae3b715fb3e7b38e8c9da0356d6091bd9 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1774271857 +0200	commit: built an installer and fixed critical bugs
+0717e89ae3b715fb3e7b38e8c9da0356d6091bd9 50e1681c672227ca255eb5dec5e2d342ccded928 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1775303873 +0200	commit: created and added dstermnal_workspace to fused secure execution performance
+50e1681c672227ca255eb5dec5e2d342ccded928 3b35298c2739d0bab2cb023dd0b95091362ee48a Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1775370934 +0200	commit: modified the recon and recon -full integrations
+3b35298c2739d0bab2cb023dd0b95091362ee48a ddf444344c82283f2ebd6510a7770088420c6a7b Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1775406786 +0200	commit: modified...
+ddf444344c82283f2ebd6510a7770088420c6a7b 3dccbef59262127a57592d7052074c9788abdb59 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1954972472 +0200	commit: built windows installer from this impleme code
+3dccbef59262127a57592d7052074c9788abdb59 7e6819ebfe72fde848302b1fd15c2a04500a6504 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1776537063 +0200	commit: modified the crypto_engine file
+7e6819ebfe72fde848302b1fd15c2a04500a6504 aaa9af10006220bdd7942bc67914e52be875ad31 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1776539674 +0200	commit: modified the crypto_engine
+aaa9af10006220bdd7942bc67914e52be875ad31 86ea46551070f6dd7234341a9f79f0fcfd069265 Stark-Expo-Tech-Exchange <sparkwilson2041@gmail.com> 1776863939 +0200	commit: added recovery data deletion detection

@@ -1381,96 +1381,252 @@ class SecurityTerminal:
     def is_windows(self):
         return os.name == "nt"
 
+ 
     def print_banner(self):
-    # ANSI color codes for hacking-style colors
+        """Display cinematic 3-column dashboard with animated side panels"""
+        import threading
+        import itertools
+    
+    # Clear screen for fresh display
+        os.system('clear' if os.name == 'posix' else 'cls')
+    
+    # ANSI color codes
         colors = [
-            '\033[92m',  # Light Green (Matrix style)
-            '\033[38;5;46m',  # Matrix Green
-            '\033[38;5;82m',  # Bright Green
-            '\033[38;5;118m',  # Lime Green
-            '\033[38;5;154m',  # Yellow-Green
-            '\033[38;5;190m',  # Light Yellow-Green
-            '\033[38;5;226m',  # Bright Yellow
-            '\033[38;5;220m',  # Gold
-            '\033[38;5;214m',  # Orange
-            '\033[38;5;202m',  # Bright Orange
-            '\033[38;5;196m',  # Bright Red
-            '\033[38;5;201m',  # Pink/Magenta
-            '\033[38;5;165m',  # Purple
-            '\033[38;5;129m',  # Violet
-            '\033[38;5;93m',   # Deep Purple
-            '\033[38;5;63m',   # Blue-Purple
-            '\033[38;5;69m',   # Blue
-            '\033[38;5;75m',   # Light Blue
-            '\033[38;5;81m',   # Cyan
-            '\033[38;5;87m',   # Light Cyan
-            '\033[96m',        # Cyan
-            '\033[95m',        # Magenta
-            '\033[91m',        # Light Red
-            '\033[93m',        # Light Yellow
+            '\033[92m', '\033[38;5;46m', '\033[38;5;82m', '\033[38;5;118m',
+            '\033[38;5;154m', '\033[38;5;190m', '\033[38;5;226m', '\033[38;5;220m',
+            '\033[96m', '\033[95m', '\033[91m', '\033[93m'
         ]
     
-        # Add blinking effects for some colors
         BLINK = '\033[5m'
         BOLD = '\033[1m'
-    
-        # Mix in some blinking and bold variants
-        extended_colors = []
-        for color in colors:
-            extended_colors.append(color)
-            extended_colors.append(color + BOLD)
-            if random.random() > 0.7:  # Add blinking to some colors randomly
-                extended_colors.append(color + BLINK)
-    
-        color = random.choice(extended_colors)
-        terminal_width = shutil.get_terminal_size((80, 20)).columns
-
-        banner_lines = [
-        "╔═══════════════════════════════════════════════════════════════════============═══╗",
-        "    ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗",
-        "    ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝",
-        "    ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝ ",
-        "    ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗ ",
-        "    ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗",
-        "    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝",
-        "",
-        "╠══════════════════════════════════════════════════════════════============══════╣",
-        f"║    Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release()}   ║",
-        "║    Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange║",
-        "║    Type 'help' for available commands                                            ║",
-        f"║ (🔍 ⚡ 🛡️) 🌐 ⚡ CLI Mode: {'ADMIN' if self.is_admin() else 'USER'}               ",
-        "╚════════════════════════════════════════════════════════════════════============══╝"
+        RESET = '\033[0m'
+    # ===============================================
+    # Side content generators (rotating)
+        left_panels = [
+            [
+                "╔══════════════════════╗",
+                "║   🔴 ACTIVE THREATS   ║",
+                "╠══════════════════════╣",
+                "║ • Cobalt Strike ████╗║",
+                "║ • Metasploit     ██╔═╝║",
+                "║ • PowerShell EDR ═╗  ║",
+                "║ • LSASS Dump     █║  ║",
+                "║ • Persistence    █║  ║",
+                "╚══════════════════════╝"
+            ],
+            [
+                "╔══════════════════════╗",
+                "║   🛡️ DEFENSE STATUS    ║",
+                "╠══════════════════════╣",
+                "║ • Firewall:    ACTIVE ║",
+                "║ • EDR:         ONLINE ║",
+                "║ • SIEM:        12k eps║",
+                "║ • Honeypot:    4 nodes║",
+                "║ • SOAR:        READY  ║",
+                "╚══════════════════════╝"
+            ],
+            [
+                "╔══════════════════════╗",
+                "║   📊 METRICS PANEL    ║",
+                "╠══════════════════════╣",
+                "║ • Alerts/h:    247    ║",
+                "║ • Incidents:   12     ║",
+                "║ • MTTR:        4.2m   ║",
+                "║ • Uptime:      99.97% ║",
+                "║ • Risk Score:  76/100 ║",
+                "╚══════════════════════╝"
+            ]
         ]
-
-        def glitch_char(c):
-            if c.isspace():
-                return c
-            return random.choice(["#", "@", "%", "&", "*", c])
-
-        def type_line(line, delay=0.002, glitch=False):
-            centered = line.center(terminal_width)
-            for char in centered:
-                if glitch and random.random() < 0.04:
-                    sys.stdout.write(color + glitch_char(char))
-                    sys.stdout.flush()
-                    time.sleep(delay * 2)
-                    sys.stdout.write('\b' + color + char)
-                    sys.stdout.flush()
-                else:
-                    sys.stdout.write(color + char)
-                    sys.stdout.flush()
-                time.sleep(delay)
-            sys.stdout.write("\n")
-            time.sleep(0.01)
-
-        for line in banner_lines:
-            type_line(line, glitch=True)
-
-        print(Style.RESET_ALL)
-
-        if not self.is_admin():
-            print("\n[!] Warning: Running without administrator privileges. Some features may be limited.")
-            # =====================banner print ends here======================================
+    
+        right_panels = [
+            [
+                "╔══════════════════════╗",
+                "║   ⚡ RECENT EVENTS     ║",
+                "╠══════════════════════╣",
+                "║ 16:32:17 │ Port Scan  ║",
+                "║ 16:31:45 │ Auth Fail  ║",
+                "║ 16:30:12 │ Malware DL ║",
+                "║ 16:28:33 │ Lateral MV ║",
+                "║ 16:25:01 │ Susp Proc  ║",
+                "╚══════════════════════╝"
+            ],
+            [
+                "╔══════════════════════╗",
+                "║   🎯 MITRE ATT&CK      ║",
+                "╠══════════════════════╣",
+                "║ T1021 • Lateral MV    ║",
+                "║ T1059 • Cmd Script    ║",
+                "║ T1566 • Phishing      ║",
+                "║ T1003 • Cred Dump     ║",
+                "║ T1078 • Valid Accts   ║",
+                "╚══════════════════════╝"
+            ],
+            [
+                "╔══════════════════════╗",
+                "║   📡 INTELLIGENCE      ║",
+                "╠══════════════════════╣",
+                "║ • New IOCs:  47       ║",
+                "║ • Campaign:  APT29    ║",
+                "║ • TTPs Updated        ║",
+                "║ • Zero-day:  CVE-2024 ║",
+                "║ • Patch:     83%      ║",
+                "╚══════════════════════╝"
+            ]
+        ]
+    
+    # Main banner (centered)
+        main_banner = [
+            "╔════════════════════════════════════════════════════════════════════════════╗",
+            "║                                                                            ║",
+            "║     ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗            ║",
+            "║     ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝            ║",
+            "║     ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝             ║",
+            "║     ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗             ║",
+            "║     ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗            ║",
+            "║     ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝            ║",
+            "║                                                                            ║",
+            "╠════════════════════════════════════════════════════════════════════════════╣",
+            f"║     Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release():<20}        ║",
+            "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo     ║",
+            "║     Type 'help' for available commands                                    ║",
+            f"║     CLI Mode: {'ADMIN' if self.is_admin() else 'USER'} 🔒                              ║",
+            "╚════════════════════════════════════════════════════════════════════════════╝"
+        ]
+    
+    # Animation state
+        animation_running = True
+        current_left_idx = 0
+        current_right_idx = 0
+        frame_count = 0
+    
+    # Gradient colors for cinematic effect
+        def get_gradient_color(frame):
+            """Cyclic rainbow gradient for cinematic feel"""
+            gradient_colors = [
+                '\033[38;5;196m',  # Red
+                '\033[38;5;202m',  # Orange
+                '\033[38;5;226m',  # Yellow
+                '\033[38;5;46m',   # Green
+                '\033[38;5;51m',   # Cyan
+                '\033[38;5;21m',   # Blue
+                '\033[38;5;93m',   # Purple
+                '\033[38;5;201m',  # Pink
+            ]
+            return gradient_colors[frame % len(gradient_colors)]
+    
+        def animate_side_panels():
+            """Background animation thread for rotating panels"""
+            nonlocal current_left_idx, current_right_idx, animation_running
+            while animation_running:
+                time.sleep(3)  # Rotate every 3 seconds
+                current_left_idx = (current_left_idx + 1) % len(left_panels)
+                current_right_idx = (current_right_idx + 1) % len(right_panels)
+    
+    # Start animation thread
+        anim_thread = threading.Thread(target=animate_side_panels, daemon=True)
+        anim_thread.start()
+    
+        try:
+            while animation_running:
+            # Get current color
+                color = get_gradient_color(frame_count)
+                frame_count += 1
+            
+            # Get current panels
+                left_panel = left_panels[current_left_idx]
+                right_panel = right_panels[current_right_idx]
+            
+            # Build 3-column layout
+                terminal_height = shutil.get_terminal_size((80, 24)).lines
+                terminal_width = shutil.get_terminal_size((80, 20)).columns
+            
+            # Calculate widths
+                panel_width = 24
+                banner_width = 80
+                spacing = 50
+            
+            # Clear and reposition cursor at top
+                sys.stdout.write('\033[H')
+            
+            # Print header spacing
+                print(f"\n{color}{BOLD}")
+            
+            # Create rows for 3-column layout
+                max_rows = max(len(left_panel), len(main_banner), len(right_panel))
+            
+            # Pad panels to same height
+                left_panel_padded = left_panel + [' ' * panel_width] * (max_rows - len(left_panel))
+                right_panel_padded = right_panel + [' ' * panel_width] * (max_rows - len(right_panel))
+                banner_padded = main_banner + [' ' * banner_width] * (max_rows - len(main_banner))
+            
+            # Print each row
+                for i in range(max_rows):
+                # Left panel (with rotation animation indicator)
+                    left_text = left_panel_padded[i]
+                    if i == 1 and frame_count % 2 == 0:
+                        left_text = left_text.replace('╔', '◈').replace('╗', '◈')
+                
+                # Center banner (with breathing effect)
+                    banner_text = banner_padded[i]
+                    if i == 2 and frame_count % 4 < 2:
+                        banner_text = banner_text.replace('█', '▓')
+                
+                # Right panel (pulse effect)
+                    right_text = right_panel_padded[i]
+                    if i == 2 and frame_count % 3 == 0:
+                        right_text = right_text.replace('║', '┃')
+                
+                # Print 3 columns with spacing
+                    sys.stdout.write(f"{color}{left_text:<{panel_width}}")
+                    sys.stdout.write(' ' * spacing)
+                    sys.stdout.write(f"{color}{banner_text:<{banner_width}}")
+                    sys.stdout.write(' ' * spacing)
+                    sys.stdout.write(f"{color}{right_text:<{panel_width}}")
+                    sys.stdout.write('\n')
+            
+            # Print bottom status bar with animation
+                status_frame = ['▰', '▱', '▰', '▱', '▰', '▱']
+                anim_char = status_frame[frame_count % len(status_frame)]
+            
+                footer = f"\n{color}{'═' * terminal_width}{RESET}\n"
+                footer += f"{color}{BOLD}{anim_char} SOC MONITORING ACTIVE {anim_char} | "
+                footer += f"Threat Level: {'█' * (frame_count % 5)}{'░' * (5 - (frame_count % 5))} | "
+                footer += f"Active Sessions: {frame_count % 10 + 1} | "
+                footer += f"Response Time: {3 - (frame_count % 4)}.{frame_count % 10}s{RESET}"
+            
+                sys.stdout.write(footer)
+                sys.stdout.flush()
+            
+                time.sleep(0.5)  # Animation frame rate
+            
+            # Check for keypress to exit animation
+                if frame_count > 10:  # Exit after ~60 seconds
+                    animation_running = False
+                    break
+                
+        except KeyboardInterrupt:
+            animation_running = False
+    
+    # Final static display
+        os.system('clear' if os.name == 'posix' else 'cls')
+    
+    # Print static version
+        color = '\033[92m'  # Default green
+    
+        for i in range(max(len(left_panels[0]), len(main_banner), len(right_panels[0]))):
+            left_text = left_panels[0][i] if i < len(left_panels[0]) else ' ' * 24
+            banner_text = main_banner[i] if i < len(main_banner) else ' ' * 80
+            right_text = right_panels[0][i] if i < len(right_panels[0]) else ' ' * 24
+        
+            sys.stdout.write(f"{color}{left_text:<24}")
+            sys.stdout.write(' ' * 50)
+            sys.stdout.write(f"{color}{banner_text:<80}")
+            sys.stdout.write(' ' * 50)
+            sys.stdout.write(f"{color}{right_text:<24}")
+            sys.stdout.write('\n')
+    
+        print(f"\n{color}{BOLD}✅ System Ready | \n[!] Warning: Running without administrator privileges. Some features may be limited.{RESET}\n")
+    #         # =====================banner print ends here======================================
     def system_info(self):
         """Enhanced system information display with security context"""
         print("\n" + "="*60)
@@ -5815,6 +5971,8 @@ class SecurityTerminal:
     def _print_banner(self, text):
         subprocess.run(["figlet", text])
         """Display hacking-style banner with fallback"""
+        left_panels = self.update_left_panels()
+        right_panels = self.update_right_panels()
         try:
             ascii_art = figlet_format(text, font='slant')
             if os.environ.get('TERM') and 'color' in os.environ.get('TERM', ''):

@@ -1,0 +1,12 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-1C700E
+║ Session ID : SESSION-C6DC2
+║ Host       : WILSON-SON
+║ Start Time : 2026-04-24 10:59:04
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[10:59:57] COMMAND: exiy
+[10:59:59] COMMAND: exit

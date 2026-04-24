@@ -154,90 +154,132 @@ class CryptoEngine:
         self.init_cipher()
         self.show_banner()
 
+#     def show_banner(self):
+#         """Show hacker-style banner"""
+#         os.system('clear' if os.name == 'posix' else 'cls')
+#         colors = [
+#             '\033[92m',  # Light Green (Matrix style)
+#             '\033[38;5;46m',  # Matrix Green
+#             '\033[38;5;82m',  # Bright Green
+#             '\033[38;5;118m',  # Lime Green
+#             '\033[38;5;154m',  # Yellow-Green
+#             '\033[38;5;190m',  # Light Yellow-Green
+#             '\033[38;5;226m',  # Bright Yellow
+#             '\033[38;5;220m',  # Gold
+#             '\033[38;5;214m',  # Orange
+#             '\033[38;5;202m',  # Bright Orange
+#             '\033[38;5;196m',  # Bright Red
+#             '\033[38;5;201m',  # Pink/Magenta
+#             '\033[38;5;165m',  # Purple
+#             '\033[38;5;129m',  # Violet
+#             '\033[38;5;93m',   # Deep Purple
+#             '\033[38;5;63m',   # Blue-Purple
+#             '\033[38;5;69m',   # Blue
+#             '\033[38;5;75m',   # Light Blue
+#             '\033[38;5;81m',   # Cyan
+#             '\033[38;5;87m',   # Light Cyan
+#             '\033[96m',        # Cyan
+#             '\033[95m',        # Magenta
+#             '\033[91m',        # Light Red
+#             '\033[93m',        # Light Yellow
+#         ]
+    
+#         # Add blinking effects for some colors
+#         BLINK = '\033[5m'
+#         BOLD = '\033[1m'
+    
+#         # Mix in some blinking and bold variants
+#         extended_colors = []
+#         for color in colors:
+#             extended_colors.append(color)
+#             extended_colors.append(color + BOLD)
+#             if random.random() > 0.7:  # Add blinking to some colors randomly
+#                 extended_colors.append(color + BLINK)
+    
+#         color = random.choice(extended_colors)
+#         terminal_width = shutil.get_terminal_size((80, 20)).columns
+
+#         banner = [f"""
+# ╔══════════════════════════════════════════════════════════════╗
+# ║  ██████╗ ███████╗████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗         ║
+# ║  ██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║         ║
+# ║  ██║  ██║███████╗   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║         ║
+# ║  ██║  ██║╚════██║   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║         ║
+# ║  ██████╔╝███████║   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗    ║
+# ║  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝    ║
+# ╚══════════════════════════════════════════════════════════════╝
+#                         [ ENCRYPTION SUITE v2.0.113 -  EDITION ]
+#                        ══════════════════════════════════════════
+# """
+#         ]
+#         def glitch_char(c):
+#             if c.isspace():
+#                 return c
+#             return random.choice(["#", "@", "%", "&", "*", c])
+
+#         def type_line(line, delay=0.002, glitch=False):
+#             centered = line.center(terminal_width)
+#             for char in centered:
+#                 if glitch and random.random() < 0.04:
+#                     sys.stdout.write(color + glitch_char(char))
+#                     sys.stdout.flush()
+#                     time.sleep(delay * 1)
+#                     sys.stdout.write('\b' + color + char)
+#                     sys.stdout.flush()
+#                 else:
+#                     sys.stdout.write(color + char)
+#                     sys.stdout.flush()
+#                 time.sleep(delay)
+#             sys.stdout.write("\n")
+#             time.sleep(0.01)
+
+#         for line in banner:
+#             type_line(line, glitch=True)
+         
+#         # print(banner_lines)
+#         # time.sleep(1)
     def show_banner(self):
-        """Show hacker-style banner"""
-        os.system('clear' if os.name == 'posix' else 'cls')
+        """Show hacker-style banner (single display without blinking)"""
+    
+    # Only clear once at the beginning
+        if not hasattr(self, '_banner_shown'):
+            os.system('clear' if os.name == 'posix' else 'cls')
+            self._banner_shown = True
+    
+    # Use a consistent color instead of random changing colors
         colors = [
             '\033[92m',  # Light Green (Matrix style)
             '\033[38;5;46m',  # Matrix Green
             '\033[38;5;82m',  # Bright Green
-            '\033[38;5;118m',  # Lime Green
-            '\033[38;5;154m',  # Yellow-Green
-            '\033[38;5;190m',  # Light Yellow-Green
-            '\033[38;5;226m',  # Bright Yellow
-            '\033[38;5;220m',  # Gold
-            '\033[38;5;214m',  # Orange
-            '\033[38;5;202m',  # Bright Orange
-            '\033[38;5;196m',  # Bright Red
-            '\033[38;5;201m',  # Pink/Magenta
-            '\033[38;5;165m',  # Purple
-            '\033[38;5;129m',  # Violet
-            '\033[38;5;93m',   # Deep Purple
-            '\033[38;5;63m',   # Blue-Purple
-            '\033[38;5;69m',   # Blue
-            '\033[38;5;75m',   # Light Blue
-            '\033[38;5;81m',   # Cyan
-            '\033[38;5;87m',   # Light Cyan
             '\033[96m',        # Cyan
-            '\033[95m',        # Magenta
-            '\033[91m',        # Light Red
-            '\033[93m',        # Light Yellow
+            '\033[95m',        # Magenta]
         ]
-    
-        # Add blinking effects for some colors
-        BLINK = '\033[5m'
         BOLD = '\033[1m'
+        RESET = '\033[0m'
     
-        # Mix in some blinking and bold variants
-        extended_colors = []
-        for color in colors:
-            extended_colors.append(color)
-            extended_colors.append(color + BOLD)
-            if random.random() > 0.7:  # Add blinking to some colors randomly
-                extended_colors.append(color + BLINK)
+    # Pick ONE color at start
+        color = random.choice(colors)
     
-        color = random.choice(extended_colors)
         terminal_width = shutil.get_terminal_size((80, 20)).columns
+    
+    # Single banner string (no list)
+        banner = f"""
+    {color}{BOLD}
+    ╔══════════════════════════════════════════════════════════════╗
+    ║  ██████╗ ███████╗████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗         ║
+    ║  ██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║         ║
+    ║  ██║  ██║███████╗   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║         ║
+    ║  ██║  ██║╚════██║   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║         ║
+    ║  ██████╔╝███████║   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗    ║
+    ║  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝    ║
+    ╚══════════════════════════════════════════════════════════════╝
+                            [ ENCRYPTION SUITE v2.0.113 - EDITION ]
+                           ══════════════════════════════════════════
+    {RESET}"""
+    
+    # Print banner directly (no typewriter effect that causes blinking)
+        print(banner)
 
-        banner = [f"""
-╔══════════════════════════════════════════════════════════════╗
-║  ██████╗ ███████╗████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗         ║
-║  ██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║         ║
-║  ██║  ██║███████╗   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║         ║
-║  ██║  ██║╚════██║   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║         ║
-║  ██████╔╝███████║   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗    ║
-║  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝    ║
-╚══════════════════════════════════════════════════════════════╝
-                        [ ENCRYPTION SUITE v2.0.113 -  EDITION ]
-                       ══════════════════════════════════════════
-"""
-        ]
-        def glitch_char(c):
-            if c.isspace():
-                return c
-            return random.choice(["#", "@", "%", "&", "*", c])
-
-        def type_line(line, delay=0.002, glitch=False):
-            centered = line.center(terminal_width)
-            for char in centered:
-                if glitch and random.random() < 0.04:
-                    sys.stdout.write(color + glitch_char(char))
-                    sys.stdout.flush()
-                    time.sleep(delay * 1)
-                    sys.stdout.write('\b' + color + char)
-                    sys.stdout.flush()
-                else:
-                    sys.stdout.write(color + char)
-                    sys.stdout.flush()
-                time.sleep(delay)
-            sys.stdout.write("\n")
-            time.sleep(0.01)
-
-        for line in banner:
-            type_line(line, glitch=True)
-         
-        # print(banner_lines)
-        # time.sleep(1)
 
     def animate_encryption(self, filename, operation="ENCRYPTING"):
         """Show encryption/decryption animation"""
