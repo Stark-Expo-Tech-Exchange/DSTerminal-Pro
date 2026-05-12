@@ -30,7 +30,7 @@ os.chdir(BASE_PATH)
 VERSION = "2.0.113"
 APP_NAME = "DSTerminal"
 DESCRIPTION = "Defensive Security Terminal"
-AUTHOR = "Stark Expo Tech Exchange"
+AUTHOR = "Spark Wilson Spink | Powered By Stark Expo Tech Exchange"
 
 def show_version():
     print(f"{APP_NAME} v{VERSION}")
@@ -60,6 +60,20 @@ import queue
 from turtle import color
 
 from stdeb import command
+from deletion_protection import (
+    DSTerminalMonitor,
+    BackupDatabase,
+    RestoreManager,
+    ServiceManager,
+    PlatformDetector,
+    EncryptionManager
+)
+
+# Keep these in the main file since they're UI-only
+# from terminal_ui import TerminalUI  # Extract TerminalUI to its own file, or keep inline
+# from workspace_manager import WorkspaceManager  # Extract WorkspaceManager, or keep inline
+# from config_manager import ConfigManager  # Extract ConfigManager, or keep inline
+
 # import recon
 # ===============================
 # Cross-platform terminal support
@@ -81,7 +95,6 @@ if IS_WINDOWS:
 else:
     import tty
     import termios
-
 
 try:
     from colorama import init, Fore, Back, Style
@@ -116,8 +129,8 @@ try:
         SystemIntegrityMonitor,
         AlertManager,
         ForensicAnalyzer,
-        AutoRemediation,
-        RealTimeHandler
+        AutoRemediation
+        # RealTimeHandler
     )
     INTEGRITY_AVAILABLE = True
     if COLORS_AVAILABLE:
@@ -388,6 +401,55 @@ engine = EducationTypingEngine(speed=0.03)
 username = "OP-" + uuid.uuid4().hex[:6].upper()
 crypto_engine = CryptoEngine()
 
+# =========================
+# Place this right after your imports, before any classes
+# =========================
+
+class SimpleWorkspace:
+    """Minimal workspace wrapper for string paths."""
+    def __init__(self, base_path):
+        self.base_path = base_path
+        os.makedirs(os.path.join(base_path, 'database'), exist_ok=True)
+        os.makedirs(os.path.join(base_path, 'logs'), exist_ok=True)
+        os.makedirs(os.path.join(base_path, 'config'), exist_ok=True)        
+        os.makedirs(os.path.join(base_path, 'backups_protected'), exist_ok=True)  # ← ADD THIS
+        for cat in ['images','documents','spreadsheets','code','config','archives','media','other','protected','encrypted']:
+            os.makedirs(os.path.join(base_path, 'backups', cat), exist_ok=True)
+    
+    def get_database_path(self):
+        return os.path.join(self.base_path, 'database', 'dsterminal.db')
+    
+    def get_backup_path(self, category='other'):
+        return os.path.join(self.base_path, 'backups', category)
+    
+    def get_log_path(self):
+        ts = datetime.now().strftime("%Y%m%d")
+        return os.path.join(self.base_path, 'logs', f'dsterminal_{ts}.log')
+    
+    def get_path(self, key):
+        return os.path.join(self.base_path, key)
+    
+    def get_key_path(self):
+        return os.path.join(self.base_path, 'config', 'encryption.key')
+    
+    def get_config_path(self):
+        return os.path.join(self.base_path, 'config', 'config.json')
+    
+    def get_report_path(self):
+        ts = datetime.now().strftime("%Y%m%d_%H%M%S")
+        return os.path.join(self.base_path, 'reports', f'report_{ts}.pdf')
+    
+    def cleanup_temp_files(self, max_age_hours=24):
+        temp_dir = os.path.join(self.base_path, 'temp')
+        if os.path.exists(temp_dir):
+            cutoff = time.time() - (max_age_hours * 3600)
+            for f in os.listdir(temp_dir):
+                fp = os.path.join(temp_dir, f)
+                if os.path.isfile(fp) and os.path.getmtime(fp) < cutoff:
+                    try:
+                        os.remove(fp)
+                    except:
+                        pass
 
 # =============dsterminal workspace creation from here===============
 def init_workspace():
@@ -853,10 +915,30 @@ class SecurityTerminal:
     REVERSE = '\033[7m'
     RESET_ALL = '\033[0m'
 
-    def __init__(self, workspace_root="."):
+    def __init__(self, workspace_root=".", interactive: bool = True):
         self.workspace = str(WORKSPACE)
         self.crypto = CryptoEngine(os.getcwd())
-    
+
+        self.interactive = interactive
+        self.ui = None
+        pd = PlatformDetector()
+
+        self.config = {
+            'version': '2.1.113',
+            'monitor_paths': pd.get_trash_paths(),
+            'exclude_patterns': ['*.tmp', '*.temp', '*~', '.DS_Store', 'Thumbs.db'],
+            'max_file_size': 100 * 1024 * 1024,
+            'encrypt_backups': False,
+        }
+
+        # self.workspace = WorkspaceManager()
+        self.config_manager = None
+        self.monitor = None
+        self.observer = None
+        self.running = False
+        self.service_manager = ServiceManager(self.workspace, pid_file=os.path.join(self.workspace, 'dsterminal.pid'))
+        self._setup_logging()
+
 
         if workspace_root is None:
             self.workspace_root = os.path.expanduser("~/dsterminal_workspace")
@@ -954,7 +1036,59 @@ class SecurityTerminal:
         self.ensure_vfs()
 
     # =========initializing operator workspace and username and session logging===========
+# ======================================autpmatically detect and monitor new created folders
+    def auto_discover_folders(self):
+        """Auto-discover common user folders and add them to monitoring."""
+        home = os.path.expanduser('~')
+        
+        # Common folder names to look for
+        common_names = [
+            'Projects', 'Work', 'Personal', 'Photos', 'Videos', 'Music',
+            'Documents', 'Desktop', 'Downloads', 'Pictures', 'Backup',
+            'Code', 'Dev', 'Development', 'Repos', 'GitHub', 'GitLab',
+            'School', 'College', 'University', 'Research', 'Thesis',
+            'Portfolio', 'Resume', 'CV', 'Certifications',
+            'Finance', 'Tax', 'Invoices', 'Receipts', 'Bills',
+            'Medical', 'Health', 'Insurance',
+            'Legal', 'Contracts', 'Agreements',
+            'Family', 'Kids', 'Travel', 'Recipes',
+            'Scripts', 'Tools', 'Configs', 'Dotfiles',
+        ]
+        
+        new_paths = []
+        
+        # Scan home directory (one level deep only)
+        try:
+            for item in os.listdir(home):
+                item_path = os.path.join(home, item)
+                if os.path.isdir(item_path) and item in common_names:
+                    if item_path not in self.config['monitor_paths']:
+                        new_paths.append(item_path)
+        except PermissionError:
+            pass
+        
+        # Scan Documents folder
+        docs = os.path.join(home, 'Documents')
+        if os.path.exists(docs):
+            try:
+                for item in os.listdir(docs):
+                    item_path = os.path.join(docs, item)
+                    if os.path.isdir(item_path):
+                        if item_path not in self.config['monitor_paths']:
+                            new_paths.append(item_path)
+            except PermissionError:
+                pass
+        
+        # Add discovered paths
+        for path in new_paths:
+            self.config['monitor_paths'].append(path)
+            if self.observer and self.observer.is_alive():
+                self.observer.schedule(self.monitor, path=path, recursive=True)
+            print(f"  ✓ Auto-discovered: {path}")
+        
+        return new_paths
 
+# ====================================================
     # =====================recon & recon_full fallback
     def run_recon_basic(self, target=None):
         """Fallback basic recon if recon.py not available"""
@@ -3376,7 +3510,444 @@ class SecurityTerminal:
                 "[bold green]✓ SYSTEM SECURE[/bold green]",
                 border_style="green",
             ))
+# ===========================================secure deletion protection section =============================
+# =============================================================================================================
+    def _setup_logging(self):
+        if not logging.getLogger().handlers:
+            logging.basicConfig(
+                level=logging.INFO,
+                format='%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+            )
 
+    def start(self):
+        """Start monitoring."""
+        if self.interactive:
+            self._show_startup_banner()
+
+        self.monitor = DSTerminalMonitor(
+            self.config, self.workspace, 
+            interactive=self.interactive, ui=self.ui
+        )
+        from watchdog.observers import Observer
+        self.observer = Observer()
+
+        for path in self.config['monitor_paths']:
+            if os.path.exists(path):
+                self.observer.schedule(self.monitor, path=path, recursive=True)
+                if self.interactive:
+                    self.ui.cinematic_print(f"  ✓ Monitoring: {path}", 0.01, "GREEN")
+                else:
+                    logging.info(f"Monitoring: {path}")
+            else:
+                if self.interactive:
+                    self.ui.cinematic_print(f"  ✗ Path not found: {path}", 0.01, "YELLOW")
+                else:
+                    logging.warning(f"Path not found: {path}")
+
+        self.observer.start()
+        self.running = True
+
+        if self.interactive:
+            print(f"\n{self.ui.colors.BRIGHT_CYAN}✨ System Active - Protecting Your Data ✨{self.ui.colors.RESET}")
+            print(f"{self.ui.colors.DIM}Press Ctrl+C to stop monitoring{self.ui.colors.RESET}\n")
+            stats_thread = threading.Thread(target=self._display_stats, daemon=True)
+            stats_thread.start()
+        else:
+            logging.info("DSTerminal service started in background.")
+
+        try:
+            while self.running:
+                time.sleep(1)
+        except KeyboardInterrupt:
+            if self.interactive:
+                self.stop()
+        finally:
+            self.stop()
+
+    def _display_stats(self):
+        last_update = 0
+        while self.running and self.interactive:
+            if time.time() - last_update > 10 and self.monitor:
+                stats = self.monitor.get_statistics()
+                if stats['session_backups'] > 0:
+                    size_mb = stats['session_size'] / (1024 * 1024)
+                    print(f"\n{self.ui.colors.DIM}📊 Session: {stats['session_backups']} files ({size_mb:.2f} MB) backed up{self.ui.colors.RESET}")
+                last_update = time.time()
+            time.sleep(1)
+
+    def stop(self):
+        self.running = False
+        if self.interactive:
+            print(f"\n{self.ui.colors.YELLOW}🛑 Shutting down...{self.ui.colors.RESET}")
+        else:
+            logging.info("Shutting down DSTerminal service...")
+        if self.observer:
+            self.observer.stop()
+            self.observer.join()
+        if self.monitor:
+            self.monitor.cleanup()
+        self.service_manager.remove_pid_file()
+        if self.interactive:
+            self._show_shutdown_summary()
+        else:
+            logging.info("DSTerminal service stopped.")
+
+    def run_as_service(self):
+        if self.service_manager.is_running(self.service_manager.pid_file):
+            print("DSTerminal service is already running.")
+            sys.exit(1)
+        print("Starting DSTerminal as a background service...")
+        self.service_manager.daemonize()
+        self.interactive = False
+        self.ui = None
+        self.start()
+
+    # ── COMMAND HANDLERS (imported module methods) ──
+
+    def _show_startup_banner(self):
+        # Your existing banner code
+        pass
+
+    def _show_shutdown_summary(self):
+        # Your existing summary code
+        pass
+# ========================added methids below============
+    # ── Deletion Protection Command Methods ──
+
+    def cmd_monitor(self):
+        """Start interactive monitoring in background thread."""
+        if self.running:
+            print("[!] Monitoring is already running.")
+            return
+    
+        print("[*] Starting deletion protection monitor...")
+
+        self.monitor = DSTerminalMonitor(
+        self.config, 
+        SimpleWorkspace(self.workspace),  # Wrap it
+        interactive=False, 
+        ui=None
+    )
+    
+    def cmd_monitor_all(self):
+        """Monitor entire user profile (skip inaccessible folders)."""
+        home = os.path.expanduser('~')
+        
+        exclude_dirs = [
+            'AppData', 'Application Data', 'Cookies', 'NetHood',
+            'PrintHood', 'Recent', 'SendTo', 'Start Menu',
+            'Templates', 'Local Settings', '.cache',
+            'node_modules', '.git', '__pycache__', '.venv',
+            'dsterminal_workspace',
+        ]
+        
+        print("[*] Starting full user profile monitoring...")
+        
+        for item in os.listdir(home):
+            item_path = os.path.join(home, item)
+            if os.path.isdir(item_path) and item not in exclude_dirs:
+                if item_path not in self.config['monitor_paths']:
+                    # Check if accessible before adding
+                    if os.access(item_path, os.R_OK):
+                        self.config['monitor_paths'].append(item_path)
+                        if self.observer and self.observer.is_alive():
+                            try:
+                                self.observer.schedule(self.monitor, path=item_path, recursive=True)
+                            except:
+                                pass
+                        print(f"  ✓ Monitoring: {item_path}")
+        
+        print("[✓] Full profile monitoring active.")
+
+    def cmd_kill_monitor(self):
+        """Force kill the monitoring window by finding the process."""
+        import subprocess
+        print("[*] Force stopping monitoring window...")
+        
+        try:
+            # Find python processes running monitor-only
+            result = subprocess.run(
+                ['wmic', 'process', 'where', 'name="python.exe"', 'get', 'processid,commandline', '/format:csv'],
+                capture_output=True, text=True, timeout=10
+            )
+            
+            for line in result.stdout.split('\n'):
+                if '--monitor-only' in line:
+                    # Extract PID (last column)
+                    parts = line.strip().split(',')
+                    if len(parts) >= 2:
+                        pid = parts[-1].strip()
+                        if pid.isdigit():
+                            subprocess.run(['taskkill', '/PID', pid, '/F'], capture_output=True)
+                            print(f"  ✓ Killed process {pid}")
+            
+            print("[✓] Monitoring stopped.")
+        except Exception as e:
+            print(f"[!] Error: {e}")
+            print("[i] Close the 'DSTerminal Deletion Protection' window manually.")
+        
+        self.running = False
+
+    def cmd_start_folder_watcher(self):
+        """Start watching for new folder creation in home directory."""
+        from deletion_protection import NewFolderWatcher
+        import watchdog.observers as wd_observers  # Import with alias to avoid conflict
+        
+        home = os.path.expanduser('~')
+        
+        # Only start if monitor is ready
+        if not self.monitor:
+            print("[!] Start monitoring first with 'service start'")
+            return
+        
+        self.folder_watcher = NewFolderWatcher(
+            config=self.config,
+            monitor_handler=self.monitor,
+            observer=self.observer,
+            workspace=self.workspace
+        )
+        
+        self.folder_observer = wd_observers.Observer()  # Use aliased import
+        self.folder_observer.schedule(self.folder_watcher, path=home, recursive=False)
+        self.folder_observer.start()
+        
+        print(f"[✓] Folder watcher active on: {home}")
+        print("[i] New folders will be automatically monitored.")
+
+
+        workspace_obj = SimpleWorkspace(self.workspace)
+    
+        self.monitor = DSTerminalMonitor(
+            self.config, workspace_obj,
+            interactive=False, ui=None
+        )
+    
+        from watchdog.observers import Observer
+        self.observer = Observer()
+    
+        for path in self.config.get('monitor_paths', []):
+            if os.path.exists(path):
+                self.observer.schedule(self.monitor, path=path, recursive=True)
+                print(f"  ✓ Monitoring: {path}")
+    
+        monitor_thread = threading.Thread(target=self._run_observer, daemon=True)
+        monitor_thread.start()
+        self.running = True
+        print("[✓] Deletion protection started in background.")
+
+
+    def _run_observer(self):
+        """Run the observer (called in daemon thread)."""
+        try:
+            self.observer.start()
+            while self.running:
+                time.sleep(1)
+        except Exception as e:
+            logging.error(f"Monitor error: {e}")
+
+
+    def cmd_service_start(self):
+        """Start deletion protection in a separate window with all folders."""
+        print("[*] Auto-discovering folders...")
+        self.auto_discover_folders()
+        
+        # Save the updated config with all paths
+        config_path = os.path.join(self.workspace, 'config', 'monitor_config.json')
+        os.makedirs(os.path.dirname(config_path), exist_ok=True)
+        with open(config_path, 'w') as f:
+            json.dump(self.config, f)
+        
+        print("[*] Launching deletion protection in separate window...")
+        
+        python_exe = sys.executable
+        script_path = os.path.abspath(__file__)
+        workspace_path = self.workspace if isinstance(self.workspace, str) else self.workspace.base_path
+        
+        # Build command with all discovered paths
+        monitor_paths = ','.join(self.config['monitor_paths'])
+        
+        if platform.system() == 'Windows':
+            cmd = (
+                f'start "DSTerminal Deletion Protection" '
+                f'cmd /k "{python_exe} {script_path} --monitor-only '
+                f'--workspace {workspace_path} '
+                f'--paths {monitor_paths}"'
+            )
+            os.system(cmd)
+        else:
+            cmd = [
+                python_exe, script_path, '--monitor-only',
+                '--workspace', workspace_path,
+                '--paths', monitor_paths
+            ]
+            subprocess.Popen(cmd)
+        
+        self.running = True
+        print("[✓] Deletion protection launched in separate window.")
+        print(f"[i] Monitoring {len(self.config['monitor_paths'])} folders")
+        print("[i] Close that window to stop monitoring.")
+
+    def cmd_service_stop(self):
+        """Stop the separate monitoring window."""
+        print("[*] Stopping deletion protection...")
+        self.cmd_kill_monitor()
+        
+        # Kill the separate window process
+        if platform.system() == 'Windows':
+            try:
+                subprocess.run(
+                    ['taskkill', '/FI', 'WINDOWTITLE eq DSTerminal Deletion Protection', '/F'],
+                    capture_output=True,
+                    timeout=5
+                )
+                print("[✓] Monitoring window closed.")
+            except Exception as e:
+                print(f"[!] Could not close window: {e}")
+                print("[i] Close the 'DSTerminal Deletion Protection' window manually.")
+        else:
+            try:
+                subprocess.run(['pkill', '-f', '--monitor-only'], capture_output=True, timeout=5)
+                print("[✓] Monitoring window closed.")
+            except:
+                print("[i] Close the monitoring window manually.")
+        
+        self.running = False
+
+
+    def cmd_service_status(self):
+        """Show service status - checks the separate window process."""
+        import subprocess
+    
+    # Check if the monitor-only process is running
+        try:
+            result = subprocess.run(
+                ['tasklist', '/FI', 'IMAGENAME eq python.exe', '/FO', 'CSV'],
+                capture_output=True, text=True
+            )
+        # Look for a python process running dsterminal with --monitor-only
+            if '--monitor-only' in result.stdout:
+                print("DSTerminal monitoring is ACTIVE (separate window).")
+            else:
+            # Fallback: check if observer is running in this process
+                if self.running:
+                    print("DSTerminal monitoring is ACTIVE.")
+                else:
+                    print("DSTerminal monitoring is INACTIVE.")
+        except:
+            if self.running:
+                print("DSTerminal monitoring is ACTIVE.")
+            else:
+                print("DSTerminal monitoring is INACTIVE.")
+
+    def _get_workspace(self):
+        """Get a workspace object from the string path."""
+        return SimpleWorkspace(self.workspace)
+
+    def cmd_list_backups(self):
+        """List recent backups."""
+        ws = SimpleWorkspace(self.workspace)
+        rm = RestoreManager(ws, ui=None)
+        backups = rm.list_backups(limit=30)
+        if not backups:
+            print("No backups found.")
+            return
+        print(f"\n{'ID':<6} {'Filename':<50} {'Size':<12} {'Date':<20}")
+        print("-" * 95)
+        for b in backups:
+            size_mb = b['file_size'] / (1024 * 1024)
+            size_str = f"{size_mb:.2f} MB"
+            date_str = b['created_at'][:19] if b['created_at'] else 'N/A'
+            filename = b['filename'][:47] + '...' if len(b['filename']) > 50 else b['filename']
+            print(f"{b['id']:<6} {filename:<50} {size_str:<12} {date_str:<20}")
+
+
+
+    def cmd_search_backups(self, query: str):
+        """Search backups."""
+        ws = SimpleWorkspace(self.workspace)
+        rm = RestoreManager(ws, ui=None)
+        results = rm.search_backups(query)
+        if not results:
+            print(f"No backups matching '{query}'.")
+            return
+        print(f"\nFound {len(results)} backup(s) matching '{query}':\n")
+        for b in results:
+            print(f"  [{b['id']}] {b['filename']} - {b['created_at']}")
+
+
+    def cmd_restore_id(self, backup_id: int, target: str = None):
+        """Restore by ID."""
+        ws = SimpleWorkspace(self.workspace)
+        rm = RestoreManager(ws, ui=None)
+        rm.restore_file(backup_id, target)
+
+    def cmd_restore_last(self):
+        """Restore most recently deleted."""
+        ws = SimpleWorkspace(self.workspace)
+        rm = RestoreManager(ws, ui=None)
+        rm.restore_last_deleted()
+
+    def cmd_add_path(self, path: str):
+        """Add monitoring path."""
+        path = os.path.abspath(os.path.expanduser(path))
+        if not os.path.isdir(path):
+            print(f"✗ Not a directory: {path}")
+            return
+        if path not in self.config['monitor_paths']:
+            self.config['monitor_paths'].append(path)
+        if self.observer and self.observer.is_alive():
+            self.observer.schedule(self.monitor, path=path, recursive=True)
+        print(f"✓ Now monitoring: {path}")
+
+    def cmd_workspace_info(self):
+        """Show workspace info."""
+        info = self.workspace if isinstance(self.workspace, str) else self.workspace.base_path
+        db_path = os.path.join(info, 'database', 'dsterminal.db')
+        if os.path.exists(db_path):
+            import sqlite3
+            conn = sqlite3.connect(db_path)
+            conn.row_factory = sqlite3.Row
+            c = conn.cursor()
+            c.execute('SELECT COUNT(*) as n, COALESCE(SUM(file_size),0) as s FROM backups')
+            row = c.fetchone()
+            conn.close()
+            total_backups = row['n'] or 0
+            total_size = row['s'] or 0
+        else:
+            total_backups = 0
+            total_size = 0
+        print(f"\n📁 Workspace: {info}")
+        print(f"📊 Total Backups: {total_backups}")
+        print(f"💾 Total Size: {total_size / (1024**3):.2f} GB\n")
+
+    def cmd_cleanup(self):
+        """Clean temp files."""
+        temp_dir = os.path.join(self.workspace if isinstance(self.workspace, str) else self.workspace.base_path, 'temp')
+        if os.path.exists(temp_dir):
+            cutoff = time.time() - (24 * 3600)
+            for f in os.listdir(temp_dir):
+                fp = os.path.join(temp_dir, f)
+                if os.path.isfile(fp) and os.path.getmtime(fp) < cutoff:
+                    try:
+                        os.remove(fp)
+                    except:
+                        pass
+        print("✅ Temporary files cleaned up")
+
+    def cmd_platform_info(self):
+        """Show platform info."""
+        pd = PlatformDetector()
+        info = pd.get_system_info()
+        print(f"\n🌍 Platform Information:")
+        for key, value in info.items():
+            print(f"   {key}: {value}")
+        print(f"\n📁 Monitor Paths:")
+        for path in pd.get_trash_paths():
+            print(f"   {path}")
+
+
+
+# =================================================ernds herte ===============================================
  
 #  network monitoring implementation from here to below
 
@@ -6475,7 +7046,10 @@ class SecurityTerminal:
         elif cmd == "dst-refresh" or cmd == "dst-reload":
             self.cmd_refresh()
             return
-
+        
+        elif parts[0] == "kill-monitor":
+            self.cmd_kill_monitor()
+            return
 #  =====================for recon & recon_full command parser=============================
  
         # =====================for recon & recon_full command parser=============================
@@ -6527,7 +7101,7 @@ class SecurityTerminal:
             else:
                 print(f"{Fore.RED}Full Recon module not available{Style.RESET_ALL}")
 #  ========================================end of recon and recon_full from above================
-        # ========== INTEGRITY MONITOR COMMANDS ==========
+ # ========== INTEGRITY MONITOR COMMANDS ==========
         elif command in ['integrity', 'integ', 'int']:
             if not self._check_integrity_available():
                 return True
@@ -6746,7 +7320,113 @@ class SecurityTerminal:
             else:
                 print(f"{Fore.RED}[!] Unknown integrity command: {subcmd}{Style.RESET_ALL}")
                 self.show_integrity_help()
-# ====================font integrity=================ends here========
+# ====================font integrity=================ends here=========================================
+
+# =======================for secure deletion protection starts here===============================
+# Inside your command handler (where parts[0] == "pwd" etc. lives)
+
+# ==================== deletion protection commands ====================
+        elif parts[0] == "monitor":
+            self.cmd_monitor()
+            return
+
+        elif parts[0] == "service":
+            if len(parts) < 2:
+                print("Usage: service <start|stop|status>")
+                return
+            subcmd = parts[1].lower()
+            if subcmd == 'start':
+                self.cmd_service_start()
+            elif subcmd == 'stop':
+                self.cmd_service_stop()
+            elif subcmd == 'status':
+                self.cmd_service_status()
+            else:
+                print(f"Unknown service command: {subcmd}")
+            return
+
+        elif parts[0] == "list-backups":
+            self.cmd_list_backups()
+            return
+
+        elif parts[0] == "search":
+            if len(parts) < 2:
+                print("Usage: search <term>")
+                return
+            self.cmd_search_backups(parts[1])
+            return
+
+        elif parts[0] == "restore-id":
+            if len(parts) < 2:
+                print("Usage: restore-id <ID> [target_directory]")
+                return
+            try:
+                bid = int(parts[1])
+                target = parts[2] if len(parts) > 2 else None
+                self.cmd_restore_id(bid, target)
+            except ValueError:
+                print("Error: Invalid backup ID")
+            return
+
+        elif parts[0] == "restore-last":
+            self.cmd_restore_last()
+            return
+
+        elif parts[0] == "add-path":
+            if len(parts) < 2:
+                print("Usage: add-path <directory>")
+                return
+            self.cmd_add_path(parts[1])
+            return
+
+        elif parts[0] == "dst-workspace":
+            self.cmd_workspace_info()
+            return
+
+        elif parts[0] == "dst-cleanup":
+            self.cmd_cleanup()
+            return
+
+        elif parts[0] == "dst-platform":
+            self.cmd_platform_info()
+            return
+        
+        # In your command handler:
+        elif parts[0] == "auto-discover":
+            self.auto_discover_folders()
+            return
+
+        elif parts[0] == "monitor-all":
+            self.cmd_monitor_all()
+            return
+
+        elif parts[0] == "watch-folders":
+            self.cmd_start_folder_watcher()
+            return
+        
+        elif parts[0] == "service" and len(parts) > 1:
+            if parts[1] == "stop":
+                self.cmd_service_stop()
+                return
+            elif parts[1] == "start":
+                self.cmd_service_start()
+                return
+            elif parts[1] == "status":
+                self.cmd_service_status()
+                return
+
+        elif parts[0] == "show-paths":
+            print("\n📁 Monitored Paths:")
+            for p in self.config['monitor_paths']:
+                status = "✓" if os.path.exists(p) else "✗"
+                print(f"  {status} {p}")
+            return
+        
+        elif parts[0] == "watch-folders":
+            self.cmd_start_folder_watcher()
+            return
+# ==================== deletion protection commands end ====================
+# ====================seciure deletriomn ends here===============================
         elif parts[0] == "pwd":
             self.pwd()
             return
@@ -7384,5 +8064,67 @@ class SecurityTerminal:
                 self.log_to_siem(f"Terminal error: {str(e)}")
 
 if __name__ == "__main__":
+    if '--monitor-only' in sys.argv:
+        ws_idx = sys.argv.index('--workspace') if '--workspace' in sys.argv else None
+        paths_idx = sys.argv.index('--paths') if '--paths' in sys.argv else None
+        
+        workspace_path = sys.argv[ws_idx + 1] if ws_idx else os.getcwd()
+        
+        print("""
+╔══════════════════════════════════════════════════════╗
+║         DSTERMINAL DELETION PROTECTION               ║
+║         Background Monitoring Active                 ║
+║         Close this window to stop                    ║
+╚══════════════════════════════════════════════════════╝
+        """)
+        
+        # Load config with all paths
+        if paths_idx:
+            monitor_paths = sys.argv[paths_idx + 1].split(',')
+        else:
+            pd = PlatformDetector()
+            monitor_paths = pd.get_trash_paths()
+        
+        config = {
+            'version': '3.1.0',
+            'monitor_paths': monitor_paths,
+            'exclude_patterns': ['*.tmp', '*.temp', '*~', '.DS_Store', 'Thumbs.db'],
+            'max_file_size': 100 * 1024 * 1024,
+            'encrypt_backups': False,
+        }
+        
+        ws = SimpleWorkspace(workspace_path)
+        monitor = DSTerminalMonitor(config, ws, interactive=False, ui=None)
+        
+        from watchdog.observers import Observer
+        observer = Observer()
+        
+        for path in monitor_paths:
+            if os.path.exists(path):
+                try:
+                    observer.schedule(monitor, path=path, recursive=True)
+                    print(f"  ✓ Monitoring: {path}")
+                except Exception as e:
+                    print(f"  ✗ Skipping {path}: {e}")
+        
+        observer.start()
+        print(f"\n[*] Monitoring {len(monitor_paths)} folders.")
+        print("[*] Press Ctrl+C to stop.\n")
+        sys.stdout.flush()
+        
+        try:
+            while True:
+                time.sleep(1)
+                sys.stdout.flush()
+        except KeyboardInterrupt:
+            print("\n[*] Stopping...")
+            observer.stop()
+            observer.join()
+            monitor.cleanup()
+            print("[✓] Monitoring stopped.")
+        
+        sys.exit(0)
+    
+    # Normal terminal startup
     terminal = SecurityTerminal()
     terminal.run()
