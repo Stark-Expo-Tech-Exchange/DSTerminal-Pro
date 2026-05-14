@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 DSTerminal - VirusTotal Integration Module
 Enhanced Cinematic SOC Dashboard with Hacking-Style Animation
@@ -6,19 +5,35 @@ Enhanced Cinematic SOC Dashboard with Hacking-Style Animation
 
 import os
 import sys
+import re
 import time
 import json
 import shutil
-import threading
-import requests
 import random
 import hashlib
+import threading
+import requests
+
 from datetime import datetime
 from pathlib import Path
 from typing import Dict, List, Optional, Tuple
-import os
+
 from dotenv import load_dotenv
 
+# =========================================================
+# ANSI COLOR STRIPPING FOR RESPONSIVE LAYOUT CALCULATIONS
+# =========================================================
+
+ANSI_ESCAPE_PATTERN = re.compile(
+    r'\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])'
+)
+
+def strip_ansi(text: str) -> str:
+    """
+    Remove ANSI escape sequences from terminal strings
+    so visible width calculations remain accurate.
+    """
+    return ANSI_ESCAPE_PATTERN.sub('', text)
 load_dotenv()
  
 # -------------------------------
@@ -240,6 +255,230 @@ class SOCOperatorGuidance:
 # ENHANCED FOUR-LAYER SOC DASHBOARD
 # -------------------------------
 
+# class SOCDashboard:
+#     def __init__(self):
+#         self.threat_level = 0
+#         self.scan_progress = 0
+#         self.findings = []
+#         self.current_action = "INITIALIZING"
+#         self.current_scan_target = "N/A"
+#         self.threat_frame_idx = 0
+#         self.progress_bar_idx = 0
+#         self.glow_idx = 0
+#         self.stop_animation = False
+#         self.operator = SOCOperatorGuidance()
+#         self.session_start = datetime.now()
+        
+#     def render_soc_header(self):
+#         elapsed = (datetime.now() - self.session_start).seconds
+#         hours = elapsed // 3600
+#         minutes = (elapsed % 3600) // 60
+#         seconds = elapsed % 60
+        
+#         glow = GLOW_FRAMES[self.glow_idx % len(GLOW_FRAMES)]
+        
+#         header = f"""
+# {BRIGHT_CYAN}╔{'═' * 80}╗{RESET}
+# {BRIGHT_CYAN}║{RESET} {glow} {BRIGHT_MAGENTA}🔬 DSTERMINAL - THREAT INTELLIGENCE 🔬{RESET} {glow} {BRIGHT_CYAN}║{RESET}
+# {BRIGHT_CYAN}╠{'═' * 80}╣{RESET}
+# {BRIGHT_CYAN}║{RESET} {BRIGHT_YELLOW}Operator:{RESET} {CONFIG['SOC_OPERATOR_NAME']:<20} {BRIGHT_YELLOW}Session:{RESET} {BRIGHT_GREEN}{CONFIG['SOC_SESSION_ID']}{RESET:<12} {BRIGHT_YELLOW}Uptime:{RESET} {BRIGHT_CYAN}{hours:02d}:{minutes:02d}:{seconds:02d}{RESET} {BRIGHT_CYAN}║{RESET}
+# {BRIGHT_CYAN}╚{'═' * 80}╝{RESET}"""
+#         print(center_text(header))
+        
+#     def render_threat_radar(self):
+#         threat_icon = THREAT_FRAMES[self.threat_frame_idx % len(THREAT_FRAMES)]
+#         glow_icon = GLOW_FRAMES[self.glow_idx % len(GLOW_FRAMES)]
+        
+#         if self.threat_level < 30:
+#             threat_color = BRIGHT_GREEN
+#             threat_text = "LOW"
+#             threat_bar = "█" * 3 + "░" * 7
+#         elif self.threat_level < 70:
+#             threat_color = BRIGHT_YELLOW
+#             threat_text = "MEDIUM"
+#             threat_bar = "█" * 6 + "░" * 4
+#         else:
+#             threat_color = BRIGHT_RED + BLINK
+#             threat_text = "CRITICAL"
+#             threat_bar = "█" * 10
+        
+#         radar_sweep = ["🟢", "🟡", "🔴", "⚡"][self.threat_frame_idx % 4]
+        
+#         radar = f"""
+# {BRIGHT_CYAN}┌{'─' * 32}┐{RESET}
+# {BRIGHT_CYAN}│{RESET} {threat_color}🛸 THREAT RADAR {threat_icon} {glow_icon}{RESET}{' ' * 12}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}├{'─' * 32}┤{RESET}
+# {BRIGHT_CYAN}│{RESET} {threat_color}Level: {threat_text}{RESET}{' ' * 21}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {threat_color}Score: {self.threat_level}%{RESET}{' ' * 20}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {threat_color}Bar: [{threat_bar}]{RESET}{' ' * 15}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {threat_color}Radar: {radar_sweep}{RESET}{' ' * 20}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}└{'─' * 32}┘{RESET}"""
+#         return radar
+    
+#     def render_scan_status(self):
+#         scan_icon = SCANNING_FRAMES[self.threat_frame_idx % len(SCANNING_FRAMES)]
+#         bar = PROGRESS_BARS[self.progress_bar_idx % len(PROGRESS_BARS)]
+        
+#         if self.scan_progress < 30:
+#             bar_color = BRIGHT_RED
+#         elif self.scan_progress < 70:
+#             bar_color = BRIGHT_YELLOW
+#         else:
+#             bar_color = BRIGHT_GREEN
+        
+#         status = f"""
+# {BRIGHT_CYAN}┌{'─' * 38}┐{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_MAGENTA}{scan_icon} ACTIVE SCAN {scan_icon}{RESET}{' ' * 18}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}├{'─' * 38}┤{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Target:{RESET} {self.current_scan_target[:28]:<28}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Action:{RESET} {self.current_action[:28]:<28}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Progress:{RESET} {bar_color}[{bar}]{RESET} {self.scan_progress}%{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}└{'─' * 38}┘{RESET}"""
+#         return status
+    
+#     def render_stats_panel(self):
+#         total_threats = sum(1 for f in self.findings if f.get('malicious', 0) > 0)
+#         total_clean = len(self.findings) - total_threats
+#         total_scans = len(self.findings)
+        
+#         stats = f"""
+# {BRIGHT_CYAN}┌{'─' * 30}┐{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_CYAN}📊 SOC STATISTICS 📊{RESET}{' ' * 7}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}├{'─' * 30}┤{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Total Scans:{RESET} {BRIGHT_CYAN}{total_scans:<4}{RESET}{' ' * 13}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_GREEN}Clean:{RESET} {total_clean:<4}{' ' * 14}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_RED}Threats:{RESET} {total_threats:<4}{' ' * 13}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Detect Rate:{RESET} {self.threat_level}%{' ' * 12}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}└{'─' * 30}┘{RESET}"""
+#         return stats
+    
+#     def render_operator_guidance(self):
+#         assessment = self.operator.assess_threat(
+#             sum(1 for f in self.findings if f.get('malicious', 0) > 0),
+#             len(self.findings) if self.findings else 1
+#         )
+        
+#         guidance = f"""
+# {BRIGHT_YELLOW}╔{'═' * 80}╗{RESET}
+# {BRIGHT_YELLOW}║{RESET} {assessment['glow']} {BRIGHT_MAGENTA}🎯 SOC OPERATOR GUIDANCE {assessment['glow']}{RESET}{' ' * 47}{BRIGHT_YELLOW}║{RESET}
+# {BRIGHT_YELLOW}╠{'═' * 80}╣{RESET}
+# {BRIGHT_YELLOW}║{RESET} {BRIGHT_CYAN}Risk Assessment:{RESET} {assessment['color']}{assessment['risk']}{RESET} ({assessment['priority']}){' ' * 45}{BRIGHT_YELLOW}║{RESET}
+# {BRIGHT_YELLOW}║{RESET} {BRIGHT_CYAN}Action Required:{RESET} {assessment['action'][:62]:<62}{BRIGHT_YELLOW}║{RESET}
+# {BRIGHT_YELLOW}╚{'═' * 80}╝{RESET}"""
+#         return center_text(guidance)
+    
+#     def render_results_panel(self):
+#         if not self.findings:
+#             results = f"""
+# {BRIGHT_CYAN}┌{'─' * 80}┐{RESET}
+# {BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}🔍 AWAITING SCAN RESULTS - STANDING BY 🔍{RESET}{' ' * 37}{BRIGHT_CYAN}│{RESET}
+# {BRIGHT_CYAN}└{'─' * 80}┘{RESET}"""
+#             return center_text(results)
+        
+#         results = f"""
+# {BRIGHT_GREEN}┌{'─' * 80}┐{RESET}
+# {BRIGHT_GREEN}│{RESET} {BRIGHT_MAGENTA}📋 LIVE SCAN RESULTS & ALERTS 📋{RESET}{' ' * 38}{BRIGHT_GREEN}│{RESET}
+# {BRIGHT_GREEN}├{'─' * 80}┤{RESET}"""
+        
+#         for finding in self.findings[-8:]:
+#             name = finding.get('name', 'Unknown')[:40]
+#             malicious = finding.get('malicious', 0)
+#             timestamp = finding.get('timestamp', datetime.now()).strftime("%H:%M:%S") if isinstance(finding.get('timestamp'), datetime) else "N/A"
+            
+#             if malicious > 0:
+#                 color = BRIGHT_RED
+#                 status = f"⚠️ {malicious} detections"
+#                 alert_icon = "🔴"
+#             else:
+#                 color = BRIGHT_GREEN
+#                 status = "✓ CLEAN"
+#                 alert_icon = "🟢"
+            
+#             results += f"\n{color}│ {alert_icon} {timestamp} | {name:<40} | {status:>25} │{RESET}"
+        
+#         results += f"\n{BRIGHT_GREEN}└{'─' * 80}┘{RESET}"
+#         return center_text(results)
+    
+#     def render_layer2(self):
+#         radar = self.render_threat_radar()
+#         status = self.render_scan_status()
+#         stats = self.render_stats_panel()
+        
+#         radar_lines = radar.split('\n')
+#         status_lines = status.split('\n')
+#         stats_lines = stats.split('\n')
+        
+#         max_lines = max(len(radar_lines), len(status_lines), len(stats_lines))
+        
+#         radar_width = 34
+#         status_width = 40
+#         stats_width = 32
+#         spacer = "   "
+        
+#         radar_lines += [' ' * radar_width] * (max_lines - len(radar_lines))
+#         status_lines += [' ' * status_width] * (max_lines - len(status_lines))
+#         stats_lines += [' ' * stats_width] * (max_lines - len(stats_lines))
+        
+#         combined = []
+#         for r, s, st in zip(radar_lines, status_lines, stats_lines):
+#             r_padded = r.ljust(radar_width)
+#             s_padded = s.ljust(status_width)
+#             st_padded = st.ljust(stats_width)
+#             combined.append(f"{r_padded}{spacer}{s_padded}{spacer}{st_padded}")
+        
+#         return '\n'.join(combined)
+    
+#     def animate(self, duration: float = 0.08):
+#         self.threat_frame_idx += 1
+#         self.progress_bar_idx += 1
+#         self.glow_idx += 1
+#         time.sleep(duration)
+    
+#     def render_full(self):
+#         clear_screen()
+        
+#         self.render_soc_header()
+#         print()
+#         print()
+        
+#         print(self.render_layer2())
+#         print()
+#         print()
+        
+#         print(self.render_operator_guidance())
+#         print()
+        
+#         print(self.render_results_panel())
+#         print()
+        
+#         self.animate(0.05)
+    
+#     def update_threat_level(self, malicious_count: int, total_scans: int = 90):
+#         if total_scans > 0:
+#             ratio = malicious_count / total_scans
+#             self.threat_level = min(100, int(ratio * 100 * 2))
+    
+#     def add_finding(self, name: str, malicious: int, details: Dict = None):
+#         finding = {
+#             'name': name,
+#             'malicious': malicious,
+#             'details': details or {},
+#             'timestamp': datetime.now()
+#         }
+#         self.findings.append(finding)
+#         self.update_threat_level(malicious, 90)
+        
+#         if malicious > 0:
+#             incident_data = {
+#                 'timestamp': datetime.now().isoformat(),
+#                 'type': 'MALICIOUS_DETECTION',
+#                 'indicator': name,
+#                 'detections': malicious,
+#                 'risk_level': self.threat_level,
+#                 'operator': CONFIG['SOC_OPERATOR_NAME'],
+#                 'session': CONFIG['SOC_SESSION_ID']
+#             }
+#             self.operator.log_incident(incident_data)
 class SOCDashboard:
     def __init__(self):
         self.threat_level = 0
@@ -253,207 +492,350 @@ class SOCDashboard:
         self.stop_animation = False
         self.operator = SOCOperatorGuidance()
         self.session_start = datetime.now()
-        
+
+    # =========================
+    # RESPONSIVE HELPERS
+    # =========================
+
+    def terminal_width(self):
+        try:
+            return shutil.get_terminal_size().columns
+        except:
+            return 120
+
+    def center_block(self, text):
+        width = self.terminal_width()
+        lines = text.splitlines()
+        centered = []
+
+        for line in lines:
+            visible = len(strip_ansi(line))
+            padding = max(0, (width - visible) // 2)
+            centered.append(" " * padding + line)
+
+        return "\n".join(centered)
+
+    def pad_panel_height(self, lines, target_height, width):
+        while len(lines) < target_height:
+            lines.append(" " * width)
+        return lines
+
+    # =========================
+    # HEADER
+    # =========================
+
     def render_soc_header(self):
         elapsed = (datetime.now() - self.session_start).seconds
+
         hours = elapsed // 3600
         minutes = (elapsed % 3600) // 60
         seconds = elapsed % 60
-        
+
         glow = GLOW_FRAMES[self.glow_idx % len(GLOW_FRAMES)]
-        
+
+        width = 85
+
+        title = f"{glow} 🔬 DSTERMINAL - THREAT INTELLIGENCE 🔬 {glow}"
+
         header = f"""
-{BRIGHT_CYAN}╔{'═' * 80}╗{RESET}
-{BRIGHT_CYAN}║{RESET} {glow} {BRIGHT_MAGENTA}🔬 DSTERMINAL - THREAT INTELLIGENCE 🔬{RESET} {glow} {BRIGHT_CYAN}║{RESET}
-{BRIGHT_CYAN}╠{'═' * 80}╣{RESET}
-{BRIGHT_CYAN}║{RESET} {BRIGHT_YELLOW}Operator:{RESET} {CONFIG['SOC_OPERATOR_NAME']:<20} {BRIGHT_YELLOW}Session:{RESET} {BRIGHT_GREEN}{CONFIG['SOC_SESSION_ID']}{RESET:<12} {BRIGHT_YELLOW}Uptime:{RESET} {BRIGHT_CYAN}{hours:02d}:{minutes:02d}:{seconds:02d}{RESET} {BRIGHT_CYAN}║{RESET}
-{BRIGHT_CYAN}╚{'═' * 80}╝{RESET}"""
-        print(center_text(header))
-        
+{BRIGHT_CYAN}╔{'═' * width}╗{RESET}
+{BRIGHT_CYAN}║{RESET}{title.center(width)}{BRIGHT_CYAN}║{RESET}
+{BRIGHT_CYAN}╠{'═' * width}╣{RESET}
+{BRIGHT_CYAN}║{RESET} {BRIGHT_YELLOW}Operator:{RESET} {CONFIG['SOC_OPERATOR_NAME']:<18} {BRIGHT_YELLOW}Session:{RESET} {CONFIG['SOC_SESSION_ID']:<18} {BRIGHT_YELLOW}Uptime:{RESET} {hours:02d}:{minutes:02d}:{seconds:02d} {BRIGHT_CYAN}║{RESET}
+{BRIGHT_CYAN}╚{'═' * width}╝{RESET}
+"""
+        print(self.center_block(header))
+
+    # =========================
+    # THREAT RADAR
+    # =========================
+
     def render_threat_radar(self):
         threat_icon = THREAT_FRAMES[self.threat_frame_idx % len(THREAT_FRAMES)]
         glow_icon = GLOW_FRAMES[self.glow_idx % len(GLOW_FRAMES)]
-        
+
         if self.threat_level < 30:
             threat_color = BRIGHT_GREEN
             threat_text = "LOW"
-            threat_bar = "█" * 3 + "░" * 7
+            threat_bar = "███░░░░░░░"
+            radar_sweep = "🟢"
+
         elif self.threat_level < 70:
             threat_color = BRIGHT_YELLOW
             threat_text = "MEDIUM"
-            threat_bar = "█" * 6 + "░" * 4
+            threat_bar = "██████░░░░"
+            radar_sweep = "🟡"
+
         else:
             threat_color = BRIGHT_RED + BLINK
             threat_text = "CRITICAL"
-            threat_bar = "█" * 10
-        
-        radar_sweep = ["🟢", "🟡", "🔴", "⚡"][self.threat_frame_idx % 4]
-        
-        radar = f"""
-{BRIGHT_CYAN}┌{'─' * 32}┐{RESET}
-{BRIGHT_CYAN}│{RESET} {threat_color}🛸 THREAT RADAR {threat_icon} {glow_icon}{RESET}{' ' * 12}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}├{'─' * 32}┤{RESET}
-{BRIGHT_CYAN}│{RESET} {threat_color}Level: {threat_text}{RESET}{' ' * 21}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {threat_color}Score: {self.threat_level}%{RESET}{' ' * 20}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {threat_color}Bar: [{threat_bar}]{RESET}{' ' * 15}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {threat_color}Radar: {radar_sweep}{RESET}{' ' * 20}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}└{'─' * 32}┘{RESET}"""
-        return radar
-    
+            threat_bar = "██████████"
+            radar_sweep = "🔴"
+
+        return f"""
+{BRIGHT_CYAN}┌────────────────────────────────┐{RESET}
+{BRIGHT_CYAN}│{RESET} {threat_color}🛸 THREAT RADAR {threat_icon} {glow_icon}{RESET}            {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}├────────────────────────────────┤{RESET}
+{BRIGHT_CYAN}│{RESET} Level: {threat_text:<22}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Score: {self.threat_level}%{' ' * 20}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Bar: [{threat_bar}]             {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Radar: {radar_sweep:<21}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}└────────────────────────────────┘{RESET}
+"""
+
+    # =========================
+    # ACTIVE SCAN
+    # =========================
+
     def render_scan_status(self):
         scan_icon = SCANNING_FRAMES[self.threat_frame_idx % len(SCANNING_FRAMES)]
         bar = PROGRESS_BARS[self.progress_bar_idx % len(PROGRESS_BARS)]
-        
+
         if self.scan_progress < 30:
             bar_color = BRIGHT_RED
         elif self.scan_progress < 70:
             bar_color = BRIGHT_YELLOW
         else:
             bar_color = BRIGHT_GREEN
-        
-        status = f"""
-{BRIGHT_CYAN}┌{'─' * 38}┐{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_MAGENTA}{scan_icon} ACTIVE SCAN {scan_icon}{RESET}{' ' * 18}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}├{'─' * 38}┤{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Target:{RESET} {self.current_scan_target[:28]:<28}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Action:{RESET} {self.current_action[:28]:<28}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Progress:{RESET} {bar_color}[{bar}]{RESET} {self.scan_progress}%{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}└{'─' * 38}┘{RESET}"""
-        return status
-    
+
+        return f"""
+{BRIGHT_CYAN}┌──────────────────────────────────────┐{RESET}
+{BRIGHT_CYAN}│{RESET} {BRIGHT_MAGENTA}🎯 ACTIVE SCAN 🎯{RESET}                  {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}├──────────────────────────────────────┤{RESET}
+{BRIGHT_CYAN}│{RESET} Target: {self.current_scan_target[:26]:<26}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Action: {self.current_action[:26]:<26}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Progress: {bar_color}[{bar}]{RESET} {self.scan_progress:>3}% {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}└──────────────────────────────────────┘{RESET}
+"""
+
+    # =========================
+    # SOC STATS
+    # =========================
+
     def render_stats_panel(self):
-        total_threats = sum(1 for f in self.findings if f.get('malicious', 0) > 0)
+        total_threats = sum(
+            1 for f in self.findings if f.get('malicious', 0) > 0
+        )
+
         total_clean = len(self.findings) - total_threats
         total_scans = len(self.findings)
-        
-        stats = f"""
-{BRIGHT_CYAN}┌{'─' * 30}┐{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_CYAN}📊 SOC STATISTICS 📊{RESET}{' ' * 7}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}├{'─' * 30}┤{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Total Scans:{RESET} {BRIGHT_CYAN}{total_scans:<4}{RESET}{' ' * 13}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_GREEN}Clean:{RESET} {total_clean:<4}{' ' * 14}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_RED}Threats:{RESET} {total_threats:<4}{' ' * 13}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}Detect Rate:{RESET} {self.threat_level}%{' ' * 12}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}└{'─' * 30}┘{RESET}"""
-        return stats
-    
+
+        return f"""
+{BRIGHT_CYAN}┌──────────────────────────────┐{RESET}
+{BRIGHT_CYAN}│{RESET} {BRIGHT_CYAN}📊 SOC STATISTICS 📊{RESET}       {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}├──────────────────────────────┤{RESET}
+{BRIGHT_CYAN}│{RESET} Total Scans: {total_scans:<12}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Clean: {total_clean:<19}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Threats: {total_threats:<16}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}│{RESET} Detect Rate: {self.threat_level}%{' ' * 8}{BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}└──────────────────────────────┘{RESET}
+"""
+
+    # =========================
+    # RESPONSIVE LAYER 2
+    # =========================
+    def render_layer2(self):
+
+        radar = self.render_threat_radar().strip("\n").splitlines()
+        scan = self.render_scan_status().strip("\n").splitlines()
+        stats = self.render_stats_panel().strip("\n").splitlines()
+
+        max_height = max(len(radar), len(scan), len(stats))
+
+        while len(radar) < max_height:
+            radar.append("")
+
+        while len(scan) < max_height:
+            scan.append("")
+
+        while len(stats) < max_height:
+            stats.append("")
+
+        term_width = self.terminal_width()
+
+        combined_lines = []
+
+        # PANEL WIDTHS
+        radar_width = 45
+        scan_width = 50
+        stats_width = 45
+
+        for r, s, st in zip(radar, scan, stats):
+
+            r_visible = len(strip_ansi(r))
+            s_visible = len(strip_ansi(s))
+            st_visible = len(strip_ansi(st))
+
+            r = r + (" " * max(0, radar_width - r_visible))
+            s = s + (" " * max(0, scan_width - s_visible))
+            st = st + (" " * max(0, stats_width - st_visible))
+
+            # CENTER ACTIVE PANEL
+            scan_padding = (term_width // 2) - (scan_width // 2)
+
+            # PUSH LEFT PANEL FURTHER LEFT
+            left_padding = max(0, scan_padding - radar_width - 24)
+
+            # PUSH RIGHT PANEL FURTHER RIGHT
+            right_padding = 24
+
+            line = (
+                (" " * left_padding)
+                + r
+                + (" " * 6)
+                + s
+                + (" " * right_padding)
+                + st
+            )
+
+            combined_lines.append(line)
+
+        return "\n".join(combined_lines)
+    # =========================
+    # OPERATOR GUIDANCE
+    # LEFT-ALIGNED
+    # =========================
+
     def render_operator_guidance(self):
+
         assessment = self.operator.assess_threat(
-            sum(1 for f in self.findings if f.get('malicious', 0) > 0),
+            sum(
+                1 for f in self.findings
+                if f.get('malicious', 0) > 0
+            ),
             len(self.findings) if self.findings else 1
         )
-        
-        guidance = f"""
-{BRIGHT_YELLOW}╔{'═' * 80}╗{RESET}
-{BRIGHT_YELLOW}║{RESET} {assessment['glow']} {BRIGHT_MAGENTA}🎯 SOC OPERATOR GUIDANCE {assessment['glow']}{RESET}{' ' * 47}{BRIGHT_YELLOW}║{RESET}
-{BRIGHT_YELLOW}╠{'═' * 80}╣{RESET}
-{BRIGHT_YELLOW}║{RESET} {BRIGHT_CYAN}Risk Assessment:{RESET} {assessment['color']}{assessment['risk']}{RESET} ({assessment['priority']}){' ' * 45}{BRIGHT_YELLOW}║{RESET}
-{BRIGHT_YELLOW}║{RESET} {BRIGHT_CYAN}Action Required:{RESET} {assessment['action'][:62]:<62}{BRIGHT_YELLOW}║{RESET}
-{BRIGHT_YELLOW}╚{'═' * 80}╝{RESET}"""
-        return center_text(guidance)
-    
+
+        return f"""
+{BRIGHT_YELLOW}╔════════════════════════════════════════════════════════════════════════════════╗{RESET}
+{BRIGHT_YELLOW}║{RESET} 🟢 🎯 SOC OPERATOR GUIDANCE 🟢                                               {BRIGHT_YELLOW}║{RESET}
+{BRIGHT_YELLOW}╠════════════════════════════════════════════════════════════════════════════════╣{RESET}
+{BRIGHT_YELLOW}║{RESET} Risk Assessment: {assessment['risk']} ({assessment['priority']}){' ' * 45}{BRIGHT_YELLOW}║{RESET}
+{BRIGHT_YELLOW}║{RESET} Action Required: {assessment['action'][:58]:<58}{' ' * 7}{BRIGHT_YELLOW}║{RESET}
+{BRIGHT_YELLOW}╚════════════════════════════════════════════════════════════════════════════════╝{RESET}
+"""
+
+    # =========================
+    # RESULTS PANEL
+    # CENTERED
+    # =========================
+
     def render_results_panel(self):
+
         if not self.findings:
-            results = f"""
-{BRIGHT_CYAN}┌{'─' * 80}┐{RESET}
-{BRIGHT_CYAN}│{RESET} {BRIGHT_YELLOW}🔍 AWAITING SCAN RESULTS - STANDING BY 🔍{RESET}{' ' * 37}{BRIGHT_CYAN}│{RESET}
-{BRIGHT_CYAN}└{'─' * 80}┘{RESET}"""
-            return center_text(results)
-        
-        results = f"""
-{BRIGHT_GREEN}┌{'─' * 80}┐{RESET}
-{BRIGHT_GREEN}│{RESET} {BRIGHT_MAGENTA}📋 LIVE SCAN RESULTS & ALERTS 📋{RESET}{' ' * 38}{BRIGHT_GREEN}│{RESET}
-{BRIGHT_GREEN}├{'─' * 80}┤{RESET}"""
-        
-        for finding in self.findings[-8:]:
-            name = finding.get('name', 'Unknown')[:40]
+            empty = f"""
+{BRIGHT_CYAN}┌────────────────────────────────────────────────────────────────────────────────┐{RESET}
+{BRIGHT_CYAN}│{RESET} 🔍 AWAITING SCAN RESULTS - STANDING BY 🔍                                 {BRIGHT_CYAN}│{RESET}
+{BRIGHT_CYAN}└────────────────────────────────────────────────────────────────────────────────┘{RESET}
+"""
+            return self.center_block(empty)
+
+        panel = f"""
+{BRIGHT_GREEN}┌────────────────────────────────────────────────────────────────────────────────┐{RESET}
+{BRIGHT_GREEN}│{RESET} 📋 LIVE SCAN RESULTS & ALERTS 📋                                          {BRIGHT_GREEN}│{RESET}
+{BRIGHT_GREEN}├────────────────────────────────────────────────────────────────────────────────┤{RESET}
+"""
+
+        for finding in self.findings[-5:]:
+
+            name = finding.get('name', 'Unknown')[:45]
+
             malicious = finding.get('malicious', 0)
-            timestamp = finding.get('timestamp', datetime.now()).strftime("%H:%M:%S") if isinstance(finding.get('timestamp'), datetime) else "N/A"
-            
+
+            timestamp = finding.get(
+                'timestamp',
+                datetime.now()
+            ).strftime("%H:%M:%S")
+
             if malicious > 0:
+                icon = "🔴"
+                status = "⚠ THREAT"
                 color = BRIGHT_RED
-                status = f"⚠️ {malicious} detections"
-                alert_icon = "🔴"
             else:
-                color = BRIGHT_GREEN
+                icon = "🟢"
                 status = "✓ CLEAN"
-                alert_icon = "🟢"
-            
-            results += f"\n{color}│ {alert_icon} {timestamp} | {name:<40} | {status:>25} │{RESET}"
-        
-        results += f"\n{BRIGHT_GREEN}└{'─' * 80}┘{RESET}"
-        return center_text(results)
-    
-    def render_layer2(self):
-        radar = self.render_threat_radar()
-        status = self.render_scan_status()
-        stats = self.render_stats_panel()
-        
-        radar_lines = radar.split('\n')
-        status_lines = status.split('\n')
-        stats_lines = stats.split('\n')
-        
-        max_lines = max(len(radar_lines), len(status_lines), len(stats_lines))
-        
-        radar_width = 34
-        status_width = 40
-        stats_width = 32
-        spacer = "   "
-        
-        radar_lines += [' ' * radar_width] * (max_lines - len(radar_lines))
-        status_lines += [' ' * status_width] * (max_lines - len(status_lines))
-        stats_lines += [' ' * stats_width] * (max_lines - len(stats_lines))
-        
-        combined = []
-        for r, s, st in zip(radar_lines, status_lines, stats_lines):
-            r_padded = r.ljust(radar_width)
-            s_padded = s.ljust(status_width)
-            st_padded = st.ljust(stats_width)
-            combined.append(f"{r_padded}{spacer}{s_padded}{spacer}{st_padded}")
-        
-        return '\n'.join(combined)
-    
+                color = BRIGHT_GREEN
+
+            panel += (
+                f"\n{color}│ {icon} {timestamp} | "
+                f"{name:<45} | "
+                f"{status:>12} │{RESET}"
+            )
+
+        panel += f"\n{BRIGHT_GREEN}└────────────────────────────────────────────────────────────────────────────────┘{RESET}"
+
+        return self.center_block(panel)
+
+    # =========================
+    # MAIN RENDER
+    # =========================
+
+    def render_full(self):
+
+        clear_screen()
+
+        self.render_soc_header()
+
+        print("\n")
+
+        print(self.render_layer2())
+
+        print("\n")
+
+        # LEFT SIDE GUIDANCE
+        print(self.render_operator_guidance())
+
+        print("\n")
+
+        # CENTERED RESULTS
+        print(self.render_results_panel())
+
+        print("\n")
+
+        self.animate(0.05)
+
+    # =========================
+    # ANIMATION
+    # =========================
+
     def animate(self, duration: float = 0.08):
         self.threat_frame_idx += 1
         self.progress_bar_idx += 1
         self.glow_idx += 1
         time.sleep(duration)
-    
-    def render_full(self):
-        clear_screen()
-        
-        self.render_soc_header()
-        print()
-        print()
-        
-        print(self.render_layer2())
-        print()
-        print()
-        
-        print(self.render_operator_guidance())
-        print()
-        
-        print(self.render_results_panel())
-        print()
-        
-        self.animate(0.05)
-    
-    def update_threat_level(self, malicious_count: int, total_scans: int = 90):
+
+    # =========================
+    # THREAT UPDATES
+    # =========================
+
+    def update_threat_level(self, malicious_count, total_scans=90):
+
         if total_scans > 0:
             ratio = malicious_count / total_scans
-            self.threat_level = min(100, int(ratio * 100 * 2))
-    
-    def add_finding(self, name: str, malicious: int, details: Dict = None):
+            self.threat_level = min(
+                100,
+                int(ratio * 100 * 2)
+            )
+
+    # =========================
+    # FINDINGS
+    # =========================
+
+    def add_finding(self, name, malicious, details=None):
+
         finding = {
             'name': name,
             'malicious': malicious,
             'details': details or {},
             'timestamp': datetime.now()
         }
+
         self.findings.append(finding)
+
         self.update_threat_level(malicious, 90)
-        
+
         if malicious > 0:
+
             incident_data = {
                 'timestamp': datetime.now().isoformat(),
                 'type': 'MALICIOUS_DETECTION',
@@ -463,8 +845,8 @@ class SOCDashboard:
                 'operator': CONFIG['SOC_OPERATOR_NAME'],
                 'session': CONFIG['SOC_SESSION_ID']
             }
-            self.operator.log_incident(incident_data)
 
+            self.operator.log_incident(incident_data)
 # -------------------------------
 # REPORT GENERATION SYSTEM
 # -------------------------------
@@ -587,7 +969,142 @@ class ReportGenerator:
 # -------------------------------
 # ENHANCED VIRUSTOTAL SCANNER
 # -------------------------------
+# Add this class before the VirusTotalScanner class
 
+class LocalThreatDetector:
+    """Local threat detection for analyzing file content before VT scan"""
+    
+    # Threat indicators and their severity scores
+    THREAT_PATTERNS = {
+        # C2 Communication Patterns
+        r'\[C2_COMMUNICATION_LOG\]': 95,
+        r'C2[_ ]?[Ss]erver.*?\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}:\d{2,5}': 90,
+        r'[Bb]eacon[_ ]?[Ii]nterval': 85,
+        r'Command[_ ]?and[_ ]?[Cc]ontrol': 85,
+        
+        # Credential Theft Patterns
+        r'\[EXFILTRATED_DATA\]': 95,
+        r'password["\']?\s*:\s*["\'][^"\']+["\']': 90,
+        r'credentials["\']?\s*:\s*\[': 90,
+        r'password_hash["\']?\s*:\s*["\'][a-f0-9]{64}["\']': 85,
+        
+        # Malicious Commands
+        r'powershell.*-ExecutionPolicy Bypass': 95,
+        r'\[COMMANDS_RECEIVED\]': 90,
+        r'schtasks.*\/create.*\/tr': 85,
+        r'Invoke-Expression|iex\s*\(': 90,
+        r'rundll32\.exe.*javascript': 80,
+        
+        # Process/System Manipulation
+        r'\[MALICIOUS_INDICATORS\]': 95,
+        r'process hollowing': 90,
+        r'lsass memory access': 90,
+        r'amsi bypass': 90,
+        r'powershell downgrade': 85,
+        
+        # Exfiltration Patterns
+        r'Data exfiltrated:\s*\d+\.?\d*\s*MB': 85,
+        r'http://[^\s]+\.(exe|ps1|dat|php)': 80,
+        
+        # Network Scanning
+        r'net view.*\/all.*net user.*\/domain': 80,
+        r'ipconfig \/all': 70,
+        
+        # Persistence
+        r'Persistence:\s*ACTIVE': 85,
+        r'CURRENT_STATUS.*?ESTABLISHED': 80
+    }
+    
+    @classmethod
+    def analyze_file(cls, file_path: str) -> Tuple[int, List[Dict]]:
+        """
+        Analyze a file for threat indicators
+        Returns: (threat_score, list_of_findings)
+        """
+        findings = []
+        total_score = 0
+        max_possible_score = 0
+        
+        try:
+            with open(file_path, 'r', encoding='utf-8', errors='ignore') as f:
+                content = f.read().lower()
+            
+            # Check each pattern
+            for pattern, score in cls.THREAT_PATTERNS.items():
+                max_possible_score += score
+                if re.search(pattern, content, re.IGNORECASE):
+                    findings.append({
+                        'pattern': pattern,
+                        'score': score,
+                        'severity': cls._get_severity(score)
+                    })
+                    total_score += score
+            
+            # Calculate percentage score (0-100)
+            threat_percentage = min(100, int((total_score / max_possible_score) * 100)) if max_possible_score > 0 else 0
+            
+            # Special case: high confidence detection
+            if threat_percentage > 70:
+                threat_percentage = min(100, threat_percentage + 10)
+            
+            return threat_percentage, findings
+            
+        except Exception as e:
+            print(f"{BRIGHT_RED}[!] Analysis error: {e}{RESET}")
+            return 0, []
+    
+    @classmethod
+    def _get_severity(cls, score: int) -> str:
+        if score >= 90:
+            return "CRITICAL"
+        elif score >= 75:
+            return "HIGH"
+        elif score >= 60:
+            return "MEDIUM"
+        else:
+            return "LOW"
+    
+    @classmethod
+    def generate_threat_report(cls, file_path: str, threat_score: int, findings: List[Dict]) -> str:
+        """Generate a detailed threat report"""
+        report_lines = []
+        report_lines.append(f"\n{BRIGHT_RED}{'='*80}{RESET}")
+        report_lines.append(center_text(f"{BRIGHT_RED}{BLINK}🚨 THREAT DETECTED! 🚨{RESET}"))
+        report_lines.append(f"{BRIGHT_RED}{'='*80}{RESET}")
+        report_lines.append(f"{BRIGHT_YELLOW}File:{RESET} {os.path.basename(file_path)}")
+        report_lines.append(f"{BRIGHT_YELLOW}Threat Score:{RESET} {BRIGHT_RED}{threat_score}%{RESET} (CRITICAL)" if threat_score > 70 else f"{BRIGHT_YELLOW}Threat Score:{RESET} {BRIGHT_YELLOW}{threat_score}%{RESET}")
+        
+        report_lines.append(f"\n{BRIGHT_CYAN}📋 Detected Indicators:{RESET}")
+        for i, finding in enumerate(findings[:10], 1):
+            severity_color = BRIGHT_RED if finding['severity'] == "CRITICAL" else BRIGHT_YELLOW if finding['severity'] == "HIGH" else BRIGHT_CYAN
+            report_lines.append(f"  {severity_color}{i}. [{finding['severity']}] {finding['pattern']}{RESET} (Score: {finding['score']})")
+        
+        # Add recommendations
+        report_lines.append(f"\n{BRIGHT_YELLOW}🎯 Recommended Actions:{RESET}")
+        if threat_score > 70:
+            report_lines.append(f"  {BRIGHT_RED}🔴 IMMEDIATE ACTION REQUIRED:{RESET}")
+            report_lines.append(f"     • Isolate affected system from network")
+            report_lines.append(f"     • Block C2 server IPs at firewall")
+            report_lines.append(f"     • Reset compromised credentials")
+            report_lines.append(f"     • Initiate incident response protocol")
+        elif threat_score > 40:
+            report_lines.append(f"  {BRIGHT_YELLOW}🟡 URGENT:{RESET}")
+            report_lines.append(f"     • Investigate detected indicators")
+            report_lines.append(f"     • Run full system scan")
+            report_lines.append(f"     • Review network logs for anomalies")
+        else:
+            report_lines.append(f"  {BRIGHT_GREEN}🟢 ROUTINE:{RESET}")
+            report_lines.append(f"     • Continue monitoring")
+            report_lines.append(f"     • No immediate action required")
+        
+        return "\n".join(report_lines)
+
+
+# Then modify the vt_file_scan method in VirusTotalScanner class:
+
+
+
+# Update _poll_results to accept local findings
 class VirusTotalScanner:
     def __init__(self, operator=None, session=None):
         self.dashboard = SOCDashboard()
@@ -698,9 +1215,9 @@ class VirusTotalScanner:
                 
         except Exception as e:
             print(f"{BRIGHT_RED}[!] Error: {e}{RESET}")
-    
+
     def vt_file_scan(self, file_path: str):
-        """Cinematic file upload with SOC Dashboard and report generation"""
+        """Cinematic file upload with SOC Dashboard and LOCAL THREAT DETECTION"""
         if not self._validate_api():
             return
         
@@ -710,21 +1227,45 @@ class VirusTotalScanner:
             print(f"{BRIGHT_RED}[!] File not found: {file_path}{RESET}")
             return
         
-        # FILE SIZE LIMIT REMOVED - No size check performed
-        # Files of any size can now be submitted to VirusTotal
-        
-        hashes = self.calculate_file_hash(file_path)
-        
-        self.dashboard.current_action = f"UPLOADING"
+        # FIRST: Perform local threat detection
+        self.dashboard.current_action = f"LOCAL THREAT ANALYSIS"
         self.dashboard.current_scan_target = os.path.basename(file_path)
-        self.dashboard.scan_progress = 0
+        self.dashboard.scan_progress = 10
+        self.dashboard.render_full()
+        
+        threat_score, findings = LocalThreatDetector.analyze_file(file_path)
+        
+        # Update dashboard with local findings
+        self.dashboard.add_finding(os.path.basename(file_path), threat_score, {
+            'local_findings': findings,
+            'threat_score': threat_score,
+            'detection_method': 'LOCAL_PATTERN_MATCHING'
+        })
+        
+        self.dashboard.scan_progress = 50
+        self.dashboard.render_full()
+        
+        # Generate threat report if malicious
+        if threat_score > 30:
+            report = LocalThreatDetector.generate_threat_report(file_path, threat_score, findings)
+            print(report)
+            
+            # Ask for quarantine
+            if threat_score > 70:
+                choice = input(f"\n{BRIGHT_RED}Quarantine infected file? (Y/n): {RESET}").lower()
+                if choice != 'n':
+                    self.quarantine_item(file_path=file_path)
+                    return  # Don't upload to VT if already quarantined
+        
+        # If low threat or user chooses to continue, upload to VirusTotal
+        hashes = self.calculate_file_hash(file_path)
         
         try:
             with open(file_path, 'rb') as f:
                 files = {'file': (os.path.basename(file_path), f)}
                 headers = {"x-apikey": CONFIG['VT_API_KEY']}
                 
-                for progress in range(10, 101, 20):
+                for progress in range(60, 101, 20):
                     self.dashboard.scan_progress = progress
                     self.dashboard.render_full()
                     time.sleep(0.15)
@@ -740,24 +1281,28 @@ class VirusTotalScanner:
                 result = response.json()
                 scan_id = result['data']['id']
                 
-                self.dashboard.current_action = "ANALYZING"
-                self.dashboard.scan_progress = 50
+                self.dashboard.current_action = "VT ANALYSIS"
+                self.dashboard.scan_progress = 70
                 self.dashboard.render_full()
                 
                 # Start polling in background
-                self._poll_results(scan_id, file_path, hashes)
+                self._poll_results(scan_id, file_path, hashes, threat_score, findings)
             else:
                 print(f"{BRIGHT_RED}[!] Upload failed (HTTP {response.status_code}){RESET}")
+                # Even if VT fails, we still have local results
+                self.dashboard.scan_progress = 100
+                self.dashboard.current_action = "COMPLETE (LOCAL)"
+                self.dashboard.render_full()
                 
         except Exception as e:
             print(f"{BRIGHT_RED}[!] Error: {e}{RESET}")
-    
-    def _poll_results(self, scan_id: str, file_path: str, hashes: Dict):
+
+    def _poll_results(self, scan_id: str, file_path: str, hashes: Dict, local_score: int = 0, local_findings: List = None):
         """Background polling with SOC Dashboard updates and report generation"""
         url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
         headers = {"x-apikey": CONFIG['VT_API_KEY']}
         
-        self.dashboard.current_action = "POLLING RESULTS"
+        self.dashboard.current_action = "POLLING VT RESULTS"
         
         for attempt in range(15):
             time.sleep(30)
@@ -769,9 +1314,17 @@ class VirusTotalScanner:
                     
                     if status == 'completed':
                         stats = result['data']['attributes']['stats']
-                        malicious = stats.get('malicious', 0)
+                        vt_malicious = stats.get('malicious', 0)
                         
-                        self.dashboard.add_finding(os.path.basename(file_path), malicious, stats)
+                        # Combine local and VT scores
+                        final_score = max(local_score, (vt_malicious / sum(stats.values()) * 100) if sum(stats.values()) > 0 else 0)
+                        
+                        self.dashboard.add_finding(os.path.basename(file_path), final_score, {
+                            'vt_stats': stats,
+                            'local_score': local_score,
+                            'local_findings': local_findings,
+                            'combined_score': final_score
+                        })
                         self.dashboard.scan_progress = 100
                         self.dashboard.current_action = "COMPLETE"
                         self.dashboard.render_full()
@@ -786,35 +1339,41 @@ class VirusTotalScanner:
                         print(f"{BRIGHT_CYAN}{'='*80}{RESET}")
                         print(advice)
                         
-                        # Save report for file scan
+                        # Show combined results
+                        if local_score > 0:
+                            print(f"\n{BRIGHT_YELLOW}📊 Local Detection Score: {local_score}%{RESET}")
+                        print(f"{BRIGHT_YELLOW}📊 VirusTotal Detections: {vt_malicious}/{sum(stats.values())}{RESET}")
+                        print(f"{BRIGHT_RED if final_score > 50 else BRIGHT_GREEN}📊 Final Risk Score: {final_score:.1f}%{RESET}")
+                        
+                        # Save report
                         report_results = {
                             'file_name': os.path.basename(file_path),
                             'file_path': file_path,
-                            'file_size': os.path.getsize(file_path),
+                            'local_threat_score': local_score,
+                            'local_findings': local_findings,
+                            'vt_detections': vt_malicious,
+                            'vt_total_scans': sum(stats.values()),
+                            'final_risk_score': final_score,
                             'md5': hashes.get('md5', 'N/A'),
-                            'sha1': hashes.get('sha1', 'N/A'),
-                            'sha256': hashes.get('sha256', 'N/A'),
-                            'detections': malicious,
-                            'total_scans': sum(stats.values()),
-                            'scan_id': scan_id
+                            'sha256': hashes.get('sha256', 'N/A')
                         }
                         ReportGenerator.save_report("file_scan", os.path.basename(file_path), report_results, self.dashboard)
                         
                         # Auto-quarantine if infected
-                        if malicious > 0:
-                            choice = input(f"\n{BRIGHT_RED}Auto-quarantine infected file? (y/N): {RESET}").lower()
-                            if choice == 'y':
+                        if final_score > 70:
+                            choice = input(f"\n{BRIGHT_RED}Quarantine infected file? (Y/n): {RESET}").lower()
+                            if choice != 'n':
                                 self.quarantine_item(file_path=file_path)
                         return
                     else:
-                        self.dashboard.scan_progress = 50 + int(attempt * 3.3)
+                        self.dashboard.scan_progress = 70 + int(attempt * 2)
                         self.dashboard.render_full()
                         
             except Exception as e:
                 print(f"{BRIGHT_RED}[!] Polling error: {e}{RESET}")
         
-        print(f"{BRIGHT_YELLOW}[!] Results timeout. Check later with scan ID: {scan_id}{RESET}")
-    
+        print(f"{BRIGHT_YELLOW}[!] Results timeout. Scan ID: {scan_id}{RESET}")
+
     def vt_bulk_scan(self, folder_path: str, max_files: int = 10):
         """Bulk scan folder with SOC Dashboard and summary report"""
         folder_path = os.path.expanduser(folder_path)
@@ -1020,7 +1579,7 @@ def vt_scan_menu(operator=None, session=None):
             input(center_text(f"{DIM}Press Enter to continue...{RESET}"))
             
         elif choice == "0":
-            print(center_text(f"{BRIGHT_RED}⚠️ CLOSING...{RESET}"))
+            print(center_text(f"{BRIGHT_RED}⚠️  CLOSING...{RESET}"))
             matrix_rain(0.5, 3)
             print(center_text(f"{BRIGHT_GREEN}✅ DSTerminal SOC - Session Terminated{RESET}"))
             print(center_text(f"{BRIGHT_CYAN}Operator: {CONFIG['SOC_OPERATOR_NAME']} | Session: {CONFIG['SOC_SESSION_ID']}{RESET}"))

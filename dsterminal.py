@@ -153,12 +153,14 @@ except Exception as e:
 # =================ends here============
 # Import Financial Forensics Module
 try:
+    # Add the current directory to path if needed
+    sys.path.insert(0, str(Path(__file__).parent))
     from financial_forensics import financial_forensics_menu
     FINANCIAL_FORENSICS_AVAILABLE = True
-    print(f"{Fore.GREEN}✓ Financial Forensics module loaded successfully{Style.RESET_ALL}")
-except ImportError as e:
+except ImportError:
     FINANCIAL_FORENSICS_AVAILABLE = False
     print(f"{Fore.YELLOW}⚠ Financial Forensics module not found: {e}{Style.RESET_ALL}")
+
 # Import crypto_engine
 try:
     crypto_path = os.path.join(BASE_PATH, 'crypto_engine.py')
@@ -833,15 +835,71 @@ EDUCATION_TIPS = {
     [dim italic]"The only truly secure system is one that is powered off, cast in a block of concrete,
     and sealed in a lead-lined room with armed guards—and even then I have my doubts."[/dim italic]
     [dim]— Updated for the modern threat landscape[/dim]
-    CER""",
+    CER
+    """,
     
     "vt-scan": """
-    [bold]🦠 VirusTotal Tip[/bold]\n
-    Advanced features:\n
-    - [red]Behavioral analysis[/red] (sandbox)\n
-    - [yellow]Community insights[/yellow]\n
-    - [blue]YARA rule scanning[/blue]\n
-    [green]Warning:[/green] Files become public!\n
+    ╭─────────────────────────────────────────────────────────────────────────────╮
+    │                         🦠 VIRUSTOTAL EDUCATIONAL TIP                        │
+    ├─────────────────────────────────────────────────────────────────────────────┤
+    │                                                                             │
+    │  📚 WHAT IS VIRUSTOTAL?                                                     │
+    │     • Advanced service that scans files & URLs with 70+ AV engines      │
+    │     • Owned by Google (since 2012) - Enterprise & Community editions       │
+    │     • Provides threat intelligence & behavioral analysis                    │
+    │                                                                             │
+    │  🔬 ADVANCED FEATURES:                                                      │
+    │     • Behavioral analysis (Cuckoo/VT Sandbox) - See what files DO          │
+    │     • YARA rule scanning - Pattern-based threat detection                  │
+    │     • Relationship graphs - Visualize threat connections                   │
+    │     • VirusTotal Enterprise - API access for automation                    │
+    │     • Retrohunt - Search historical scan data                             │
+    │                                                                             │
+    │  📊 COMMUNITY INSIGHTS:                                                     │
+    │     • Vote on detections (False Positive / Malicious)                      │
+    │     • Comment on samples with analysis findings                           │
+    │     • Share YARA rules with security community                            │
+    │     • Create collections of related malware                               │
+    │                                                                             │
+    │  🎯 USE CASES FOR SOC OPERATORS:                                           │
+    │     1. Incident Response - Verify suspicious file detections              │
+    │     2. Threat Hunting - Research new malware families                     │
+    │     3. IOC Validation - Check hash/domain reputation                      │
+    │     4. Malware Analysis - Understand file behavior                        │
+    │                                                                             │
+    │  ⚠️ CRITICAL WARNINGS:                                                      │
+    │     • Files uploaded become PUBLIC - Never upload sensitive data!         │
+    │     • Free API has rate limits (4 requests/min, 500/day)                  │
+    │     • Some AV engines may have false positives                            │
+    │     • Not all samples get sandbox analysis                                │
+    │                                                                           │
+    │  💡 PRO TIPS FOR DSTERMINAL:                                              │
+    │     → Hash lookup first (faster, anonymous)                               │
+    │     → Enable VT Enterprise for corporate use                              │
+    │     → Combine with local YARA rules for better detection                  │
+    │     → Automate with Python API for bulk scanning                          │
+    │                                                                           │
+    │  📈 STATISTICS (2024):                                                    │
+    │     • 70+ antivirus engines                                               │
+    │     • 2M+ daily submissions                                               │
+    │     • 6B+ historical scans                                                │
+    │     • 60+ URL scanners                                                    │
+    │                                                                             │
+    │  🎓 RECOMMENDED LEARNING PATH:                                             │
+    │     1. Start with hash lookups (no exposure)                              │
+    │     2. Learn to read analysis reports                                     │
+    │     3. Study YARA rule syntax                                             │
+    │     4. Experiment with API automation                                     │
+    │     5. Contribute community insights                                      │
+    │                                                                             │
+    │  🛡️ BEST PRACTICES FOR SOC:                                                │
+    │     • Always sanitize files before upload                                 │
+    │     • Use API keys with restricted permissions                           │
+    │     • Maintain local database of known threats                           │
+    │     • Cross-reference with other threat intel feeds                      │
+    │     • Document findings in incident reports                              │
+    │                                                                             │
+    ╰─────────────────────────────────────────────────────────────────────────────╯
     """,
     
     "registry -n mon": """
@@ -1620,11 +1678,11 @@ class SecurityTerminal:
             "║     ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝            ║",
             "║                                                                            ║",
             "╠════════════════════════════════════════════════════════════════════════════╣",
-            f"║     Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release():<20}        ║",
-            "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo     ║",
-            "║     Type 'help' for available commands                                    ║",
+            f"║     Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release():<20}║",
+            "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange    ║",
+            "║     Type 'help' for available commands                                                 ║",
             f"║     CLI Mode: {'ADMIN' if self.is_admin() else 'USER'} 🔒                              ║",
-            "╚════════════════════════════════════════════════════════════════════════════╝"
+            "╚════════════════════════════════════════════════════════════════════════════╝"    
         ]
     
     # Animation state
@@ -1758,8 +1816,9 @@ class SecurityTerminal:
             sys.stdout.write(' ' * 50)
             sys.stdout.write(f"{color}{right_text:<24}")
             sys.stdout.write('\n')
-    
-        print(f"\n{color}{BOLD}✅ System Ready | \n[!] Warning: Running without administrator privileges. Some features may be limited.{RESET}\n")
+
+        if not self.is_admin():
+            print(f"\n{color}{BOLD}✅ System Ready | \n[!] Warning: Running without administrator privileges. Some features may be limited.{RESET}\n")
     #         # =====================banner print ends here======================================
     def system_info(self):
         """Enhanced system information display with security context"""
@@ -3948,7 +4007,25 @@ class SecurityTerminal:
 
 
 # =================================================ernds herte ===============================================
- 
+#  for financial_forensics==========================================
+    def cmd_financial_forensics(self):
+        """Launch the Financial Forensics investigation suite."""
+        if not FINANCIAL_FORENSICS_AVAILABLE:
+            print(f"{Fore.RED}[!] Financial Forensics module not available.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[*] Make sure financial_forensic.py is in the same directory.{Style.RESET_ALL}")
+            return
+        
+        print(f"{Fore.CYAN}[*] Launching Financial Forensics Suite...{Style.RESET_ALL}")
+        time.sleep(0.5)
+        
+        try:
+            financial_forensics_menu()
+        except Exception as e:
+            print(f"{Fore.RED}[!] Error: {e}{Style.RESET_ALL}")
+        
+        print(f"{Fore.CYAN}[*] Returning to DSTerminal...{Style.RESET_ALL}")
+
+# ========forensics ends here================================
 #  network monitoring implementation from here to below
 
     def init_bandwidth(self):
@@ -5766,15 +5843,39 @@ class SecurityTerminal:
             print(f"  CPU Cores: {psutil.cpu_count()}")
             print(f"  RAM: {psutil.virtual_memory().total / 1024**3:.1f} GB")
 
+ 
     def check_updates(self):
         """Cinematic update check with real GitHub API integration"""
+        
+        # ===================== IMPORTS =====================
+        import time
+        import random
+        import requests
+        import subprocess
+        import sys
+        import os
+        import platform
+        import tempfile
+        from datetime import datetime
+        from pathlib import Path
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.progress import (
+            Progress, SpinnerColumn, TextColumn, BarColumn, 
+            DownloadColumn, TransferSpeedColumn
+        )
+        from rich.live import Live
+        from rich.align import Align
+        from rich.table import Table
+        from rich import box
+
         console = Console()
 
-    # ===================== ANIMATIONS =====================
+        # ===================== ANIMATIONS =====================
         def hacker_animation():
             symbols = "█▓▒░▄▀■►▼▲◄▶◀◢◣◥◤▬▭▮▯┌┐└┘├┤┬┴┼╔╗╚╝╠╣╦╩╬═║"
             width = console.size.width
-            with console.status("[bold red]ACCESSING UPDATE SERVERS...[/]", spinner="dots"):
+            with console.status("[bold red]🔐 ACCESSING UPDATE SERVERS...[/]", spinner="dots"):
                 for _ in range(3):
                     console.print(
                         "".join(random.choice(symbols) for _ in range(width)),
@@ -5783,7 +5884,7 @@ class SecurityTerminal:
                     time.sleep(1.5)
 
         def satellite_scan():
-            frames = ["🛰", "📡", "📶", "🔍", "🎯"]
+            frames = ["🛰", "📡", "📶", "🔍", "🎯", "⚡"]
             with Progress(
                 SpinnerColumn(style="cyan"),
                 TextColumn("[bold blue]{task.description}"),
@@ -5797,388 +5898,758 @@ class SecurityTerminal:
                     time.sleep(1.5)
 
         def version_comparison_animation(current_ver, latest_ver):
-            with Live(refresh_per_second=20, console=console) as live:
-                for i in range(1, 6):
-                    bar = "█" * (i * 10)
+            with Live(refresh_per_second=10, console=console, transient=True) as live:
+                for i in range(1, 4):
+                    bar = "█" * (i * 8)
                     live.update(
                         Panel(
-                            f"[bold]Comparing Versions[/]\n\n"
-                            f"[yellow]Current:[/] {current_ver}\n{bar}\n\n"
-                            f"[green]Latest:[/] {latest_ver}\n{bar}",
-                            border_style="cyan"
+                            f"[bold cyan]Comparing Versions[/]\n\n"
+                            f"[yellow]Current:[/] v{current_ver}\n"
+                            f"[white]{bar:30}[/]\n\n"
+                            f"[green]Latest:[/] v{latest_ver}\n"
+                            f"[white]{bar:30}[/]",
+                            border_style="cyan",
+                            width=50
                         )
                     )
                     time.sleep(1.5)
 
-    # ===================== UPDATE LOGIC =====================
+        # ===================== UPDATE LOGIC =====================
         def parse_version(v):
             parts = [int(p) if p.isdigit() else 0 for p in str(v).lstrip("vV").split(".")]
             while len(parts) < 3:
                 parts.append(0)
             return tuple(parts)
 
-        def check_github_release():
-            try:
-                api_url = (
-                    "https://api.github.com/repos/"
-                    "Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/latest"
-                )
-                r = requests.get(api_url, timeout=10)
-                if r.status_code != 200:
-                    return None
-
-                data = r.json()
-                assets = {
-                    a["name"]: a["browser_download_url"]
-                    for a in data.get("assets", [])
-                }
-
-                return {
-                    "version": data.get("tag_name", "").lstrip("v"),
-                    "url": data.get("html_url", ""),
-                    "assets": assets,
-                    "notes": data.get("body", ""),
-                    "prerelease": data.get("prerelease", False),
-                }
-
-            except requests.RequestException:
-                return None
-        
-# ---------------------another update function ends here from above===========
-
-        def perform_update(latest_tag):
-            """
-            Downloads the latest DSTerminal release and updates local version.
-            latest_tag: string, e.g., "v2.0.113"
-            """
-
-            os_type = platform.system().lower()  # 'linux', 'windows', 'darwin'
-            print(f"[+] Detected OS: {os_type}")
-
-            # Clean the version tag (remove 'v' if present)
-            clean_version = latest_tag.lstrip('v')
-
-    # Determine download URL based on OS
-            if os_type == "linux":
-                filename = f"dsterminal_{clean_version}_amd64.deb"
-                download_url = f"https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/download/{latest_tag}/{filename}"
-            elif os_type == "windows":
-                    clean_version = latest_tag.lstrip('v')
-                    version_with_v = f"v{clean_version}"
-                    possible_filenames = [
-                        f"DSTerminal_Installer_v{clean_version}.exe",
-                        f"DSTerminal_Setup_{clean_version}_x64.exe",
-                        f"DSTerminalInstaller_{version_with_v}.exe",
-                        f"DSTerminal_{clean_version}_setup.exe",
-                        f"DSTerminal_v{clean_version}_installer.exe"
-                    ]
-
-                    downloaded = False
-                    for filename in possible_filenames:
-                        download_url = f"https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/download/{version_with_v}/{filename}"
-                        print(f"[+] Trying: {filename}")
-        
-                        try:
-                            # First, check if the file exists without downloading (HEAD request)
-                            response = requests.head(download_url, timeout=5)
-                            if response.status_code == 200:
-                                print(f"[+] Found: {filename}")
-                                # Now download the file
-                                print(f"[+] Downloading {filename} from GitHub...")
-                                r = requests.get(download_url, stream=True)
-                                r.raise_for_status()
-                
-                                # Get file size for progress bar
-                                total_size = int(r.headers.get('content-length', 0))
-                
-                                with open(filename, 'wb') as f:
-                                    if total_size == 0:
-                                        f.write(r.content)
-                                    else:
-                                        with tqdm(total=total_size, unit='B', unit_scale=True, desc=filename) as pbar:
-                                            for chunk in r.iter_content(chunk_size=8192):
-                                                f.write(chunk)
-                                                pbar.update(len(chunk))
-                
-                                print(f"[+] Download complete: {filename}")
-                                print(f"[+] Please run the downloaded installer manually: {filename}")
-                                print("[+] After installation, restart DSTerminal.")
-                                downloaded = True
-                                break
-                            else:
-                                print(f"[-] Not found (HTTP {response.status_code})")
-                        except Exception as e:
-                            print(f"[-] Error checking: {e}")
-    
-                    if not downloaded:
-                        print("[!] Could not find installer file. Please download manually from:")
-                        print(f"https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/tag/{version_with_v}")
-
-                   # Try each filename until one works
-                    for filename in possible_filenames:
-                        download_url = f"https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/download/{version_with_v}/{filename}"
-                        print(f"[+] Trying: {filename}")
-                    # You might want to check if URL exists before downloading
-                        break  # For now, just use the first one
+        def get_system_info():
+            """Get system information for correct download"""
+            system = platform.system().lower()
+            arch = platform.machine().lower()
+            
+            if system == "windows":
+                return "windows", "exe", "win"
+            elif system == "linux":
+                return "linux", "AppImage", "linux"
+            elif system == "darwin":
+                return "macos", "dmg", "mac"
             else:
-                print("[!] Your OS is not supported for auto-update.")
-                return
+                return system, "unknown", "unknown"
 
-    # Download the file
+        def check_github_release():
+            """Check GitHub for latest release from YOUR repo"""
             try:
-                print(f"[+] Downloading {filename} from GitHub...")
-                r = requests.get(download_url, stream=True)
-                r.raise_for_status()
-                with open(filename, "wb") as f:
-                    for chunk in r.iter_content(chunk_size=8192):
-                        f.write(chunk)
-                print(f"[+] Download complete: {filename}")
+                # YOUR CORRECTED GitHub API URL
+                api_url = "https://api.github.com/repos/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/latest"
+                
+                headers = {
+                    'Accept': 'application/vnd.github.v3+json',
+                    'User-Agent': 'DSTerminal-Update-Checker/2.0'
+                }
+                
+                console.print(f"[dim]Connecting to Update Module...[/dim]")
+                r = requests.get(api_url, timeout=15, headers=headers)
+                
+                if r.status_code == 403:
+                    console.print("[yellow]Rate limit hit. Try again later.[/yellow]")
+                    return None
+                elif r.status_code != 200:
+                    console.print(f"[red]Update Module API error: {r.status_code}[/red]")
+                    return None
+                
+                data = r.json()
+                
+                if 'tag_name' not in data:
+                    console.print("[red]Invalid response from GitHub[/red]")
+                    return None
+                
+                # Get the version (remove 'v' prefix)
+                version = data.get("tag_name", "").lstrip("v")
+                
+                # Find Windows installer asset
+                download_url = None
+                asset_name = None
+                asset_size = None
+                
+                console.print("[dim]Scanning release assets...[/dim]")
+                
+                for asset in data.get("assets", []):
+                    name = asset["name"]
+                    console.print(f"[dim]  Found: {name}[/dim]")
+                    
+                    # Look for Windows installer (matches your actual file names)
+                    if "DSTerminal_Installer" in name and name.endswith(".exe"):
+                        download_url = asset["browser_download_url"]
+                        asset_name = name
+                        asset_size = asset.get("size", 0)
+                        console.print(f"[green]✓ Selected: {name}[/green]")
+                        break
+                    elif "dsterminal_win" in name and name.endswith(".exe"):
+                        download_url = asset["browser_download_url"]
+                        asset_name = name
+                        asset_size = asset.get("size", 0)
+                        console.print(f"[green]✓ Selected: {name}[/green]")
+                        break
+                
+                if not download_url:
+                    console.print("[yellow]No Windows installer found in release[/yellow]")
+                    # Fall back to showing the release page
+                    return {
+                        "version": version,
+                        "url": data.get("html_url", ""),
+                        "download_url": None,
+                        "assets": {a["name"]: a["browser_download_url"] for a in data.get("assets", [])},
+                        "notes": data.get("body", "No release notes provided.")[:500],
+                        "prerelease": data.get("prerelease", False),
+                        "published_at": data.get("published_at", ""),
+                        "asset_name": None,
+                    }
+                
+                return {
+                    "version": version,
+                    "url": data.get("html_url", ""),
+                    "download_url": download_url,
+                    "assets": {a["name"]: a["browser_download_url"] for a in data.get("assets", [])},
+                    "notes": data.get("body", "No release notes provided.")[:500],
+                    "prerelease": data.get("prerelease", False),
+                    "published_at": data.get("published_at", ""),
+                    "asset_name": asset_name,
+                    "asset_size": asset_size,
+                }
 
+            except requests.RequestException as e:
+                console.print(f"[red]Connection error: {e}[/red]")
+                return None
             except Exception as e:
-                print(f"[!] Download failed: {e}")
-                return
+                console.print(f"[red]Parse error: {e}[/red]")
+                return None
 
-    # Auto-install depending on OS
-            if os_type == "linux":
-                print("[+] Installing .deb package...")
+        def download_update(url, filename):
+            """Download update with progress bar"""
+            try:
+                console.print(f"\n[cyan]📥 Downloading update from Update Modules...[/cyan]")
+                console.print(f"[dim]File: {filename}[/dim]")
+                
+                response = requests.get(url, stream=True, timeout=30)
+                response.raise_for_status()
+                
+                total_size = int(response.headers.get('content-length', 0))
+                
+                with open(filename, 'wb') as f:
+                    with Progress(
+                        DownloadColumn(),
+                        BarColumn(),
+                        TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
+                        TransferSpeedColumn(),
+                        console=console,
+                        transient=False
+                    ) as progress:
+                        task = progress.add_task("[green]Downloading...[/green]", total=total_size)
+                        for chunk in response.iter_content(chunk_size=8192):
+                            f.write(chunk)
+                            progress.update(task, advance=len(chunk))
+                
+                # Verify file size
+                actual_size = os.path.getsize(filename)
+                if total_size > 0 and actual_size != total_size:
+                    console.print(f"[red]Size mismatch! Expected {total_size}, got {actual_size}[/red]")
+                    return False
+                
+                console.print(f"[green]✓ Download complete: {filename}[/green]")
+                return True
+                
+            except Exception as e:
+                console.print(f"[red]✗ Download failed: {e}[/red]")
+                return False
+
+        def perform_update(latest):
+            """Execute the actual update process"""
+            
+            # Show update details
+            details_table = Table(box=box.HEAVY_EDGE, border_style="cyan")
+            details_table.add_column("Item", style="cyan")
+            details_table.add_column("Details", style="white")
+            details_table.add_row("New Version", f"[green]v{latest['version']}[/green]")
+            details_table.add_row("Installer", latest.get('asset_name', 'Unknown'))
+            if latest.get('asset_size'):
+                size_mb = latest['asset_size'] / (1024 * 1024)
+                details_table.add_row("Size", f"{size_mb:.1f} MB")
+            details_table.add_row("Release", latest.get('published_at', 'Unknown')[:10])
+            
+            console.print(Panel(details_table, title="[bold yellow]📦 UPDATE DETAILS[/bold yellow]", border_style="yellow"))
+            
+            # Security confirmation
+            console.print("\n[bold red]⚠️ SECURITY NOTICE[/bold red]")
+            console.print("[dim]• The installer will be downloaded from GitHub\n"
+                        "• Verify the digital signature before running\n"
+                        "• Administrator privileges may be required[/dim]\n")
+            
+            confirm = console.input("[bold red]Type 'INSTALL' to download and run the installer: [/]").strip()
+            
+            if confirm != "INSTALL":
+                console.print("[yellow]Update cancelled[/yellow]")
+                return False
+            
+            if not latest.get('download_url'):
+                console.print(Panel(
+                    "[yellow]No automatic download available[/]\n\n"
+                    f"Please download manually from:\n{latest['url']}",
+                    border_style="yellow"
+                ))
+                return False
+            
+            # Download update to temp directory
+            temp_dir = tempfile.gettempdir()
+            installer_path = os.path.join(temp_dir, latest['asset_name'])
+            
+            # Remove old installer if exists
+            if os.path.exists(installer_path):
+                os.remove(installer_path)
+            
+            if not download_update(latest['download_url'], installer_path):
+                return False
+            
+            # Verify download exists
+            if not os.path.exists(installer_path):
+                console.print("[red]Download verification failed[/red]")
+                return False
+            
+            console.print("\n[green]✓ Download verified successfully[/green]")
+            
+            # Ask to run installer
+            console.print("\n[cyan]🔧 Ready to install update...[/cyan]")
+            run_installer = console.input("[bold yellow]Run the installer now? (Y/n): [/]").strip().lower()
+            
+            if run_installer != 'n':
+                console.print("[cyan]Launching installer...[/cyan]")
+                time.sleep(1)
+                
                 try:
-                    subprocess.run(["sudo", "dpkg", "-i", filename], check=True)
-                    print("[+] Update installed successfully!")
-                except subprocess.CalledProcessError as e:
-                    print(f"[!] Installation failed: {e}")
-                    print(f"[+] You may try: sudo dpkg -i {filename}")
-            elif os_type == "windows":
-                # print(f"[+] Please run the downloaded installer manually: {filename}")
-                # print("[+] After installation, restart DSTerminal.")
-                clean_version = latest_tag.lstrip('v')
-                version_with_v = f"v{clean_version}"
-                filename = f"DSTerminal_Installer_v{clean_version}.exe"
-                download_url = f"https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases/download/{version_with_v}/{filename}"
+                    # Launch the installer
+                    if platform.system().lower() == "windows":
+                        os.startfile(installer_path)
+                    else:
+                        subprocess.Popen([installer_path], shell=True)
+                    
+                    console.print(Panel(
+                        f"[bold green]✅ INSTALLER LAUNCHED![/bold green]\n\n"
+                        f"[yellow]Please complete the installation wizard[/yellow]\n"
+                        f"[dim]Installer location: {installer_path}[/dim]\n\n"
+                        f"[cyan]After installation, restart DSTerminal[/cyan]",
+                        border_style="green"
+                    ))
+                    return True
+                    
+                except Exception as e:
+                    console.print(f"[red]Failed to launch installer: {e}[/red]")
+                    console.print(f"[yellow]Please run manually: {installer_path}[/yellow]")
+                    return False
+            else:
+                console.print(f"[yellow]Installer saved to: {installer_path}[/yellow]")
+                return True
 
-    # Update local VERSION file
-            version_file = os.path.join(os.path.dirname(__file__), "VERSION")
-            try:
-                with open(version_file, "w") as vf:
-                    vf.write(latest_tag.strip("v"))
-                print(f"[+] Local version updated to {latest_tag}")
-            except Exception as e:
-                print(f"[!] Could not update local VERSION file: {e}")
-
-    # ===================== MAIN FLOW =====================
+        # ===================== MAIN FLOW =====================
         try:
-            console.print("\n")
+            # Display header
             console.print(Panel(
-                "[bold cyan]▄︻デ══━ INITIATING SYSTEM UPDATE PROTOCOL ══━︻▄[/]",
+                Align.center("[bold cyan]🔄 DSTERMINAL UPDATE PROTOCOL 🔄[/bold cyan]"),
                 border_style="cyan"
             ))
-
-            time.sleep(0.5)
+            
+            # Animated sequence
             hacker_animation()
             satellite_scan()
-
-            current_version = CONFIG.get("CURRENT_VERSION", "1.0.0").lstrip("v")
-            console.print(Panel(f"[bold]Current version:[/] v{current_version}",
-            border_style="white"
-            ))
-
+            
+            # Get current version
+            current_version = CONFIG.get("CURRENT_VERSION", "2.0.113").lstrip("v")
+            
+            # Display version info
+            version_table = Table(box=box.SIMPLE, border_style="blue")
+            version_table.add_column("Component", style="cyan")
+            version_table.add_column("Version", style="green")
+            version_table.add_row("Current Installation", f"v{current_version}")
+            version_table.add_row("System", platform.system())
+            version_table.add_row("Architecture", platform.machine())
+            
+            console.print(Panel(version_table, title="[bold]📊 SYSTEM STATUS[/bold]", border_style="blue"))
+            
+            # Check for updates
+            console.print("\n[cyan]🔍 Checking Modules for updates...[/cyan]")
             latest = check_github_release()
+            
             if not latest:
                 console.print(Panel(
-                    "[yellow]Unable to reach update servers[/]",
+                    "[yellow]⚠️ UPDATE SERVER UNREACHABLE[/yellow]\n\n"
+                    "[dim]• Check your internet connection\n"
+                    "• GitHub API may be rate-limited\n"
+                    "• Visit: https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/releases[/dim]",
                     border_style="yellow"
                 ))
                 return True
-
-            version_comparison_animation(
-                f"v{current_version}", f"v{latest['version']}"
-            )
-
-            if parse_version(latest["version"]) > parse_version(current_version):
+            
+            # Version comparison animation
+            version_comparison_animation(current_version, latest['version'])
+            
+            # Compare versions
+            current_tuple = parse_version(current_version)
+            latest_tuple = parse_version(latest['version'])
+            
+            if latest_tuple > current_tuple:
+                # Show update available
+                update_info = (
+                    f"[bold red]🚨 UPDATE AVAILABLE! 🚨[/bold red]\n\n"
+                    f"[yellow]Current:[/yellow] v{current_version}\n"
+                    f"[green]Latest:[/green] v{latest['version']}\n"
+                    f"[cyan]Released:[/cyan] {latest.get('published_at', 'Unknown')[:10]}\n\n"
+                    f"[cyan]Release Notes:[/cyan]\n"
+                    f"[dim]{latest['notes'][:400]}[/dim]\n"
+                )
+                
+                if latest.get('prerelease'):
+                    update_info += f"\n[red]⚠️ PRE-RELEASE VERSION - Use with caution[/red]\n"
+                
                 console.print(Panel(
-                    f"[bold red]UPDATE AVAILABLE[/]\n\n"
-                    f"Latest: v{latest['version']}\n"
-                    f"{latest['notes'][:300]}",
-                    border_style="red"
+                    update_info,
+                    border_style="red",
+                    width=90,
+                    padding=(1, 2)
                 ))
-
-                if console.input("Install update now? (y/N): ").lower() == "y":
-                    return perform_update(latest['version'])
-
+                
+                # Ask for update
+                choice = console.input("\n[bold cyan]Download and install update now? (y/N): [/]").lower()
+                
+                if choice == 'y':
+                    return perform_update(latest)
+                else:
+                    console.print("[yellow]Update postponed[/yellow]")
+            
             else:
                 console.print(Panel(
-                    f"[bold green]DSTerminal is up to date[/]\n\n"
-                    f"Checked: {datetime.now():%Y-%m-%d %H:%M:%S}",
-                    border_style="green"
+                    Align.center(
+                        f"[bold green]✅ DSTERMINAL IS UP TO DATE![/bold green]\n\n"
+                        f"[dim]Version: v{current_version}\n"
+                        f"Checked: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]"
+                    ),
+                    border_style="green",
+                    width=60
                 ))
-
+            
             return True
-
+            
+        except KeyboardInterrupt:
+            console.print("\n[yellow]Update cancelled by user[/yellow]")
+            return True
         except Exception as e:
             console.print(Panel(
                 f"[bold red]UPDATE ERROR[/]\n\n{str(e)}",
                 border_style="red"
             ))
+            import traceback
+            traceback.print_exc()
             return True
-
+    
 # --------------------------for updates above code--------------------
 
 # ---------------------------wipe tracks and terminal clearing
-    def clear_terminal(self):
-        """Advanced terminal clearing with spinning boxes and centered animations"""
+    # def clear_terminal(self):
+    #     """Advanced terminal clearing with spinning boxes and centered animations"""
     
+    #     console = Console()
+    #     terminal_width = shutil.get_terminal_size((80, 20)).columns
+    #     panel_width = min(70, terminal_width - 10)
+    
+    # # Multiple spinner types for variety
+    #     spinners = {
+    #         'dots': ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
+    #         'arrows': ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"],
+    #         'pipes': ["┤", "┘", "┴", "└", "├", "┌", "┬", "┐"],
+    #         'circles': ["◴", "◷", "◶", "◵"]
+    #     }
+    
+    # # Glitch text fragments
+    #     glitch_texts = [
+    #         "CLEARING...", "WIPING...", "PURGING...", 
+    #         "RESETTING...", "REFRESHING...", "RELOADING..."
+    #     ]
+    
+    # # Create a box with spinning animation
+    #     with Live(console=console, refresh_per_second=12, screen=True) as live:
+    #         for phase in range(4):  # 4 phases of clearing
+    #             for step in range(25):  # 25 steps per phase
+    #             # Select spinner based on phase
+    #                 spinner_type = list(spinners.keys())[phase % len(spinners)]
+    #                 spinner = spinners[spinner_type][step % len(spinners[spinner_type])]
+                
+    #             # Phase-based colors
+    #                 if phase == 0:
+    #                     color = "bright_red"
+    #                     phase_text = "PHASE 1: MEMORY CLEAR"
+    #                 elif phase == 1:
+    #                     color = "bright_yellow"
+    #                     phase_text = "PHASE 2: BUFFER FLUSH"
+    #                 elif phase == 2:
+    #                     color = "bright_green"
+    #                     phase_text = "PHASE 3: CACHE WIPE"
+    #                 else:
+    #                     color = "bright_cyan"
+    #                     phase_text = "PHASE 4: DISPLAY RESET"
+                
+    #             # Progress calculation
+    #                 total_progress = (phase * 25 + step) / 100
+    #                 progress_bar_width = panel_width - 30
+    #                 progress_filled = int(total_progress * progress_bar_width)
+    #                 progress_bar = "█" * progress_filled + "░" * (progress_bar_width - progress_filled)
+                
+    #             # Random glitch effect
+    #                 if random.random() > 0.7:
+    #                     glitch = random.choice(glitch_texts)
+    #                 else:
+    #                     glitch = ""
+                
+    #             # Create stats content
+    #                 stats_content = (
+    #                     f"[cyan]CPU: [green]{random.randint(20, 95)}%[/green]\n"
+    #                     f"[cyan]MEM: [yellow]{random.randint(100, 500)}MB[/yellow]\n"
+    #                     f"[cyan]PID: [white]{os.getpid()}[/white]"
+    #                 )
+                
+    #             # Create main content
+    #                 main_content = Panel(
+    #                     Align.center(
+    #                         f"[bold {color}]{spinner} {phase_text} {spinner}[/bold {color}]\n\n"
+    #                         f"[white]{progress_bar}[/white] [{int(total_progress*100)}%]\n\n"
+    #                         f"[dim]{glitch}[/dim]",
+    #                         vertical="middle"
+    #                     ),
+    #                     title=f"[bold {color}]╔ TERMINAL WIPE SEQUENCE ╗[/bold {color}]",
+    #                     border_style=color,
+    #                     padding=(1, 2),
+    #                     width=panel_width
+    #                 )
+                
+    #             # Create stats box
+    #                 stats_box = Panel(
+    #                     Align.center(stats_content, vertical="middle"),
+    #                     title="[bold white]SYS STATS[/bold white]",
+    #                     border_style="bright_black",
+    #                     width=panel_width - 4,
+    #                     padding=(1, 1)
+    #                 )
+                
+    #             # Create layout to combine panels
+    #                 layout = Layout()
+    #                 layout.split_column(
+    #                     Layout(main_content),
+    #                     Layout(stats_box)
+    #                 )
+                
+    #             # Center everything
+    #                 final_display = Align.center(layout)
+                
+    #                 live.update(final_display)
+    #                 time.sleep(0.08)
+    
+    # # Execute actual terminal clear
+    #     os.system("clear" if platform.system() != "Windows" else "cls")
+    
+    # # Create a dramatic banner reveal
+    #     banner = """
+    #     ╔═══════════════════════════════════════════════════════════════════╗
+    #     ║                                                                    ║
+    #     ║    ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗    ║
+    #     ║    ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝    ║
+    #     ║    ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝     ║
+    #     ║    ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗     ║
+    #     ║    ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗    ║
+    #     ║    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝    ║
+    #     ║                                                                    ║
+    #     ╚═══════════════════════════════════════════════════════════════════╝
+    #     """
+    
+    # # Animate banner with scan line effect
+    #     banner_lines = banner.split('\n')
+    #     centered_banner = []
+    
+    # # Center each line
+    #     for line in banner_lines:
+    #         if line.strip():
+    #             centered_banner.append(line.center(terminal_width))
+    #         else:
+    #             centered_banner.append('')
+    
+    # # Display with scan line animation
+    #     for i, line in enumerate(centered_banner):
+    #         if i == 0 or i == len(centered_banner)-1:
+    #             console.print(f"[bright_cyan]{line}[/bright_cyan]")
+    #         elif i == 1 or i == 7:
+    #             console.print(f"[bright_blue]{line}[/bright_blue]")
+    #         elif 2 <= i <= 6:
+    #         # Gradient effect on logo
+    #             colors = ["cyan", "bright_cyan", "blue", "bright_blue", "green"]
+    #             color = colors[(i-2) % len(colors)]
+    #             console.print(f"[bold {color}]{line}[/bold {color}]")
+    #         else:
+    #             console.print(f"[dim]{line}[/dim]")
+    #         time.sleep(0.08)
+    
+    # # Add a status message with blink effect
+    #     status_panel = Panel(
+    #         Align.center(
+    #             "[blink][bright_green]✦ SYSTEM INITIALIZED ✦[/bright_green][/blink]\n\n"
+    #             f"[cyan]Session ID:[/cyan] [white]{datetime.now().strftime('%Y%m%d%H%M%S')}[/white]\n"
+    #             f"[cyan]Ready for:[/cyan] [yellow]SSL/TLS Security Audit[/yellow]",
+    #             vertical="middle"
+    #         ),
+    #         title="[bold white]SYSTEM STATUS[/bold white]",
+    #         border_style="bright_green",
+    #         padding=(1, 2),
+    #         width=panel_width
+    #     )
+    
+    #     console.print(Align.center(status_panel))
+    #     print()
+    def clear_terminal(self):
+        """Advanced terminal clearing with three-column centered layout and spinning animations"""
+        
+        import shutil
+        import time
+        import random
+        import os
+        import platform
+        from datetime import datetime
+        from rich.console import Console
+        from rich.panel import Panel
+        from rich.live import Live
+        from rich.layout import Layout
+        from rich.align import Align
+        from rich.table import Table
+        from rich.text import Text
+        from rich.progress import Progress, SpinnerColumn, TextColumn
+        
         console = Console()
         terminal_width = shutil.get_terminal_size((80, 20)).columns
-        panel_width = min(70, terminal_width - 10)
-    
-    # Multiple spinner types for variety
+        column_width = min(35, terminal_width // 3 - 6)  # Width for each column
+        
+        # Multiple spinner types for variety
         spinners = {
             'dots': ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
             'arrows': ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"],
             'pipes': ["┤", "┘", "┴", "└", "├", "┌", "┬", "┐"],
             'circles': ["◴", "◷", "◶", "◵"]
         }
-    
-    # Glitch text fragments
+        
+        # Glitch text fragments
         glitch_texts = [
             "CLEARING...", "WIPING...", "PURGING...", 
             "RESETTING...", "REFRESHING...", "RELOADING..."
         ]
-    
-    # Create a box with spinning animation
-        with Live(console=console, refresh_per_second=12, screen=True) as live:
-            for phase in range(4):  # 4 phases of clearing
-                for step in range(25):  # 25 steps per phase
-                # Select spinner based on phase
-                    spinner_type = list(spinners.keys())[phase % len(spinners)]
-                    spinner = spinners[spinner_type][step % len(spinners[spinner_type])]
+        
+        # System stats simulator
+        def get_system_stats():
+            return {
+                "cpu": random.randint(20, 95),
+                "mem": random.randint(100, 500),
+                "pid": os.getpid(),
+                "disk": random.randint(10, 90),
+                "network": random.randint(1, 100)
+            }
+        
+        # Phase configurations
+        phases = [
+            {"text": "PHASE 1: MEMORY CLEAR", "color": "bright_red", "spinner": "dots"},
+            {"text": "PHASE 2: BUFFER FLUSH", "color": "bright_yellow", "spinner": "arrows"},
+            {"text": "PHASE 3: CACHE WIPE", "color": "bright_green", "spinner": "pipes"},
+            {"text": "PHASE 4: DISPLAY RESET", "color": "bright_cyan", "spinner": "circles"}
+        ]
+        
+        # Animated clearing sequence with three columns
+        with Live(console=console, refresh_per_second=12, screen=True, auto_refresh=False) as live:
+            for phase_idx, phase in enumerate(phases):
+                spinner_chars = spinners[phase["spinner"]]
+                color = phase["color"]
+                phase_text = phase["text"]
                 
-                # Phase-based colors
-                    if phase == 0:
-                        color = "bright_red"
-                        phase_text = "PHASE 1: MEMORY CLEAR"
-                    elif phase == 1:
-                        color = "bright_yellow"
-                        phase_text = "PHASE 2: BUFFER FLUSH"
-                    elif phase == 2:
-                        color = "bright_green"
-                        phase_text = "PHASE 3: CACHE WIPE"
-                    else:
-                        color = "bright_cyan"
-                        phase_text = "PHASE 4: DISPLAY RESET"
-                
-                # Progress calculation
-                    total_progress = (phase * 25 + step) / 100
-                    progress_bar_width = panel_width - 30
-                    progress_filled = int(total_progress * progress_bar_width)
-                    progress_bar = "█" * progress_filled + "░" * (progress_bar_width - progress_filled)
-                
-                # Random glitch effect
-                    if random.random() > 0.7:
-                        glitch = random.choice(glitch_texts)
-                    else:
-                        glitch = ""
-                
-                # Create stats content
-                    stats_content = (
-                        f"[cyan]CPU: [green]{random.randint(20, 95)}%[/green]\n"
-                        f"[cyan]MEM: [yellow]{random.randint(100, 500)}MB[/yellow]\n"
-                        f"[cyan]PID: [white]{os.getpid()}[/white]"
+                for step in range(30):  # 30 steps per phase
+                    # Calculate progress
+                    total_progress = (phase_idx * 30 + step) / 120
+                    progress_percent = int(total_progress * 100)
+                    
+                    # Current spinner character
+                    spinner = spinner_chars[step % len(spinner_chars)]
+                    
+                    # Glitch effect
+                    glitch = random.choice(glitch_texts) if random.random() > 0.7 else ""
+                    
+                    # Get current stats
+                    stats = get_system_stats()
+                    
+                    # === LEFT COLUMN: System Stats ===
+                    left_content = Panel(
+                        Align.center(
+                            f"[bold cyan]📊 SYSTEM STATS[/bold cyan]\n\n"
+                            f"[white]CPU:[/white] [green]{stats['cpu']}%[/green]\n"
+                            f"[white]MEM:[/white] [yellow]{stats['mem']} MB[/yellow]\n"
+                            f"[white]DISK:[/white] [blue]{stats['disk']}%[/blue]\n"
+                            f"[white]PID:[/white] [dim]{stats['pid']}[/dim]\n"
+                            f"[white]NET:[/white] [cyan]{stats['network']} Mbps[/cyan]",
+                            vertical="middle"
+                        ),
+                        title=f"[bold {color}]⚙️ LEFT PANEL[/bold {color}]",
+                        border_style=color,
+                        width=column_width,
+                        padding=(0, 1),
+                        height=20
                     )
-                
-                # Create main content
-                    main_content = Panel(
+                    
+                    # === CENTER COLUMN: Main Progress ===
+                    # Progress bar
+                    bar_width = column_width - 10
+                    filled = int(progress_percent / 100 * bar_width)
+                    progress_bar = "█" * filled + "░" * (bar_width - filled)
+                    
+                    center_content = Panel(
                         Align.center(
                             f"[bold {color}]{spinner} {phase_text} {spinner}[/bold {color}]\n\n"
-                            f"[white]{progress_bar}[/white] [{int(total_progress*100)}%]\n\n"
+                            f"[white]{progress_bar}[/white]\n"
+                            f"[bold cyan]{progress_percent}%[/bold cyan]\n\n"
                             f"[dim]{glitch}[/dim]",
                             vertical="middle"
                         ),
-                        title=f"[bold {color}]╔ TERMINAL WIPE SEQUENCE ╗[/bold {color}]",
+                        title=f"[bold {color}]🌀 CENTER PANEL[/bold {color}]",
                         border_style=color,
-                        padding=(1, 2),
-                        width=panel_width
+                        width=column_width,
+                        padding=(0, 1),
+                        height=20
                     )
-                
-                # Create stats box
-                    stats_box = Panel(
-                        Align.center(stats_content, vertical="middle"),
-                        title="[bold white]SYS STATS[/bold white]",
-                        border_style="bright_black",
-                        width=panel_width - 4,
-                        padding=(1, 1)
+                    
+                    # === RIGHT COLUMN: Security Events ===
+                    events = [
+                        "Buffer overflow check",
+                        "Memory seg scan",
+                        "Stack trace verify",
+                        "Heap corruption test"
+                    ]
+                    current_event = events[step % len(events)]
+                    
+                    right_content = Panel(
+                        Align.center(
+                            f"[bold yellow]⚠️ SECURITY[/bold yellow]\n\n"
+                            f"[white]Event:[/white]\n[cyan]{current_event}[/cyan]\n\n"
+                            f"[white]Status:[/white] [green]ACTIVE[/green]\n"
+                            f"[white]Level:[/white] [red]HIGH[/red]",
+                            vertical="middle"
+                        ),
+                        title=f"[bold {color}]🔒 RIGHT PANEL[/bold {color}]",
+                        border_style=color,
+                        width=column_width,
+                        padding=(1, 1),
+                        height=20
                     )
-                
-                # Create layout to combine panels
+                    
+                    # Create three-column layout
                     layout = Layout()
-                    layout.split_column(
-                        Layout(main_content),
-                        Layout(stats_box)
+                    layout.split_row(
+                        Layout(left_content, ratio=1),
+                        Layout(center_content, ratio=1),
+                        Layout(right_content, ratio=1)
                     )
-                
-                # Center everything
+                    
+                    # Center the entire layout on screen
                     final_display = Align.center(layout)
-                
                     live.update(final_display)
-                    time.sleep(0.08)
-    
-    # Execute actual terminal clear
+                    live.refresh()
+                    time.sleep(0.06)
+        
+        # Execute actual terminal clear
         os.system("clear" if platform.system() != "Windows" else "cls")
-    
-    # Create a dramatic banner reveal
-        banner = """
-        ╔═══════════════════════════════════════════════════════════════════╗
-        ║                                                                    ║
-        ║    ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗    ║
-        ║    ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝    ║
-        ║    ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝     ║
-        ║    ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗     ║
-        ║    ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗    ║
-        ║    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝    ║
-        ║                                                                    ║
-        ╚═══════════════════════════════════════════════════════════════════╝
-        """
-    
-    # Animate banner with scan line effect
-        banner_lines = banner.split('\n')
-        centered_banner = []
-    
-    # Center each line
-        for line in banner_lines:
-            if line.strip():
-                centered_banner.append(line.center(terminal_width))
-            else:
-                centered_banner.append('')
-    
-    # Display with scan line animation
-        for i, line in enumerate(centered_banner):
-            if i == 0 or i == len(centered_banner)-1:
-                console.print(f"[bright_cyan]{line}[/bright_cyan]")
-            elif i == 1 or i == 7:
-                console.print(f"[bright_blue]{line}[/bright_blue]")
-            elif 2 <= i <= 6:
-            # Gradient effect on logo
+        
+        # Create dramatic three-column banner reveal
+        terminal_width = shutil.get_terminal_size((80, 20)).columns
+        
+        # ASCII Art Logo (centered across all columns)
+        logo_art = [
+            "╔═══════════════════════════════════════════════════════════════════╗",
+            "║                                                                    ║",
+            "║    ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗    ║",
+            "║    ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝    ║",
+            "║    ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝     ║",
+            "║    ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗     ║",
+            "║    ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗    ║",
+            "║    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝    ║",
+            "║                                                                    ║",
+            "╚═══════════════════════════════════════════════════════════════════╝",
+        ]
+        
+        # Center and display logo with gradient
+        for i, line in enumerate(logo_art):
+            centered_line = line.center(terminal_width)
+            if i == 0 or i == len(logo_art) - 1:
+                console.print(f"[bright_cyan]{centered_line}[/bright_cyan]")
+            elif i == 1 or i == len(logo_art) - 2:
+                console.print(f"[bright_blue]{centered_line}[/bright_blue]")
+            elif 2 <= i <= len(logo_art) - 3:
                 colors = ["cyan", "bright_cyan", "blue", "bright_blue", "green"]
-                color = colors[(i-2) % len(colors)]
-                console.print(f"[bold {color}]{line}[/bold {color}]")
-            else:
-                console.print(f"[dim]{line}[/dim]")
-            time.sleep(0.08)
-    
-    # Add a status message with blink effect
-        status_panel = Panel(
+                color = colors[(i - 2) % len(colors)]
+                console.print(f"[bold {color}]{centered_line}[/bold {color}]")
+            time.sleep(0.05)
+        
+        # === THREE-COLUMN STATUS PANEL ===
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        # Left column: System Info
+        left_status = Panel(
             Align.center(
-                "[blink][bright_green]✦ SYSTEM INITIALIZED ✦[/bright_green][/blink]\n\n"
-                f"[cyan]Session ID:[/cyan] [white]{datetime.now().strftime('%Y%m%d%H%M%S')}[/white]\n"
-                f"[cyan]Ready for:[/cyan] [yellow]SSL/TLS Security Audit[/yellow]",
+                f"[bold cyan]🖥️ SYSTEM INFO[/bold cyan]\n\n"
+                f"[white]OS:[/white] [green]{platform.system()} {platform.release()}[/green]\n"
+                f"[white]Arch:[/white] [yellow]{platform.machine()}[/yellow]\n"
+                f"[white]Terminal:[/white] [dim]{terminal_width} cols[/dim]\n",
                 vertical="middle"
             ),
-            title="[bold white]SYSTEM STATUS[/bold white]",
-            border_style="bright_green",
-            padding=(1, 2),
-            width=panel_width
+            border_style="blue",
+            width=column_width + 4,
+            padding=(1, 1),
+            height=20
         )
-    
-        console.print(Align.center(status_panel))
+        
+        # Center column: Status Message
+        center_status = Panel(
+            Align.center(
+                f"[blink][bright_green]✦ SYSTEM INITIALIZED ✦[/bright_green][/blink]\n\n"
+                f"[white]Session ID:[/white]\n[cyan]{datetime.now().strftime('%Y%m%d%H%M%S')}[/cyan]\n\n"
+                f"[white]Ready for:[/white]\n[yellow]SSL/TLS Security Audit[/yellow]",
+                vertical="middle"
+            ),
+            border_style="bright_green",
+            width=column_width + 4,
+            padding=(1, 1),
+            height=20
+        )
+        
+        # Right column: Quick Commands
+        right_status = Panel(
+            Align.center(
+                f"[bold yellow]⚡ QUICK CMDS[/bold yellow]\n\n"
+                f"[cyan]help[/cyan] - Show commands\n"
+                f"[cyan]scan[/cyan] - Run security scan\n"
+                f"[cyan]update[/cyan] - Check updates\n"
+                f"[cyan]exit[/cyan] - Close terminal",
+                vertical="middle"
+            ),
+            border_style="yellow",
+            width=column_width + 4,
+            padding=(1, 1),
+            height=20
+        )
+        
+        # Create three-column status layout
+        status_layout = Layout()
+        status_layout.split_row(
+            Layout(left_status, ratio=1),
+            Layout(center_status, ratio=1),
+            Layout(right_status, ratio=1)
+        )
+        
+        # Center and display
+        console.print(Align.center(status_layout))
         print()
 
     # =======ends here from above-==============
@@ -7049,6 +7520,19 @@ class SecurityTerminal:
         
         elif parts[0] == "kill-monitor":
             self.cmd_kill_monitor()
+            return
+        
+        # ===== Financial Forensics =====
+        elif parts[0] == "forensics" or parts[0] == "ff" or parts[0] == "dst-investigation":
+            self.cmd_financial_forensics()
+            return
+
+        elif parts[0] == "fraud-investigation":
+            self.cmd_financial_forensics()
+            return
+
+        elif parts[0] == "dst-investigate":
+            self.cmd_financial_forensics()
             return
 #  =====================for recon & recon_full command parser=============================
  

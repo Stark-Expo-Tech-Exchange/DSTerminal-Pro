@@ -1,4 +1,4 @@
-#!/usr/bin/env python3
+#!/usr/bin/env python3 financial_forensic.py
 """
 DSTerminal Financial Forensics Module
 Cinematic simulation of global banking fraud scenarios
@@ -22,7 +22,9 @@ from rich.layout import Layout
 from rich.text import Text
 from rich import box
 from rich.columns import Columns
-
+import shutil  # ← ADD THIS LINE
+from datetime import datetime, timedelta
+from pathlib import Path
 # PDF Generation imports
 try:
     from reportlab.lib.pagesizes import A4, letter, landscape
@@ -55,8 +57,10 @@ except ImportError:
         BRIGHT = '\033[1m'; RESET_ALL = '\033[0m'
 
 console = Console()
+# =========================
+# GLOBAL FRAUD SCENARIOS DATABASE
+# =========================
 
-# Global fraud scenarios database
 FRAUD_SCENARIOS = {
     "money_laundering": {
         "name": "💰 MONEY LAUNDERING DETECTION",
@@ -69,7 +73,10 @@ FRAUD_SCENARIOS = {
             "Multiple transactions just below $10,000",
             "Rapid movement between accounts",
             "Offshore account involvement",
-            "Structuring detected (smurfing)"
+            "Structuring detected (smurfing)",
+            "Unexplained third-party transfers",
+            "Shell company intermediary detected",
+            "Trade-based money laundering pattern"
         ]
     },
     "wire_fraud": {
@@ -82,7 +89,11 @@ FRAUD_SCENARIOS = {
         "indicators": [
             "Unexpected change in beneficiary",
             "Urgent payment requests",
-            "Spoofed email domain detected"
+            "Spoofed email domain detected",
+            "Foreign correspondent bank alert",
+            "Duplicate invoice detected",
+            "Unusual payment timing (after hours)",
+            "Newly created beneficiary account"
         ]
     },
     "crypto_scam": {
@@ -95,7 +106,11 @@ FRAUD_SCENARIOS = {
         "indicators": [
             "Unrealistic return promises",
             "Fake celebrity endorsements",
-            "Rug pull pattern detected"
+            "Rug pull pattern detected",
+            "Mixer/tumbler service usage",
+            "Unregistered exchange activity",
+            "Rapid token minting detected",
+            "Liquidity pool manipulation"
         ]
     },
     "identity_theft": {
@@ -108,7 +123,11 @@ FRAUD_SCENARIOS = {
         "indicators": [
             "Multiple credit applications",
             "Address mismatch detected",
-            "Unusual login patterns"
+            "Unusual login patterns",
+            "SIM swap detected",
+            "Dark web credential listing",
+            "Multiple failed KYC attempts",
+            "Biometric spoofing attempt"
         ]
     },
     "insider_trading": {
@@ -121,10 +140,14 @@ FRAUD_SCENARIOS = {
         "indicators": [
             "Trading before major news",
             "Pattern matching known insiders",
-            "Abnormal volume spikes"
+            "Abnormal volume spikes",
+            "Offshore account trading",
+            "Family member account activity",
+            "Encrypted communication detected",
+            "Option strike price anomalies"
         ]
     },
-    "shel_company": {
+    "shell_company": {
         "name": "🏢 SHELL COMPANY FRAUD",
         "stages": [
             "Fake invoicing scheme",
@@ -134,29 +157,341 @@ FRAUD_SCENARIOS = {
         "indicators": [
             "No physical business address",
             "Circular transactions",
-            "Offshore tax haven links"
+            "Offshore tax haven links",
+            "Nominee directors identified",
+            "Bearer shares issued",
+            "Dormant company reactivation",
+            "Multiple company registrations at same address"
+        ]
+    },
+    "mobile_money_fraud": {
+        "name": "📱 MOBILE MONEY FRAUD",
+        "stages": [
+            "SIM swap or account takeover",
+            "Unauthorized mobile wallet access",
+            "Rapid transfer to multiple agents"
+        ],
+        "indicators": [
+            "Multiple agent withdrawals in short period",
+            "Unusual transaction locations",
+            "Maximum transaction limit exploitation",
+            "New device login detected",
+            "Bulk airtime purchases",
+            "Cross-network rapid transfers",
+            "Agent collusion pattern"
+        ]
+    },
+    "procurement_fraud": {
+        "name": "📋 PROCUREMENT FRAUD",
+        "stages": [
+            "Bid rigging or collusion",
+            "Inflated invoice submission",
+            "Goods not delivered"
+        ],
+        "indicators": [
+            "Single bidder pattern",
+            "Unusual vendor relationship",
+            "Split purchase orders",
+            "Vendor address matches employee",
+            "Ghost vendor detected",
+            "Contract value inflation",
+            "Unauthorized sole sourcing"
+        ]
+    },
+    "agricultural_fraud": {
+        "name": "🌾 AGRICULTURAL SUBSIDY FRAUD",
+        "stages": [
+            "Fake farmer registration",
+            "Inflated harvest claims",
+            "Subsidy diversion"
+        ],
+        "indicators": [
+            "Non-existent farmland claimed",
+            "Multiple claims on same plot",
+            "Harvest exceeding land capacity",
+            "Ghost farmer detected",
+            "Fertilizer diversion to market",
+            "Duplicate cooperative membership",
+            "Satellite imagery mismatch"
         ]
     }
 }
 
-# Global banking networks
+# =========================
+# GLOBAL BANKING NETWORKS
+# =========================
+
 BANKING_NETWORKS = {
-    "SWIFT": ["JPMorgan Chase", "HSBC", "Deutsche Bank", "Barclays", "BNP Paribas"],
-    "CRYPTO": ["Binance", "Coinbase", "Kraken", "FTX (Defunct)", "KuCoin"],
-    "PAYMENT": ["Visa", "Mastercard", "PayPal", "Stripe", "Square"],
-    "OFFSHORE": ["Cayman National", "BVI Bank", "Swiss Finance", "Singapore Banking"]
+    "SWIFT": [
+        "JPMorgan Chase", "HSBC", "Deutsche Bank", "Barclays", "BNP Paribas",
+        "Standard Chartered", "Citibank", "Bank of America", "UBS", "Credit Suisse"
+    ],
+    "CRYPTO": [
+        "Binance", "Coinbase", "Kraken", "FTX (Defunct)", "KuCoin",
+        "Bybit", "OKX", "Gate.io", "Bitfinex", "Huobi"
+    ],
+    "PAYMENT": [
+        "Visa", "Mastercard", "PayPal", "Stripe", "Square",
+        "Apple Pay", "Google Pay", "Samsung Pay", "Alipay", "WeChat Pay"
+    ],
+    "OFFSHORE": [
+        "Cayman National", "BVI Bank", "Swiss Finance", "Singapore Banking",
+        "Mauritius Commercial Bank", "Bermuda Commercial Bank", "Jersey Financial",
+        "Guernsey Banking", "Isle of Man Finance", "Bahamas International"
+    ],
+    "AFRICAN_BANKS": [
+        "Standard Bank", "Absa Group", "Nedbank", "FirstRand",
+        "Ecobank", "United Bank for Africa", "Access Bank", "Guaranty Trust Bank",
+        "Kenya Commercial Bank", "Equity Bank", "Attijariwafa Bank", "Banque Misr"
+    ],
+    "MOBILE_MONEY": [
+        "M-Pesa", "Airtel Money", "TNM Mpamba", "Orange Money",
+        "MTN Mobile Money", "Tigo Pesa", "Safaricom", "Vodacom M-Pesa",
+        "Wave", "OPay", "PalmPay", "WorldRemit"
+    ]
 }
 
-# High-risk jurisdictions
+# =========================
+# MALAWI BANKING SECTOR (COMPLETE)
+# =========================
+
+MALAWI_BANKS = {
+    "commercial_banks": {
+        "National Bank of Malawi (NBM)": {
+            "code": "NBM",
+            "swift": "NBMAMWMW",
+            "type": "Commercial",
+            "branches": 32,
+            "services": ["Retail", "Corporate", "Treasury", "Trade Finance", "Mobile Banking (Mo626)"]
+        },
+        "Standard Bank Malawi": {
+            "code": "SBM",
+            "swift": "SBICMWMX",
+            "type": "Commercial",
+            "branches": 25,
+            "services": ["Retail", "Corporate", "Investment", "Trade Finance", "Digital Banking (Unayo)"]
+        },
+        "First Capital Bank (FCB)": {
+            "code": "FCB",
+            "swift": "FCDZMWMW",
+            "type": "Commercial",
+            "branches": 15,
+            "services": ["Retail", "SME", "Corporate", "Treasury", "Internet Banking"]
+        },
+        "FDH Bank": {
+            "code": "FDH",
+            "swift": "FDHMMWMW",
+            "type": "Commercial",
+            "branches": 45,
+            "services": ["Retail", "Corporate", "Treasury", "Trade Finance", "Ufulu Digital Account"]
+        },
+        "NBS Bank": {
+            "code": "NBS",
+            "swift": "NBSTMWMW",
+            "type": "Commercial",
+            "branches": 30,
+            "services": ["Retail", "SME", "Agricultural Finance", "Mobile Banking"]
+        },
+        "CDH Investment Bank": {
+            "code": "CDH",
+            "swift": "CDHIMWMW",
+            "type": "Investment/Commercial",
+            "branches": 5,
+            "services": ["Investment Banking", "Corporate Advisory", "Wealth Management", "Treasury"]
+        },
+        "Ecobank Malawi": {
+            "code": "ECO",
+            "swift": "ECOCMWMW",
+            "type": "Commercial",
+            "branches": 8,
+            "services": ["Pan-African Banking", "Trade Finance", "Corporate", "Digital Banking"]
+        },
+        "Centenary Bank Malawi": {
+            "code": "CBM",
+            "swift": "CERBMWMW",
+            "type": "Commercial",
+            "branches": 12,
+            "services": ["Retail", "SME", "Agricultural Finance", "Microfinance"]
+        },
+        "MyBucks Banking Corporation": {
+            "code": "MBC",
+            "swift": "MYBMMWMW",
+            "type": "Digital/Commercial",
+            "branches": 4,
+            "services": ["Digital Banking", "Fintech", "Consumer Lending", "Mobile Banking"]
+        }
+    },
+    "reserve_bank": {
+        "Reserve Bank of Malawi (RBM)": {
+            "code": "RBM",
+            "swift": "RBMMMWMW",
+            "type": "Central Bank",
+            "role": "Monetary Policy, Banking Regulation, Currency Issuance, Financial Stability"
+        }
+    },
+    "microfinance_institutions": [
+        "FINCA Malawi",
+        "Opportunity Bank Malawi",
+        "CUMO Microfinance",
+        "Vision Fund Malawi",
+        "Select Financial Services",
+        "Express Credit Malawi"
+    ],
+    "mobile_money_platforms": {
+        "TNM Mpamba": {
+            "operator": "TNM Malawi",
+            "services": ["Person-to-Person", "Bill Payments", "Merchant Payments", "Bank Integration", "Bulk Disbursement"],
+            "ussd": "*444#"
+        },
+        "Airtel Money Malawi": {
+            "operator": "Airtel Malawi",
+            "services": ["Person-to-Person", "Bill Payments", "International Remittance", "Bank Integration", "Airtel Money Mastercard"],
+            "ussd": "*211#"
+        }
+    },
+    "digital_banking": {
+        "Mo626 (NBM)": {"type": "Mobile/Internet Banking"},
+        "Unayo (Standard Bank)": {"type": "Digital Wallet"},
+        "Ufulu Digital (FDH)": {"type": "Digital Account"},
+        "Kwacha Direct (NBS)": {"type": "Online Banking"},
+        "FCB Online": {"type": "Internet Banking"}
+    }
+}
+
+# =========================
+# MALAWI FRAUD PATTERNS (LOCALIZED)
+# =========================
+
+MALAWI_FRAUD_PATTERNS = {
+    "mobile_money_scams": {
+        "Airtel Money/TNM Mpamba Fraud": [
+            "SIM swap to access mobile wallet",
+            "Fake promotion messages ('You have won...')",
+            "Agent-assisted unauthorized withdrawals",
+            "Phishing via SMS (smishing) targeting banking details",
+            "Ghost agent transactions"
+        ]
+    },
+    "agricultural_fraud": {
+        "Farm Input Subsidy Program (FISP)": [
+            "Ghost farmers registered for subsidies",
+            "Coupon diversion to black market",
+            "Fertilizer resale across borders (Mozambique/Zambia)",
+            "Multiple registrations across districts",
+            "Cooperative fraud (fake cooperatives)"
+        ]
+    },
+    "procurement_fraud": {
+        "Government Tender Fraud": [
+            "Inflated pricing in public contracts",
+            "Bid rigging among connected companies",
+            "Payment for undelivered goods",
+            "Single-sourcing without proper justification",
+            "Kickbacks from contractors"
+        ]
+    },
+    "forex_manipulation": {
+        "Currency Black Market": [
+            "Parallel forex rates exploitation",
+            "Under-invoicing imports",
+            "Over-invoicing exports",
+            "Externalization of forex through trade mispricing",
+            "Bureau de change collusion"
+        ]
+    },
+    "payroll_fraud": {
+        "Ghost Workers": [
+            "Non-existent employees on payroll",
+            "Salary continuation after resignation/death",
+            "Duplicate salary payments across ministries",
+            "Unauthorized salary advances",
+            "Grade inflation for higher pay"
+        ]
+    },
+    "cross_border_fraud": {
+        "Regional Trade Fraud": [
+            "Smuggling through unmonitored borders",
+            "Counterfeit goods (Zambia/Mozambique/Tanzania)",
+            "Document forgery for customs clearance",
+            "Transit fraud (goods disappearing in transit)",
+            "Cash courier across borders"
+        ]
+    }
+}
+
+# =========================
+# HIGH-RISK JURISDICTIONS
+# =========================
+
 HIGH_RISK_COUNTRIES = {
     "North Korea": "DPRK",
-    "Iran": "IRN", 
+    "Iran": "IRN",
     "Syria": "SYR",
     "Russia": "RUS",
     "Myanmar": "MMR",
-    "Venezuela": "VEN"
+    "Venezuela": "VEN",
+    "Afghanistan": "AFG",
+    "Cuba": "CUB",
+    "Somalia": "SOM",
+    "Sudan": "SDN",
+    "Yemen": "YEM",
+    "Zimbabwe": "ZWE",
+    "Democratic Republic of Congo": "COD",
+    "South Sudan": "SSD"
 }
 
+# =========================
+# SUSPICIOUS TRANSACTION PATTERNS
+# =========================
+
+SUSPICIOUS_PATTERNS = {
+    "structuring": {
+        "name": "Structuring (Smurfing)",
+        "description": "Breaking large transactions into smaller ones to avoid reporting thresholds",
+        "thresholds": {
+            "Malawi": "MWK 5,000,000 (approx. $5,000)",
+            "International": "$10,000",
+            "EU": "€10,000"
+        }
+    },
+    "rapid_movement": {
+        "name": "Rapid Fund Movement",
+        "description": "Quick transfers between multiple accounts to obscure origin",
+        "indicators": ["Same-day transfers", "Multiple intermediary accounts", "Round-dollar amounts"]
+    },
+    "geographic_anomaly": {
+        "name": "Geographic Anomaly",
+        "description": "Transactions inconsistent with customer's location or profile",
+        "indicators": ["Foreign ATM use while card at home", "Cross-border transfers to high-risk countries"]
+    },
+    "new_account_activity": {
+        "name": "New Account Surge",
+        "description": "Sudden high-volume activity in newly opened accounts",
+        "indicators": ["Large deposit followed by rapid withdrawal", "Dormant account reactivation"]
+    }
+}
+
+# =========================
+# REGULATORY BODIES
+# =========================
+
+REGULATORY_BODIES = {
+    "Malawi": {
+        "Financial Intelligence Authority (FIA)": "AML/CFT supervision and financial intelligence",
+        "Reserve Bank of Malawi (RBM)": "Banking regulation and monetary policy",
+        "Malawi Revenue Authority (MRA)": "Tax collection and enforcement",
+        "Anti-Corruption Bureau (ACB)": "Corruption investigation and prosecution",
+        "Directorate of Public Procurement (DPP)": "Public procurement oversight",
+        "Financial Services Regulatory Authority": "Non-bank financial services regulation"
+    },
+    "International": {
+        "FATF": "Financial Action Task Force - Global AML standards",
+        "INTERPOL": "International police cooperation",
+        "ESAAMLG": "Eastern and Southern Africa Anti-Money Laundering Group",
+        "FINCEN": "Financial Crimes Enforcement Network (USA)",
+        "NCA": "National Crime Agency (UK)"
+    }
+}
 class FinancialForensics:
     """Advanced financial fraud investigation system"""
     
@@ -525,7 +860,7 @@ class FinancialForensics:
                 Layout(right_panel, ratio=1)
             )
             
-            console.print(Align.center(Panel(menu_layout, title="[bold white]🌍 GLOBAL FINANCIAL FRAUD INVESTIGATION SUITE 🌍[/bold white]", border_style="bright_red", width=100)))
+            console.print(Align.center(Panel(menu_layout, title="[bold white]🌍 GLOBAL FINANCIAL FRAUD INVESTIGATION SUITE 🌍[/bold white]", border_style="bright_red", width=180)))
             
             choice = console.input("\n[bold cyan]└─$ Select investigation type: [/]").strip()
             
@@ -600,40 +935,115 @@ class FinancialForensics:
         input()
     
     def _display_hacker_title(self):
-        """Display animated hacker-style title"""
-        title_art = """
-╔═══════════════════════════════════════════════════════════════════════════════╗
-║                                                                               ║
-║    ███████╗██╗███╗   ██╗ █████╗ ███╗   ██╗ ██████╗██╗ █████╗ ██╗              ║
-║    ██╔════╝██║████╗  ██║██╔══██╗████╗  ██║██╔════╝██║██╔══██╗██║              ║
-║    █████╗  ██║██╔██╗ ██║███████║██╔██╗ ██║██║     ██║███████║██║              ║
-║    ██╔══╝  ██║██║╚██╗██║██╔══██║██║╚██╗██║██║     ██║██╔══██║██║              ║
-║    ██║     ██║██║ ╚████║██║  ██║██║ ╚████║╚██████╗██║██║  ██║███████╗         ║
-║    ╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚═╝╚═╝  ╚═╝╚══════╝         ║
-║                                                                               ║
-║                      ███████╗██████╗  █████╗ ██╗   ██╗██████╗                 ║
-║                      ██╔════╝██╔══██╗██╔══██╗██║   ██║██╔══██╗                ║
-║                      █████╗  ██║  ██║███████║██║   ██║██║  ██║                ║
-║                      ██╔══╝  ██║  ██║██╔══██║██║   ██║██║  ██║                ║
-║                      ██║     ██████╔╝██║  ██║╚██████╔╝██████╔╝                ║
-║                      ╚═╝     ╚═════╝ ╚═╝  ╚═╝ ╚═════╝ ╚═════╝                 ║
-║                                                                               ║
-║                      🌍 GLOBAL FINANCIAL CRIME UNIT 🌍                         ║
-╚═══════════════════════════════════════════════════════════════════════════════╝
-        """
-        for line in title_art.split('\n'):
-            console.print(f"[bold red]{line}[/bold red]")
-            time.sleep(0.02)
+        """Display centered Financial Forensic Investigation Analysis banner with dynamic effects"""
+        console.clear()
         
-        console.print(Panel(
-            "[bold yellow]INTERPOL Financial Crimes Task Force[/bold yellow]\n"
-            "[cyan]Real-time fraud detection & investigation platform[/cyan]\n"
-            f"[dim]Session: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}[/dim]\n"
-            f"[dim]PDF Reports: {self.reports_dir}[/dim]",
-            border_style="red"
-        ))
-        time.sleep(2)
-    
+        import shutil
+        import time
+        from datetime import datetime
+        from rich.align import Align
+        from rich.panel import Panel
+        from random import choice
+        import hashlib
+        
+        term_width = shutil.get_terminal_size().columns
+        banner_width = min(120, term_width - 4)
+        
+        # Auto color cycling based on timestamp
+        def get_auto_colors():
+            color_seed = int(time.time() / 30)
+            color_seed_hash = hashlib.md5(str(color_seed).encode()).hexdigest()[:8]
+            seed_value = int(color_seed_hash, 16)
+            
+            color_schemes = [
+                ("bright_red", "red", "yellow", "bright_red"),
+                ("bright_cyan", "cyan", "white", "bright_cyan"),
+                ("bright_green", "green", "yellow", "bright_green"),
+                ("bright_magenta", "magenta", "cyan", "bright_magenta"),
+                ("bright_yellow", "yellow", "red", "bright_yellow"),
+                ("bright_blue", "blue", "cyan", "bright_blue"),
+            ]
+            
+            scheme_index = seed_value % len(color_schemes)
+            return color_schemes[scheme_index]
+        
+        main_color, shimmer_color, blink_color, border_accent = get_auto_colors()
+        
+        # Shimmer characters
+        shimmer_chars = ['✦', '✧', '⋆', '✴', '❖', '◆', '◈', '⬟']
+        shimmer_top = ''.join(choice(shimmer_chars) for _ in range(3))
+        shimmer_bottom = ''.join(choice(shimmer_chars) for _ in range(3))
+        
+        # Single banner - NO leading spaces
+        title_art = f"""
+    {shimmer_top}╔{'═' * banner_width}╗{shimmer_top}
+    ║{' ' * banner_width}║
+    ║{'███████╗██╗███╗   ██╗ █████╗ ███╗   ██╗ ██████╗██╗ █████╗ ██╗'.center(banner_width)}║
+    ║{'██╔════╝██║████╗  ██║██╔══██╗████╗  ██║██╔════╝██║██╔══██╗██║'.center(banner_width)}║
+    ║{'█████╗  ██║██╔██╗ ██║███████║██╔██╗ ██║██║     ██║███████║██║'.center(banner_width)}║
+    ║{'██╔══╝  ██║██║╚██╗██║██╔══██║██║╚██╗██║██║     ██║██╔══██║██║'.center(banner_width)}║
+    ║{'██║     ██║██║ ╚████║██║  ██║██║ ╚████║╚██████╗██║██║  ██║███████╗'.center(banner_width)}║
+    ║{'╚═╝     ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚═╝  ╚═══╝ ╚═════╝╚═╝╚═╝  ╚═╝╚══════╝'.center(banner_width)}║
+    ║{' ' * banner_width}║
+    ║{'███████╗ ██████╗ ██████╗ ███████╗███╗   ██╗███████╗██╗ ██████╗'.center(banner_width)}║
+    ║{'██╔════╝██╔═══██╗██╔══██╗██╔════╝████╗  ██║██╔════╝██║██╔════╝'.center(banner_width)}║
+    ║{'█████╗  ██║   ██║██████╔╝█████╗  ██╔██╗ ██║███████╗██║██║'.center(banner_width)}║
+    ║{'██╔══╝  ██║   ██║██╔══██╗██╔══╝  ██║╚██╗██║╚════██║██║██║'.center(banner_width)}║
+    ║{'██║     ╚██████╔╝██║  ██║███████╗██║ ╚████║███████║██║╚██████╗'.center(banner_width)}║
+    ║{'╚═╝      ╚═════╝ ╚═╝  ╚═╝╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝ ╚═════╝'.center(banner_width)}║
+    ║{' ' * banner_width}║
+    ║{'██╗███╗   ██╗██╗   ██╗███████╗███████╗████████╗██╗ ██████╗  █████╗ ████████╗██╗ ██████╗ ███╗   ██╗'.center(banner_width)}║
+    ║{'██║████╗  ██║██║   ██║██╔════╝██╔════╝╚══██╔══╝██║██╔════╝ ██╔══██╗╚══██╔══╝██║██╔═══██╗████╗  ██║'.center(banner_width)}║
+    ║{'██║██╔██╗ ██║██║   ██║█████╗  ███████╗   ██║   ██║██║  ███╗███████║   ██║   ██║██║   ██║██╔██╗ ██║'.center(banner_width)}║
+    ║{'██║██║╚██╗██║╚██╗ ██╔╝██╔══╝  ╚════██║   ██║   ██║██║   ██║██╔══██║   ██║   ██║██║   ██║██║╚██╗██║'.center(banner_width)}║
+    ║{'██║██║ ╚████║ ╚████╔╝ ███████╗███████║   ██║   ██║╚██████╔╝██║  ██║   ██║   ██║╚██████╔╝██║ ╚████║'.center(banner_width)}║
+    ║{'╚═╝╚═╝  ╚═══╝  ╚═══╝  ╚══════╝╚══════╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═╝   ╚═╝   ╚═╝ ╚═════╝ ╚═╝  ╚═══╝'.center(banner_width)}║
+    ║{' ' * banner_width}║
+    ║{'█████╗ ███╗   ██╗ █████╗ ██╗  ██╗   ██╗███████╗██╗███████╗'.center(banner_width)}║
+    ║{'██╔══██╗████╗  ██║██╔══██╗██║  ╚██╗ ██╔╝██╔════╝██║██╔════╝'.center(banner_width)}║
+    ║{'███████║██╔██╗ ██║███████║██║   ╚████╔╝ ███████╗██║███████╗'.center(banner_width)}║
+    ║{'██╔══██║██║╚██╗██║██╔══██║██║    ╚██╔╝  ╚════██║██║╚════██║'.center(banner_width)}║
+    ║{'██║  ██║██║ ╚████║██║  ██║███████╗██║   ███████║██║███████║'.center(banner_width)}║
+    ║{'╚═╝  ╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝╚═╝   ╚══════╝╚═╝╚══════╝'.center(banner_width)}║
+    ║{' ' * banner_width}║
+    ║{'◢◤  F I N A N C I A L   F O R E N S I C   I N V E S T I G A T I O N   A N A L Y S I S  ◥◣'.center(banner_width)}║
+    ║{' ' * banner_width}║
+    ╚{'═' * banner_width}╝{shimmer_bottom}
+    """
+        
+        # Display banner ONCE
+        console.print(Align.center(f"[bold {main_color}]{title_art}[/bold {main_color}]", vertical="middle"))
+        time.sleep(0.2)
+        
+        # Display panel ONCE - REMOVED ALL DUPLICATES
+        current_time = datetime.now().strftime('%Y-%m-%d %H:%M:%S')
+        
+        panel_content = (
+            f"[bold {shimmer_color}]🌐 GLOBAL FINANCIAL CRIME INTELLIGENCE GRID 🌐[/bold {shimmer_color}]\n\n"
+            f"[{main_color}]🔍 Real-Time Fraud Detection • AML Monitoring • Crypto Tracing[/{main_color}]\n"
+            f"[{blink_color}]💳 SWIFT Analysis • Transaction Correlation • Threat Intelligence[/{blink_color}]\n"
+            f"[{shimmer_color}]📊 Forensic Accounting • Asset Tracing • KYC Verification[/{shimmer_color}]\n\n"
+            f"[dim]⏰ SESSION INITIALIZED : {current_time}[/dim]\n"
+            f"[dim]📁 FORENSIC REPORTS : {self.reports_dir}[/dim]\n"
+            f"[dim]🖥️  SYSTEM STATUS : [green]● ACTIVE[/green] | [yellow]SECURE CHANNEL[/yellow][/dim]\n"
+            f"[bold {border_accent}]⚠️  AUTHORIZED ACCESS ONLY - ALL ACTIVITIES ARE MONITORED ⚠️[/bold {border_accent}]"
+        )
+        
+        console.print(
+            Align.center(
+                Panel(
+                    Align.center(panel_content, vertical="middle"),
+                    border_style=border_accent,
+                    width=min(110, banner_width),
+                    title=f"[bold {shimmer_color}]🔒 FINANCIAL FORENSICS COMMAND CENTER 🔒[/bold {shimmer_color}]",
+                    subtitle=f"[bold {border_accent}]⚡ CLASSIFIED - TOP SECRET ⚡[/bold {border_accent}]",
+                    padding=(1, 2)
+                )
+            )
+        )
+        
+        time.sleep(0.2)
+
     def investigate_money_laundering(self):
         """Cinematic money laundering investigation with animated tables"""
         console.clear()
