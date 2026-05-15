@@ -982,7 +982,7 @@ class SecurityTerminal:
         pd = PlatformDetector()
 
         self.config = {
-            'version': '2.1.113',
+            'version': '2.0.113',
             'monitor_paths': pd.get_trash_paths(),
             'exclude_patterns': ['*.tmp', '*.temp', '*~', '.DS_Store', 'Thumbs.db'],
             'max_file_size': 100 * 1024 * 1024,

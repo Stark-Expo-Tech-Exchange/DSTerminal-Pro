@@ -1,9 +1,10 @@
 ; DSTerminal Installer Script - Non-Admin Safe with Documentation & Auto-Update
 ; Version: 2.0.113
-; Date: 2024
+; Date: 2026
 
 [Setup]
 ; Basic Setup Information
+AppId={{1EFF5130-85AF-4EE9-B818-5634A06408D2}}
 AppName=DSTerminal
 AppVersion=2.0.113
 AppVerName=DSTerminal v2.0.113
@@ -20,16 +21,16 @@ DefaultDirName={userappdata}\DSTerminal
 DefaultGroupName=DSTerminal
 LicenseFile=license.txt
 OutputDir=installer_output
-OutputBaseFilename=DSTerminal_Installer_2025_v2.0.113
+OutputBaseFilename=DSTerminal_Installer_2026_v2.0.113
 Compression=lzma2/ultra64
 SolidCompression=yes
 DisableWelcomePage=no
 WizardStyle=modern
-SetupIconFile=installer_assets\icon.ico
+SetupIconFile=installer_assets\3486-removebg-preview.ico
 DisableProgramGroupPage=no
 AllowNoIcons=yes
 PrivilegesRequired=lowest
-MinVersion=10.0.10240
+MinVersion=10.0
 UninstallDisplayIcon={app}\dsterminal.exe
 UninstallDisplayName=DSTerminal v2.0.113
 VersionInfoVersion=2.0.113
@@ -42,7 +43,7 @@ VersionInfoProductVersion=2.0.113
 
 ; Create uninstaller in registry
 CreateUninstallRegKey=yes
-UpdateUninstallLogAppName=no
+UpdateUninstallLogAppName=yes
 
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
@@ -73,7 +74,7 @@ Name: "startwithwindows"; Description: "Start DSTerminal with Windows (minimized
 [Files]
 ; ========== CORE APPLICATION ==========
 ; Main executable (ensure this file exists in dist folder)
-Source: "dist\dsterminal_win-2025_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
+Source: "dist\dsterminal_win-2026_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
 Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
 
