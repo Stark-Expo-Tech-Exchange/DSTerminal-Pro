@@ -2,9 +2,9 @@
 
 import sys
 import os
-from PyInstaller.utils.hooks import collect_data_files, collect_submodules
+from PyInstaller.utils.hooks import collect_data_files, collect_submodules, collect_dynamic_libs
 
-# Exclude heavy/unnecessary modules (removed 'tkinter')
+# Exclude heavy/unnecessary modules
 excludes = [
     'unittest', 'pytest', 'PyQt5', 'PyQt6', 
     'IPython', 'jupyter', 'matplotlib.tests', 'numpy.tests', 
@@ -50,23 +50,120 @@ for file in files:
     if os.path.exists(file):
         datas.append((file, '.'))
 
+# Comprehensive hidden imports for all DSTerminal functionality
+hiddenimports = [
+    # Rich Console & UI
+    'rich', 'rich.console', 'rich.panel', 'rich.align', 'rich.table',
+    'rich.live', 'rich.layout', 'rich.progress', 'rich.syntax', 'rich.traceback',
+    'rich.markdown', 'rich.columns', 'rich.tree', 'rich.prompt', 'rich.status',
+    'rich.box', 'rich.text', 'rich.style', 'rich.color', 'rich.theme',
+    'rich.segment', 'rich.measure', 'rich.padding', 'rich.control',
+    
+    # Colorama for cross-platform colors
+    'colorama', 'colorama.initialise', 'colorama.ansitowin32',
+    
+    # Core Python libraries
+    'json', 'os', 'sys', 'time', 'random', 'datetime', 'threading',
+    'pathlib', 'shutil', 'platform', 'subprocess', 'hashlib', 'base64',
+    'logging', 're', 'collections', 'itertools', 'functools', 'glob',
+    'tempfile', 'io', 'abc', 'weakref', 'copy', 'math', 'string',
+    'typing', 'enum', 'dataclasses', 'contextlib', 'signal', 'atexit',
+    
+    # Network & Web
+    'requests', 'requests.packages', 'requests.packages.urllib3',
+    'urllib3', 'urllib.parse', 'socket', 'ssl', 'http.client', 'http.server',
+    'webbrowser', 'email', 'email.mime', 'email.mime.text', 'email.mime.multipart',
+    'smtplib', 'ftplib', 'telnetlib',
+    
+    # Data Processing
+    'psutil', 'psutil._psutil_windows', 'psutil._common',
+    
+    # Reporting & PDF
+    'fpdf', 'fpdf2', 'fpdf.enums', 'fpdf.table', 'fpdf.fonts',
+    'reportlab', 'reportlab.pdfgen', 'reportlab.lib.pagesizes', 'reportlab.lib.units',
+    'reportlab.lib.colors', 'reportlab.platypus', 'reportlab.platypus.tables',
+    'reportlab.pdfbase', 'reportlab.pdfbase.pdfmetrics',
+    
+    # File System & Operations
+    'shutil', 'filecmp', 'stat', 'fnmatch', 'pickle', 'shelve',
+    
+    # Windows Specific
+    'win32api', 'win32com', 'win32com.client', 'win32com.shell', 'win32com.shell.shell',
+    'win32ctypes', 'win32ctypes.pywin32', 'win32ctypes.pywin32.win32api',
+    'win32security', 'win32file', 'win32con', 'win32process', 'win32event',
+    'win32gui', 'win32ui', 'ctypes', 'ctypes.wintypes',
+    
+    # Terminal & Progress Bars
+    'tqdm', 'tqdm.std', 'tqdm.rich', 'tqdm.asyncio',
+    'prompt_toolkit', 'prompt_toolkit.shortcuts', 'prompt_toolkit.styles',
+    'pyfiglet', 'pyfiglet.fonts',
+    
+    # Cryptography & Security
+    'cryptography', 'cryptography.hazmat', 'cryptography.hazmat.primitives',
+    'cryptography.hazmat.primitives.ciphers', 'cryptography.hazmat.primitives.hashes',
+    'cryptography.hazmat.backends', 'cryptography.hazmat.backends.openssl',
+    'cryptography.hazmat.primitives.asymmetric', 'cryptography.hazmat.primitives.kdf',
+    'hashlib', 'hmac', 'secrets',
+    
+    # Web Scraping & APIs
+    'urllib3', 'urllib3.poolmanager', 'urllib3.util', 'urllib3.util.retry',
+    'json.decoder', 'json.encoder',
+    
+    # GUI & Dialog (for file dialogs)
+    'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox',
+    'tkinter.simpledialog', 'tkinter.scrolledtext', 'tkinter.colorchooser',
+    
+    # Syntax Highlighting
+    'pygments', 'pygments.lexers', 'pygments.formatters', 'pygments.styles',
+    
+    # Textual UI (if used)
+    'textual', 'textual.app', 'textual.widgets', 'textual.containers',
+    'textual.screen', 'textual.events', 'textual.messages',
+    
+    # Animation & Visual Effects
+    'ascii_magic', 'ascii_magic._ascii_magic',
+    
+    # Financial Forensics specific
+    'financial_forensics', 'crypto_engine', 'integrity_monitor',
+    'recon', 'recon_full', 'vt_scan', 'edu_typing_engine',
+    'deletion_protection',
+    
+    # Networking Tools
+    'socket', 'ipaddress', 'dnspython', 'dns', 'dns.resolver',
+    
+    # Compression (if needed)
+    'zipfile', 'tarfile', 'gzip', 'bz2', 'lzma',
+    
+    # XML/HTML Processing
+    'xml', 'xml.etree', 'xml.etree.ElementTree', 'html', 'html.parser',
+    
+    # Date/Time
+    'calendar', 'zoneinfo',
+    
+    # System Information
+    'platform', 'sysconfig', 'site',
+    
+    # Additional Windows-specific
+    'winreg', 'msvcrt', '_winapi',
+]
+
+# Collect hidden submodules from key packages
+try:
+    hiddenimports.extend(collect_submodules('rich'))
+    hiddenimports.extend(collect_submodules('psutil'))
+    hiddenimports.extend(collect_submodules('reportlab'))
+except:
+    pass
+
 a = Analysis(
     ['dsterminal.py'],
     pathex=[],
     binaries=[],
     datas=datas,
-    hiddenimports=[
-        'rich', 'rich.console', 'rich.panel', 'rich.align', 'rich.table',
-        'rich.live', 'rich.layout', 'rich.progress', 'rich.syntax', 'rich.traceback',
-        'colorama', 'requests', 'json', 'os', 'sys', 'time', 'random', 'datetime',
-        'pathlib', 'shutil', 'platform', 'subprocess', 'threading', 'hashlib',
-        'win32api', 'win32com', 'win32ctypes.pywin32', 'win32ctypes.pywin32.win32api',
-        'tqdm', 'pygments', 'cryptography', 'psutil', 'prompt_toolkit', 'pyfiglet',
-        'textual', 'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox'
-    ],
+    hiddenimports=hiddenimports,
     hookspath=[],
     hooksconfig={},
-    runtime_hooks=[],  # Removed custom hook-rich.py
+    runtime_hooks=[],
     excludes=excludes,
     noarchive=False,
 )
