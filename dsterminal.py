@@ -4294,49 +4294,63 @@ class SecurityTerminal:
 
 # ====================for hardening section=================================
 # ============================================================
-# added to MAIN DSTERMINAL.PY FILE
+# ENTERPRISE-GRADE HARDENING INTEGRATION FOR MAIN DSTERMINAL.PY
 # ============================================================
+
     def _get_hardening_dashboard(self):
-        """Get or create hardening dashboard instance"""
+        """Get or create hardening dashboard instance with cinematic support"""
         if not hasattr(self, 'hardening_dashboard') or self.hardening_dashboard is None:
             try:
                 from hardening_dashboard import HardeningDashboard
-                print("[DEBUG] Importing HardeningDashboard...")
-                self.hardening_dashboard = HardeningDashboard(
-                    terminal_width=self.terminal_width if hasattr(self, 'terminal_width') else 80
-                )
-                print("[✓] Hardening system initialized")
-                print(f"[DEBUG] Dashboard modules: {len(self.hardening_dashboard.modules)}")
+                # Detect terminal width
+                try:
+                    import shutil
+                    terminal_width = shutil.get_terminal_size().columns
+                except:
+                    terminal_width = 120
+                
+                self.hardening_dashboard = HardeningDashboard(terminal_width=terminal_width)
+                print(f"{Fore.GREEN}[✓] Hardening system initialized (Cinematic Mode){Style.RESET_ALL}")
             except ImportError as e:
-                print(f"[!] Failed to import hardening_dashboard: {e}")
-                print("[!] Make sure hardening_dashboard.py exists in the same directory")
+                print(f"{Fore.RED}[!] Failed to import hardening_dashboard: {e}{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[*] Make sure hardening_dashboard.py exists in the same directory{Style.RESET_ALL}")
                 return None
             except Exception as e:
-                print(f"[!] Failed to initialize hardening: {e}")
+                print(f"{Fore.RED}[!] Failed to initialize hardening: {e}{Style.RESET_ALL}")
                 import traceback
                 traceback.print_exc()
                 return None
         return self.hardening_dashboard
 
     def harden_system(self):
-        """Main hardening command handler"""
+        """Main hardening command handler - Enterprise Cinematic Mode"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
         
-        print(f"\n{'='*60}")
-        print("SYSTEM HARDENING")
-        print(f"{'='*60}")
-        print(f"System: {dashboard.system}")
-        print(f"Admin: {dashboard.is_admin_user}")
-        print(f"Available Modules: {len(dashboard.modules)}")
-        print(f"\nType 'harden-dashboard' for interactive mode")
-        print(f"Type 'harden-list' to see all modules")
-        print(f"Type 'harden-status' for current status")
-
+        # Check if Rich is available for cinematic mode
+        try:
+            from rich.console import Console
+            RICH_AVAILABLE = True
+        except ImportError:
+            RICH_AVAILABLE = False
+        
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{' '*15}SYSTEM HARDENING - CINEMATIC MODE{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}System:{Style.RESET_ALL} {dashboard.system}")
+        print(f"{Fore.YELLOW}Admin:{Style.RESET_ALL} {dashboard.is_admin_user}")
+        print(f"{Fore.YELLOW}Modules:{Style.RESET_ALL} {len(dashboard.modules)}")
+        print(f"\n{Fore.CYAN}Commands:{Style.RESET_ALL}")
+        print(f"  {Fore.GREEN}harden-dashboard{Style.RESET_ALL}  - Launch cinematic dashboard")
+        print(f"  {Fore.GREEN}harden-list{Style.RESET_ALL}       - List all modules")
+        print(f"  {Fore.GREEN}harden-status{Style.RESET_ALL}     - Show status")
+        print(f"  {Fore.GREEN}harden-full{Style.RESET_ALL}       - Execute full hardening")
+        print(f"  {Fore.GREEN}harden-quick{Style.RESET_ALL}      - Quick hardening")
+        print(f"  {Fore.GREEN}harden-cinematic{Style.RESET_ALL}  - Launch cinematic mode")
 
     def harden_system_full(self):
-        """Execute full system hardening"""
+        """Execute full system hardening with real-time telemetry"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
@@ -4347,14 +4361,18 @@ class SecurityTerminal:
             if not (m.requires_admin and not dashboard.is_admin_user)
         ]
         
-        print(f"\n[+] Executing full system hardening...")
-        print(f"[+] {len(dashboard.selected_modules)} modules selected")
+        print(f"\n{Fore.GREEN}[+] Executing FULL system hardening...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] {len(dashboard.selected_modules)} modules selected{Style.RESET_ALL}")
         
-        dashboard._execute_hardening()
+        # Use cinematic execution if available
+        if hasattr(dashboard, '_execute_hardening_realtime'):
+            dashboard._execute_hardening_realtime()
+        else:
+            dashboard._execute_hardening()
         dashboard._generate_report()
 
     def harden_system_quick(self):
-        """Quick hardening - critical and high only"""
+        """Quick hardening - critical and high only with real-time output"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
@@ -4366,70 +4384,141 @@ class SecurityTerminal:
             and not (m.requires_admin and not dashboard.is_admin_user)
         ]
         
-        print(f"\n[+] Quick hardening: {len(dashboard.selected_modules)} modules")
-        dashboard._execute_hardening()
+        print(f"\n{Fore.GREEN}[+] Executing QUICK hardening...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] {len(dashboard.selected_modules)} critical/high modules selected{Style.RESET_ALL}")
+        
+        if hasattr(dashboard, '_execute_hardening_realtime'):
+            dashboard._execute_hardening_realtime()
+        else:
+            dashboard._execute_hardening()
 
     def harden_system_dry_run(self):
-        """Preview hardening without applying"""
+        """Preview hardening without applying - Dry Run Mode"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
         
-        print(f"\n{'='*60}")
-        print("DRY RUN - Preview Only (No Changes Made)")
-        print(f"{'='*60}\n")
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self._center_text('DRY RUN - Preview Mode (No Changes Made)')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}\n")
         
-        for i, module in enumerate(dashboard.modules, 1):
-            if module.platforms and dashboard.system not in module.platforms:
-                continue
-            admin_req = " [ADMIN REQUIRED]" if module.requires_admin and not dashboard.is_admin_user else ""
-            print(f"  {i:2d}. {module.name}")
-            print(f"      [{module.severity.value}] {module.description[:55]}...{admin_req}")
+        # Create categories for better display
+        categories = {}
+        for module in dashboard.modules:
+            cat = module.category.value
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(module)
         
-        print(f"\n[✓] Dry run complete. {len(dashboard.modules)} modules available.")
+        for category, modules in categories.items():
+            print(f"{Fore.YELLOW}▸ {category}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{'─'*50}{Style.RESET_ALL}")
+            for module in modules:
+                if module.platforms and dashboard.system not in module.platforms:
+                    continue
+                admin_req = f"{Fore.RED} [ADMIN REQUIRED]{Style.RESET_ALL}" if module.requires_admin and not dashboard.is_admin_user else ""
+                severity_color = Fore.RED if module.severity.value == 'CRITICAL' else Fore.YELLOW
+                print(f"  {Fore.GREEN}○{Style.RESET_ALL} {module.name}")
+                print(f"      [{severity_color}{module.severity.value}{Style.RESET_ALL}] {module.description[:55]}...{admin_req}")
+            print()
+        
+        print(f"{Fore.GREEN}[✓] Dry run complete. {len(dashboard.modules)} modules available.{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[!] No changes were made to your system.{Style.RESET_ALL}")
 
     def launch_hardening_dashboard(self):
-        """Launch interactive hardening dashboard"""
+        """Launch interactive hardening dashboard (Cinematic Mode)"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
-        dashboard.run()
+        
+        # Use cinematic mode if available
+        if hasattr(dashboard, 'run_cinematic'):
+            dashboard.run_cinematic()
+        else:
+            dashboard.run()
+
+    def launch_hardening_cinematic(self):
+        """Launch cinematic hardening dashboard with 4-panel layout"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        if hasattr(dashboard, 'run_cinematic'):
+            dashboard.run_cinematic()
+        else:
+            print(f"{Fore.YELLOW}[!] Cinematic mode not available, using standard mode...{Style.RESET_ALL}")
+            dashboard.run()
 
     def show_hardening_status(self):
-        """Show current hardening status"""
+        """Show current hardening status with cinematic formatting"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
         
-        print(f"\n{'='*60}")
-        print("HARDENING STATUS")
-        print(f"{'='*60}")
-        print(f"System: {dashboard.system}")
-        print(f"Admin Privileges: {dashboard.is_admin_user}")
-        print(f"Session: {dashboard.session_id}")
-        print(f"\nModules Available: {len(dashboard.modules)}")
-        print(f"Modules Selected: {len(dashboard.selected_modules)}")
+        # Try to use cinematic status if available
+        if hasattr(dashboard, 'show_status_cinematic'):
+            dashboard.show_status_cinematic()
+            return
         
-        completed = sum(1 for r in dashboard.results if r.success)
-        failed = sum(1 for r in dashboard.results if not r.success)
-        print(f"Completed: {completed}")
-        print(f"Failed: {failed}")
+        # Fallback to standard status
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self._center_text('HARDENING STATUS DASHBOARD')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
         
+        # System Info Box
+        print(f"\n{Fore.CYAN}┌{'─'*56}┐{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}│{self._center_text('SYSTEM INFORMATION', 56)}│{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}├{'─'*56}┤{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}│{f' Platform: {dashboard.system}'.ljust(56)}│{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}│{f' Admin: {dashboard.is_admin_user}'.ljust(56)}│{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}│{f' Session: {dashboard.session_id}'.ljust(56)}│{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}└{'─'*56}┘{Style.RESET_ALL}")
+        
+        # Module Stats Box
+        print(f"\n{Fore.GREEN}┌{'─'*56}┐{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}│{self._center_text('MODULE STATISTICS', 56)}│{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}├{'─'*56}┤{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}│{f' Available: {len(dashboard.modules)}'.ljust(56)}│{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}│{f' Selected: {len(dashboard.selected_modules)}'.ljust(56)}│{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}└{'─'*56}┘{Style.RESET_ALL}")
+        
+        # Results Box
         if dashboard.results:
-            print(f"\nLast Results:")
-            for r in dashboard.results[-5:]:
-                status = "✓" if r.success else "✗"
-                print(f"  {status} {r.module.name}")
+            completed = sum(1 for r in dashboard.results if r.success)
+            failed = len(dashboard.results) - completed
+            success_rate = (completed / len(dashboard.results) * 100) if dashboard.results else 0
+            
+            print(f"\n{Fore.YELLOW if failed > 0 else Fore.GREEN}┌{'─'*56}┐{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}│{self._center_text('EXECUTION RESULTS', 56)}│{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}├{'─'*56}┤{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}│{f' Completed: {completed}'.ljust(56)}│{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}│{f' Failed: {failed}'.ljust(56)}│{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}│{f' Success Rate: {success_rate:.1f}%'.ljust(56)}│{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW if failed > 0 else Fore.GREEN}└{'─'*56}┘{Style.RESET_ALL}")
+            
+            if dashboard.results:
+                print(f"\n{Fore.CYAN}Recent Results:{Style.RESET_ALL}")
+                for r in dashboard.results[-5:]:
+                    status = f"{Fore.GREEN}✓{Style.RESET_ALL}" if r.success else f"{Fore.RED}✗{Style.RESET_ALL}"
+                    print(f"  {status} {r.module.name}")
+        else:
+            print(f"\n{Fore.YELLOW}[!] No results yet. Run hardening first.{Style.RESET_ALL}")
 
     def list_hardening_modules(self):
-        """List all hardening modules"""
+        """List all hardening modules with cinematic formatting"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
         
-        print(f"\n{'='*60}")
-        print("AVAILABLE HARDENING MODULES")
-        print(f"{'='*60}\n")
+        # Try to use cinematic list if available
+        if hasattr(dashboard, 'list_modules_cinematic'):
+            dashboard.list_modules_cinematic()
+            return
+        
+        # Fallback to standard list with categories
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{self._center_text('AVAILABLE HARDENING MODULES')}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}\n")
         
         categories = {}
         for module in dashboard.modules:
@@ -4439,35 +4528,64 @@ class SecurityTerminal:
             categories[cat].append(module)
         
         for category, modules in categories.items():
-            print(f"\n▸ {category}")
-            print(f"  {'─'*50}")
+            print(f"{Fore.YELLOW}▸ {category}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{'─'*55}{Style.RESET_ALL}")
             for module in modules:
                 compatible = dashboard.system in module.platforms if module.platforms else True
-                status = "✓" if compatible else "✗"
-                print(f"  [{status}] {module.name}")
-                print(f"       [{module.severity.value}] {module.description[:50]}...")
+                status = f"{Fore.GREEN}✓{Style.RESET_ALL}" if compatible else f"{Fore.RED}✗{Style.RESET_ALL}"
+                severity_color = Fore.RED if module.severity.value == 'CRITICAL' else Fore.YELLOW
+                print(f"  [{status}] {Fore.CYAN}{module.name}{Style.RESET_ALL}")
+                print(f"       [{severity_color}{module.severity.value}{Style.RESET_ALL}] {module.description[:50]}...")
+            print()
+        
+        # Summary footer
+        total = len(dashboard.modules)
+        compatible = sum(1 for m in dashboard.modules if not m.platforms or dashboard.system in m.platforms)
+        print(f"{Fore.GREEN}{'─'*55}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}Total: {total} | Compatible: {compatible} | Platform: {dashboard.system}{Style.RESET_ALL}")
 
     def generate_hardening_report(self):
-        """Generate hardening audit report"""
+        """Generate hardening audit report with summary"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
         
         if not dashboard.results:
-            print("[!] No results to report. Run hardening first.")
+            print(f"{Fore.RED}[!] No results to report. Run hardening first.{Style.RESET_ALL}")
             return
         
+        print(f"\n{Fore.GREEN}[+] Generating hardening audit report...{Style.RESET_ALL}")
         dashboard._generate_report()
+        
+        # Display summary after generation
+        successful = sum(1 for r in dashboard.results if r.success)
+        total = len(dashboard.results)
+        print(f"\n{Fore.CYAN}Report Summary:{Style.RESET_ALL}")
+        print(f"  {Fore.GREEN}✓ Successful: {successful}{Style.RESET_ALL}")
+        print(f"  {Fore.RED}✗ Failed: {total - successful}{Style.RESET_ALL}")
+        print(f"  {Fore.YELLOW}📊 Success Rate: {(successful/total*100):.1f}%{Style.RESET_ALL}")
 
     def rollback_hardening(self):
-        """Rollback hardening changes"""
+        """Rollback hardening changes with confirmation"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
-        dashboard._rollback_hardening()
+        
+        print(f"\n{Fore.RED}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{self._center_text('⚠ ROLLBACK WARNING ⚠')}{Style.RESET_ALL}")
+        print(f"{Fore.RED}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}This will revert all applied hardening changes.{Style.RESET_ALL}")
+        print(f"{Fore.RED}This action cannot be undone!{Style.RESET_ALL}")
+        
+        confirm = input(f"\n{Fore.RED}Type 'ROLLBACK' to confirm: {Style.RESET_ALL}").strip()
+        
+        if confirm == "ROLLBACK":
+            dashboard._rollback_hardening()
+        else:
+            print(f"{Fore.GREEN}Rollback cancelled.{Style.RESET_ALL}")
 
     def harden_users_only(self):
-        """Harden user accounts"""
+        """Harden user accounts only"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
@@ -4476,10 +4594,16 @@ class SecurityTerminal:
             m.id for m in dashboard.modules 
             if m.category == HardeningCategory.USER_SECURITY
         ]
-        dashboard._execute_hardening()
+        print(f"\n{Fore.GREEN}[+] Hardening user accounts...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] {len(dashboard.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if hasattr(dashboard, '_execute_hardening_realtime'):
+            dashboard._execute_hardening_realtime()
+        else:
+            dashboard._execute_hardening()
 
     def harden_firewall_only(self):
-        """Harden firewall"""
+        """Harden firewall only"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
@@ -4488,10 +4612,16 @@ class SecurityTerminal:
             m.id for m in dashboard.modules 
             if m.category == HardeningCategory.FIREWALL
         ]
-        dashboard._execute_hardening()
+        print(f"\n{Fore.GREEN}[+] Hardening firewall...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] {len(dashboard.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if hasattr(dashboard, '_execute_hardening_realtime'):
+            dashboard._execute_hardening_realtime()
+        else:
+            dashboard._execute_hardening()
 
     def harden_ssh_only(self):
-        """Harden SSH"""
+        """Harden SSH only"""
         dashboard = self._get_hardening_dashboard()
         if not dashboard:
             return
@@ -4500,8 +4630,23 @@ class SecurityTerminal:
             m.id for m in dashboard.modules 
             if m.category == HardeningCategory.SSH_SECURITY
         ]
-        dashboard._execute_hardening()
+        print(f"\n{Fore.GREEN}[+] Hardening SSH...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] {len(dashboard.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if hasattr(dashboard, '_execute_hardening_realtime'):
+            dashboard._execute_hardening_realtime()
+        else:
+            dashboard._execute_hardening()
 
+    def _center_text(self, text: str, width: int = None) -> str:
+        """Center text in terminal"""
+        if width is None:
+            width = self.terminal_width if hasattr(self, 'terminal_width') else 80
+        return text.center(width)
+
+# ============================================================
+# END OF HARDENING INTEGRATION
+# ============================================================
 # ====================================functions for hardening ends here=======
 # ========forensics ends here================================
     def init_bandwidth(self):
@@ -10550,37 +10695,39 @@ class SecurityTerminal:
 
         # ==================== ADD HARDENING COMMANDS HERE ====================
         # Hardening commands
+# Hardening commands - Enterprise Cinematic Mode
         elif parts[0] == "harden":
             if len(parts) == 1:
                 self.harden_system()
             elif len(parts) == 2:
                 subcmd = parts[1].lower()
-                if subcmd == "dashboard" or subcmd == "menu":
+                if subcmd in ["dashboard", "menu"]:
                     self.launch_hardening_dashboard()
-                elif subcmd == "list":
+                elif subcmd in ["cinematic", "cinema"]:
+                    self.launch_hardening_cinematic()
+                elif subcmd in ["list", "ls"]:
                     self.list_hardening_modules()
-                elif subcmd == "status":
+                elif subcmd in ["status", "st"]:
                     self.show_hardening_status()
-                elif subcmd == "report":
-                    self.generate_hardening_report()
-                elif subcmd == "rollback":
-                    self.rollback_hardening()
-                elif subcmd == "full":
+                elif subcmd in ["full", "all"]:
                     self.harden_system_full()
-                elif subcmd == "quick":
+                elif subcmd in ["quick", "q"]:
                     self.harden_system_quick()
-                elif subcmd == "dry-run":
+                elif subcmd in ["dry-run", "dry"]:
                     self.harden_system_dry_run()
-                elif subcmd == "users":
+                elif subcmd in ["users", "user"]:
                     self.harden_users_only()
-                elif subcmd == "firewall":
+                elif subcmd in ["firewall", "fw"]:
                     self.harden_firewall_only()
-                elif subcmd == "ssh":
+                elif subcmd in ["ssh", "secure-ssh"]:
                     self.harden_ssh_only()
+                elif subcmd in ["report", "rep"]:
+                    self.generate_hardening_report()
+                elif subcmd in ["rollback", "rb"]:
+                    self.rollback_hardening()
                 else:
                     print(f"{Fore.RED}[!] Unknown hardening command: harden {subcmd}{Style.RESET_ALL}")
-            else:
-                print(f"{Fore.RED}[!] Usage: harden [dashboard|list|status|report|rollback|full|quick|dry-run|users|firewall|ssh]{Style.RESET_ALL}")
+                    print(f"{Fore.YELLOW}Commands: dashboard, cinematic, list, status, full, quick, dry-run, users, firewall, ssh, report, rollback{Style.RESET_ALL}")
             return
         
         # Also support direct commands like 'harden-status' without space
@@ -10619,40 +10766,52 @@ class SecurityTerminal:
             return
         # ==================== END HARDENING COMMANDS ====================
 
-        elif cmd == "harden":
-            self.harden_system()
-            return
-        elif cmd == "harden-status":
-            self.show_hardening_status()
-            return
-        elif cmd == "harden-list":
+# Direct command shortcuts
+        elif cmd in ["harden-list", "harden-ls"]:
             self.list_hardening_modules()
             return
-        elif cmd == "harden-dashboard":
+
+        elif cmd in ["harden-status", "harden-st"]:
+            self.show_hardening_status()
+            return
+
+        elif cmd in ["harden-dashboard", "harden-menu"]:
             self.launch_hardening_dashboard()
             return
-        elif cmd == "harden-report":
-            self.generate_hardening_report()
+
+        elif cmd == "harden-cinematic":
+            self.launch_hardening_cinematic()
             return
-        elif cmd == "harden-rollback":
-            self.rollback_hardening()
-            return
+
         elif cmd == "harden-full":
             self.harden_system_full()
             return
+
         elif cmd == "harden-quick":
             self.harden_system_quick()
             return
+
         elif cmd == "harden-dry-run":
             self.harden_system_dry_run()
             return
-        elif cmd == "harden-users":
+
+        elif cmd == "harden-report":
+            self.generate_hardening_report()
+            return
+
+        elif cmd == "harden-rollback":
+            self.rollback_hardening()
+            return
+
+        elif cmd in ["harden-users", "harden-user"]:
             self.harden_users_only()
             return
-        elif cmd == "harden-firewall":
+
+        elif cmd in ["harden-firewall", "harden-fw"]:
             self.harden_firewall_only()
             return
-        elif cmd == "harden-ssh":
+
+        elif cmd in ["harden-ssh", "harden-sshd"]:
             self.harden_ssh_only()
             return
     # ==================== END HARDENING COMMANDS ====================
