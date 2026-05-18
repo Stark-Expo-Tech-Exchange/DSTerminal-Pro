@@ -5,6 +5,9 @@ from pathlib import Path
 # Add at the top of the file with other imports
 import timezonefinder
 import pytz
+from enum import Enum
+from typing import Dict, List, Optional, Tuple, Any
+from dataclasses import dataclass, field
 
 # Then update the imports in live_monitor
 def get_base_path():
@@ -124,6 +127,69 @@ except ImportError:
             pass
     
     COLORS_AVAILABLE = False
+    # ==========================import hardening==================
+    # Try importing colorama for cross-platform color support
+try:
+    from colorama import init, Fore, Back, Style
+    init(autoreset=True)
+except ImportError:
+    # Fallback color codes
+    class Fore:
+        BLACK = '\033[30m'
+        RED = '\033[31m'
+        GREEN = '\033[32m'
+        YELLOW = '\033[33m'
+        BLUE = '\033[34m'
+        MAGENTA = '\033[35m'
+        CYAN = '\033[36m'
+        WHITE = '\033[37m'
+        RESET = '\033[0m'
+    
+    class Style:
+        BRIGHT = '\033[1m'
+        DIM = '\033[2m'
+        NORMAL = '\033[22m'
+        RESET_ALL = '\033[0m'
+    
+    class Back:
+        BLACK = '\033[40m'
+        RED = '\033[41m'
+        GREEN = '\033[42m'
+        YELLOW = '\033[43m'
+        BLUE = '\033[44m'
+        MAGENTA = '\033[45m'
+        CYAN = '\033[46m'
+        WHITE = '\033[47m'
+# ============================================================
+# HARDENING DATA STRUCTURES
+# ============================================================
+class Fore:
+    BLACK = '\033[30m'
+    RED = '\033[31m'
+    GREEN = '\033[32m'
+    YELLOW = '\033[33m'
+    BLUE = '\033[34m'
+    MAGENTA = '\033[35m'
+    CYAN = '\033[36m'
+    WHITE = '\033[37m'
+    RESET = '\033[0m'
+
+class Style:
+    BRIGHT = '\033[1m'
+    DIM = '\033[2m'
+    NORMAL = '\033[22m'
+    RESET_ALL = '\033[0m'
+
+# Import hardening modules
+try:
+    from hardening_dashboard import (
+        HardeningDashboard
+    )
+    HARDENING_AVAILABLE = True
+except ImportError as e:
+    print(f"[!] Hardening module not available: {e}")
+    HARDENING_AVAILABLE = False
+
 # ===========import integrity_monitor======
 # =================================
 # Import Integrity Monitor Module
@@ -348,7 +414,7 @@ import subprocess
 from cryptography.x509 import load_pem_x509_certificate
 from cryptography.x509.ocsp import OCSPRequestBuilder
 from threading import Thread, Event
-from datetime import datetime
+from datetime import datetime, timedelta 
 from cryptography.fernet import Fernet
 import re
 from colorama import Fore, Style, init
@@ -1188,6 +1254,22 @@ class SecurityTerminal:
     def __init__(self, workspace_root=".", interactive: bool = True):
         self.workspace = str(WORKSPACE)
         self.crypto = CryptoEngine(os.getcwd())
+# ===========for hardening part+++++++++++++++++++++++++++++
+        self.terminal_width = self._get_terminal_width()
+        self.system = platform.system()
+        self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
+
+        # ===== INTEGRATE HARDENING DASHBOARD =====
+        self.hardening_dashboard = HardeningDashboard(terminal_width=self.terminal_width)
+        self.hardening_enabled = True
+        
+        # Register hardening commands
+        self.commands = {}
+
+        self._setup_logging()
+
+
+# =======================================================
 
         self.interactive = interactive
         self.ui = None
@@ -1299,8 +1381,6 @@ class SecurityTerminal:
             if not os.path.exists(dir_path):
                 os.makedirs(dir_path)
     
-        self.terminal_width = self._get_terminal_width()
-
     # Virtual filesystem directory
         self.vfs_root = os.path.expanduser("~/.dsterminal_vfs")
         self.ensure_vfs()
@@ -2474,24 +2554,74 @@ class SecurityTerminal:
     
         print("")  # Empty line for spacing
 
-    # =================ends here==========
+# Keep ONLY this version:
     def process_command(self, user_input):
         """Process and dispatch commands"""
         if not user_input.strip():
-            return True  # Nothing to do, continue
+            return True
 
-    # Handle echo first to preserve the raw string
+        # Handle echo first
         if user_input.strip().lower().startswith("echo"):
             self.handle_echo(user_input)
             return True
 
-    # Otherwise, parse normally
+        # ======================== HARDENING COMMANDS ============================
+        # Check for hardening commands BEFORE any other processing
+        cmd_lower = user_input.strip().lower()
+        
+        # Direct hardcoded checks (most reliable)
+        if cmd_lower == 'harden':
+            self.harden_system()
+            return True
+        elif cmd_lower == 'harden-dashboard' or cmd_lower == 'harden-menu':
+            self.launch_hardening_dashboard()
+            return True
+        elif cmd_lower == 'harden-list':
+            self.list_hardening_modules()
+            return True
+        elif cmd_lower == 'harden-status':
+            self.show_hardening_status()
+            return True
+        elif cmd_lower == 'harden-report':
+            self.generate_hardening_report()
+            return True
+        elif cmd_lower == 'harden-rollback':
+            self.rollback_hardening()
+            return True
+        elif cmd_lower == 'harden-full':
+            self.harden_system_full()
+            return True
+        elif cmd_lower == 'harden-quick':
+            self.harden_system_quick()
+            return True
+        elif cmd_lower == 'harden-dry-run':
+            self.harden_system_dry_run()
+            return True
+        elif cmd_lower == 'harden-users':
+            self.harden_users_only()
+            return True
+        elif cmd_lower == 'harden-firewall':
+            self.harden_firewall_only()
+            return True
+        elif cmd_lower == 'harden-ssh':
+            self.harden_ssh_only()
+            return True
+        # ======================== END HARDENING COMMANDS ========================
+
+        # Continue with normal command parsing using shlex
         import shlex
-        parts = shlex.split(user_input)
+        try:
+            parts = shlex.split(user_input)
+        except ValueError:
+            parts = user_input.split()
+        
+        if not parts:
+            return True
+            
         command = parts[0].lower()
         args = parts[1:] if len(parts) > 1 else []
 
-    # Command dispatch
+        # Command dispatch for other commands
         if command == "help":
             self.show_help()
         elif command in ("exit", "quit", "logout"):
@@ -2499,7 +2629,6 @@ class SecurityTerminal:
             self.close_operator_session()
             print(f"{Fore.YELLOW}[+] Exiting DSTerminal...{Style.RESET_ALL}")
             return False
-        
         elif command in ("clear", "cls"):
             os.system('cls' if os.name == 'nt' else 'clear')
         elif command == "pwd":
@@ -2521,34 +2650,26 @@ class SecurityTerminal:
                 self.touch(args[0])
             else:
                 print(f"{Fore.RED}[!] Usage: touch <filename>{Style.RESET_ALL}")
-        # Add this to your command handler:
         elif command == "viewlog" or command == "session":
             self.view_session_log()
-
-        elif command == 'cat ':
+        elif command == "cat":
             if not args:
                 print(f"{Fore.RED}[!] Usage: cat <filename>{Style.RESET_ALL}")
-                return True
-            filename = args[0]
-            try:
-                if hasattr(self, 'operator_dir') and os.path.exists(self.operator_dir):
-                    filepath = os.path.join(self.operator_dir, filename)
-                else:
-                    filepath = self.safe_path(filename)
-            except Exception as e:
-                    filepath = filename  # Fallback to original filename if safe_path fails
-
-              # Read the file with multiple encoding attempts
-            content = self.safe_read_file(filepath)
-            print(content)
-  
- 
-        elif command == "harden":
-            dry_run = "-t" in args or "--test" in args
-            self.harden_system(dry_run=dry_run)
+            else:
+                filename = args[0]
+                try:
+                    if hasattr(self, 'operator_dir') and os.path.exists(self.operator_dir):
+                        filepath = os.path.join(self.operator_dir, filename)
+                    else:
+                        filepath = self.safe_path(filename) if hasattr(self, 'safe_path') else filename
+                except:
+                    filepath = filename
+                content = self.safe_read_file(filepath) if hasattr(self, 'safe_read_file') else "Error reading file"
+                print(content)
         else:
-            return True
+            print(f"{Fore.RED}[!] Unknown command: {command}{Style.RESET_ALL}")
         
+        return True
 # ------added msf impleme
     def check_metasploit_installed(self):
         """Check if Metasploit is installed on Windows (multiple methods)"""
@@ -4170,6 +4291,218 @@ class SecurityTerminal:
         
         print(f"{Fore.CYAN}[*] Returning to DSTerminal...{Style.RESET_ALL}")
 
+
+# ====================for hardening section=================================
+# ============================================================
+# added to MAIN DSTERMINAL.PY FILE
+# ============================================================
+    def _get_hardening_dashboard(self):
+        """Get or create hardening dashboard instance"""
+        if not hasattr(self, 'hardening_dashboard') or self.hardening_dashboard is None:
+            try:
+                from hardening_dashboard import HardeningDashboard
+                print("[DEBUG] Importing HardeningDashboard...")
+                self.hardening_dashboard = HardeningDashboard(
+                    terminal_width=self.terminal_width if hasattr(self, 'terminal_width') else 80
+                )
+                print("[✓] Hardening system initialized")
+                print(f"[DEBUG] Dashboard modules: {len(self.hardening_dashboard.modules)}")
+            except ImportError as e:
+                print(f"[!] Failed to import hardening_dashboard: {e}")
+                print("[!] Make sure hardening_dashboard.py exists in the same directory")
+                return None
+            except Exception as e:
+                print(f"[!] Failed to initialize hardening: {e}")
+                import traceback
+                traceback.print_exc()
+                return None
+        return self.hardening_dashboard
+
+    def harden_system(self):
+        """Main hardening command handler"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        print(f"\n{'='*60}")
+        print("SYSTEM HARDENING")
+        print(f"{'='*60}")
+        print(f"System: {dashboard.system}")
+        print(f"Admin: {dashboard.is_admin_user}")
+        print(f"Available Modules: {len(dashboard.modules)}")
+        print(f"\nType 'harden-dashboard' for interactive mode")
+        print(f"Type 'harden-list' to see all modules")
+        print(f"Type 'harden-status' for current status")
+
+
+    def harden_system_full(self):
+        """Execute full system hardening"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        # Select all compatible modules
+        dashboard.selected_modules = [
+            m.id for m in dashboard.modules 
+            if not (m.requires_admin and not dashboard.is_admin_user)
+        ]
+        
+        print(f"\n[+] Executing full system hardening...")
+        print(f"[+] {len(dashboard.selected_modules)} modules selected")
+        
+        dashboard._execute_hardening()
+        dashboard._generate_report()
+
+    def harden_system_quick(self):
+        """Quick hardening - critical and high only"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        # Select critical and high severity
+        dashboard.selected_modules = [
+            m.id for m in dashboard.modules 
+            if m.severity.value in ['CRITICAL', 'HIGH']
+            and not (m.requires_admin and not dashboard.is_admin_user)
+        ]
+        
+        print(f"\n[+] Quick hardening: {len(dashboard.selected_modules)} modules")
+        dashboard._execute_hardening()
+
+    def harden_system_dry_run(self):
+        """Preview hardening without applying"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        print(f"\n{'='*60}")
+        print("DRY RUN - Preview Only (No Changes Made)")
+        print(f"{'='*60}\n")
+        
+        for i, module in enumerate(dashboard.modules, 1):
+            if module.platforms and dashboard.system not in module.platforms:
+                continue
+            admin_req = " [ADMIN REQUIRED]" if module.requires_admin and not dashboard.is_admin_user else ""
+            print(f"  {i:2d}. {module.name}")
+            print(f"      [{module.severity.value}] {module.description[:55]}...{admin_req}")
+        
+        print(f"\n[✓] Dry run complete. {len(dashboard.modules)} modules available.")
+
+    def launch_hardening_dashboard(self):
+        """Launch interactive hardening dashboard"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        dashboard.run()
+
+    def show_hardening_status(self):
+        """Show current hardening status"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        print(f"\n{'='*60}")
+        print("HARDENING STATUS")
+        print(f"{'='*60}")
+        print(f"System: {dashboard.system}")
+        print(f"Admin Privileges: {dashboard.is_admin_user}")
+        print(f"Session: {dashboard.session_id}")
+        print(f"\nModules Available: {len(dashboard.modules)}")
+        print(f"Modules Selected: {len(dashboard.selected_modules)}")
+        
+        completed = sum(1 for r in dashboard.results if r.success)
+        failed = sum(1 for r in dashboard.results if not r.success)
+        print(f"Completed: {completed}")
+        print(f"Failed: {failed}")
+        
+        if dashboard.results:
+            print(f"\nLast Results:")
+            for r in dashboard.results[-5:]:
+                status = "✓" if r.success else "✗"
+                print(f"  {status} {r.module.name}")
+
+    def list_hardening_modules(self):
+        """List all hardening modules"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        print(f"\n{'='*60}")
+        print("AVAILABLE HARDENING MODULES")
+        print(f"{'='*60}\n")
+        
+        categories = {}
+        for module in dashboard.modules:
+            cat = module.category.value
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(module)
+        
+        for category, modules in categories.items():
+            print(f"\n▸ {category}")
+            print(f"  {'─'*50}")
+            for module in modules:
+                compatible = dashboard.system in module.platforms if module.platforms else True
+                status = "✓" if compatible else "✗"
+                print(f"  [{status}] {module.name}")
+                print(f"       [{module.severity.value}] {module.description[:50]}...")
+
+    def generate_hardening_report(self):
+        """Generate hardening audit report"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        
+        if not dashboard.results:
+            print("[!] No results to report. Run hardening first.")
+            return
+        
+        dashboard._generate_report()
+
+    def rollback_hardening(self):
+        """Rollback hardening changes"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        dashboard._rollback_hardening()
+
+    def harden_users_only(self):
+        """Harden user accounts"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        from hardening_dashboard import HardeningCategory
+        dashboard.selected_modules = [
+            m.id for m in dashboard.modules 
+            if m.category == HardeningCategory.USER_SECURITY
+        ]
+        dashboard._execute_hardening()
+
+    def harden_firewall_only(self):
+        """Harden firewall"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        from hardening_dashboard import HardeningCategory
+        dashboard.selected_modules = [
+            m.id for m in dashboard.modules 
+            if m.category == HardeningCategory.FIREWALL
+        ]
+        dashboard._execute_hardening()
+
+    def harden_ssh_only(self):
+        """Harden SSH"""
+        dashboard = self._get_hardening_dashboard()
+        if not dashboard:
+            return
+        from hardening_dashboard import HardeningCategory
+        dashboard.selected_modules = [
+            m.id for m in dashboard.modules 
+            if m.category == HardeningCategory.SSH_SECURITY
+        ]
+        dashboard._execute_hardening()
+
+# ====================================functions for hardening ends here=======
 # ========forensics ends here================================
     def init_bandwidth(self):
         self.prev_io = psutil.net_io_counters()
@@ -10014,126 +10347,126 @@ class SecurityTerminal:
         # Blinking threat neutralized
         self._blinking_text(self._center_text("⚠ THREAT NEUTRALIZED ⚠"), Fore.RED, 2)
     
-    def harden_system(self, dry_run=False):
-        """Cinematic system hardening with typing, animations, and progress bars"""
-        try:
-            # Show enlarged blinking banner at start - THIS WAS MISSING!
-            self._enlarged_ascii_banner()
+    # def harden_system(self, dry_run=False):
+    #     """Cinematic system hardening with typing, animations, and progress bars"""
+    #     try:
+    #         # Show enlarged blinking banner at start - THIS WAS MISSING!
+    #         self._enlarged_ascii_banner()
             
-            # Matrix rain effect for style
-            self._matrix_rain_effect(1)
+    #         # Matrix rain effect for style
+    #         self._matrix_rain_effect(1)
             
-            # Check admin privileges
-            if not self.is_admin():
-                self._hacking_animation("Checking Privileges")
-                print(f"{Fore.RED}[!] Warning: Running without administrator privileges. Some features may be limited.{Style.RESET_ALL}")
-                # Don't return, continue with limited functionality
+    #         # Check admin privileges
+    #         if not self.is_admin():
+    #             self._hacking_animation("Checking Privileges")
+    #             print(f"{Fore.RED}[!] Warning: Running without administrator privileges. Some features may be limited.{Style.RESET_ALL}")
+    #             # Don't return, continue with limited functionality
             
-            # ----------------------------
-            # Pre-hardening animations
-            # ----------------------------
-            self._hacking_animation("Initializing Threat Assessment")
-            self._cinematic_typing("Scanning system threats...")
-            self._progress_bar("Threat Assessment", duration=3)
+    #         # ----------------------------
+    #         # Pre-hardening animations
+    #         # ----------------------------
+    #         self._hacking_animation("Initializing Threat Assessment")
+    #         self._cinematic_typing("Scanning system threats...")
+    #         self._progress_bar("Threat Assessment", duration=3)
             
-            self._network_scan_animation()
-            self._hacking_animation("Scanning Exploit Database")
-            self._cinematic_typing("Analyzing known vulnerabilities...")
-            self._progress_bar("Exploit Database Scan", duration=3)
+    #         self._network_scan_animation()
+    #         self._hacking_animation("Scanning Exploit Database")
+    #         self._cinematic_typing("Analyzing known vulnerabilities...")
+    #         self._progress_bar("Exploit Database Scan", duration=3)
             
-            self._vulnerability_scan()
-            self._cyber_attack_simulation()
-            self._cinematic_typing("Threat analysis complete.")
-            self._progress_bar("Threat Analysis", duration=2)
+    #         self._vulnerability_scan()
+    #         self._cyber_attack_simulation()
+    #         self._cinematic_typing("Threat analysis complete.")
+    #         self._progress_bar("Threat Analysis", duration=2)
             
-            # ----------------------------
-            # Dry-run simulation
-            # ----------------------------
-            if dry_run:
-                self._hacking_animation("Simulating Countermeasures")
-                self._cinematic_typing("[SIMULATION] No changes were actually made.", 0.05)
-                self._progress_bar("Simulation", duration=2)
+    #         # ----------------------------
+    #         # Dry-run simulation
+    #         # ----------------------------
+    #         if dry_run:
+    #             self._hacking_animation("Simulating Countermeasures")
+    #             self._cinematic_typing("[SIMULATION] No changes were actually made.", 0.05)
+    #             self._progress_bar("Simulation", duration=2)
             
-            # ----------------------------
-            # Actual hardening
-            # ----------------------------
-            else:
-                self._hacking_animation("Deploying Cyber Armor")
-                self._cinematic_typing("Applying system fortifications...", 0.04)
-                self._progress_bar("Deploying Armor", duration=3)
+    #         # ----------------------------
+    #         # Actual hardening
+    #         # ----------------------------
+    #         else:
+    #             self._hacking_animation("Deploying Cyber Armor")
+    #             self._cinematic_typing("Applying system fortifications...", 0.04)
+    #             self._progress_bar("Deploying Armor", duration=3)
                 
-                try:
-                    system = platform.system()
+    #             try:
+    #                 system = platform.system()
                     
-                    # Windows Hardening
-                    if system == "Windows":
-                        try:
-                            self._cinematic_typing("Disabling SMB1 protocol...", 0.04)
-                            powershell_cmd = "powershell -Command Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -NoRestart"
-                            self._progress_bar("SMB1 Disable", duration=2)
+    #                 # Windows Hardening
+    #                 if system == "Windows":
+    #                     try:
+    #                         self._cinematic_typing("Disabling SMB1 protocol...", 0.04)
+    #                         powershell_cmd = "powershell -Command Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -NoRestart"
+    #                         self._progress_bar("SMB1 Disable", duration=2)
                             
-                            if self.is_admin():
-                                result = subprocess.run(powershell_cmd, shell=True, capture_output=True, text=True)
+    #                         if self.is_admin():
+    #                             result = subprocess.run(powershell_cmd, shell=True, capture_output=True, text=True)
                                 
-                                if result.returncode == 0:
-                                    self._cinematic_typing("[OK] SMB1 protocol disabled.", 0.04)
-                                    logging.info("SMB1 protocol disabled successfully on Windows")
-                                else:
-                                    self._cinematic_typing(f"[!] PowerShell command failed: {result.stderr}", 0.04)
-                                    logging.error(f"PowerShell command failed: {result.stderr}")
-                            else:
-                                self._cinematic_typing("[!] Skipping SMB1 disable (requires admin rights)", 0.04)
+    #                             if result.returncode == 0:
+    #                                 self._cinematic_typing("[OK] SMB1 protocol disabled.", 0.04)
+    #                                 logging.info("SMB1 protocol disabled successfully on Windows")
+    #                             else:
+    #                                 self._cinematic_typing(f"[!] PowerShell command failed: {result.stderr}", 0.04)
+    #                                 logging.error(f"PowerShell command failed: {result.stderr}")
+    #                         else:
+    #                             self._cinematic_typing("[!] Skipping SMB1 disable (requires admin rights)", 0.04)
                             
-                        except Exception as e:
-                            self._cinematic_typing(f"[!] Could not disable SMB1: {str(e)}", 0.04)
-                            logging.error(f"Error disabling SMB1: {str(e)}")
+    #                     except Exception as e:
+    #                         self._cinematic_typing(f"[!] Could not disable SMB1: {str(e)}", 0.04)
+    #                         logging.error(f"Error disabling SMB1: {str(e)}")
                     
-                    # Linux Hardening
-                    elif system == "Linux":
-                        ufw_path = shutil.which("ufw")
-                        if ufw_path:
-                            self._cinematic_typing("Enabling UFW firewall...", 0.04)
-                            self._progress_bar("UFW Firewall", duration=2)
-                            try:
-                                subprocess.run(["sudo", ufw_path, "--force", "enable"], check=True)
-                                self._cinematic_typing("[OK] UFW firewall enabled.", 0.04)
-                                logging.info("UFW firewall enabled successfully on Linux")
-                            except subprocess.CalledProcessError as e:
-                                self._cinematic_typing(f"[!] Failed to enable UFW: {str(e)}", 0.04)
-                                logging.error(f"Failed to enable UFW: {str(e)}")
-                        else:
-                            self._cinematic_typing("[!] UFW firewall not found — skipping Linux hardening", 0.04)
+    #                 # Linux Hardening
+    #                 elif system == "Linux":
+    #                     ufw_path = shutil.which("ufw")
+    #                     if ufw_path:
+    #                         self._cinematic_typing("Enabling UFW firewall...", 0.04)
+    #                         self._progress_bar("UFW Firewall", duration=2)
+    #                         try:
+    #                             subprocess.run(["sudo", ufw_path, "--force", "enable"], check=True)
+    #                             self._cinematic_typing("[OK] UFW firewall enabled.", 0.04)
+    #                             logging.info("UFW firewall enabled successfully on Linux")
+    #                         except subprocess.CalledProcessError as e:
+    #                             self._cinematic_typing(f"[!] Failed to enable UFW: {str(e)}", 0.04)
+    #                             logging.error(f"Failed to enable UFW: {str(e)}")
+    #                     else:
+    #                         self._cinematic_typing("[!] UFW firewall not found — skipping Linux hardening", 0.04)
                 
-                except Exception as e:
-                    logging.error(f"Hardening failed: {str(e)}")
-                    print(f"{Fore.RED}[!] Error during hardening: {str(e)}{Style.RESET_ALL}")
+    #             except Exception as e:
+    #                 logging.error(f"Hardening failed: {str(e)}")
+    #                 print(f"{Fore.RED}[!] Error during hardening: {str(e)}{Style.RESET_ALL}")
             
-            # ----------------------------
-            # Cinematic completion with blinking
-            # ----------------------------
-            self._cinematic_typing("System fortification complete!", 0.05)
+    #         # ----------------------------
+    #         # Cinematic completion with blinking
+    #         # ----------------------------
+    #         self._cinematic_typing("System fortification complete!", 0.05)
             
-            # Blinking completion banner
-            for _ in range(3):
-                print(f"\r{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}", end="")
-                time.sleep(0.3)
-                print(f"\r{' ' * self.terminal_width}", end="")
-                time.sleep(0.3)
+    #         # Blinking completion banner
+    #         for _ in range(3):
+    #             print(f"\r{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}", end="")
+    #             time.sleep(0.3)
+    #             print(f"\r{' ' * self.terminal_width}", end="")
+    #             time.sleep(0.3)
             
-            print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
-            threat_level = random.randint(1, 10)
+    #         print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
+    #         threat_level = random.randint(1, 10)
             
-            # Blinking threat level
-            threat_text = f" Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10"
-            self._blinking_text(self._center_text(threat_text), Fore.YELLOW, 3)
+    #         # Blinking threat level
+    #         threat_text = f" Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10"
+    #         self._blinking_text(self._center_text(threat_text), Fore.YELLOW, 3)
             
-        except Exception as e:
-            # Catch-all to preserve cinematic end even on errors
-            print(f"{Fore.RED}[!] Critical error: {str(e)}{Style.RESET_ALL}")
-            self._cinematic_typing("System fortification complete with errors.", 0.05)
-            print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
-            threat_level = random.randint(1, 10)
-            print(f"{Fore.YELLOW}{self._center_text(f' Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10')}{Style.RESET_ALL}")
+    #     except Exception as e:
+    #         # Catch-all to preserve cinematic end even on errors
+    #         print(f"{Fore.RED}[!] Critical error: {str(e)}{Style.RESET_ALL}")
+    #         self._cinematic_typing("System fortification complete with errors.", 0.05)
+    #         print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
+    #         threat_level = random.randint(1, 10)
+    #         print(f"{Fore.YELLOW}{self._center_text(f' Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10')}{Style.RESET_ALL}")
 
 
     # go down here, don't remove these lines below
@@ -10192,7 +10525,6 @@ class SecurityTerminal:
 
         return {name: h.hexdigest() for name, h in hashes.items()}
 
-#   ---------------------------------
     def handle_command(self, cmd):
         cmd = cmd.strip()
         if not cmd:
@@ -10200,12 +10532,10 @@ class SecurityTerminal:
 
         original_cmd = cmd
         parts = cmd.split()
-        # cmd = parts[0].lower()
         command = parts[0].lower()
         args = parts[1:] if len(parts) > 1 else []
 
-
-# -----------------------------starts here-------------
+        # -----------------------------mkdir & touch-------------
         if parts[0] == "mkdir" and len(parts) == 2:
             self.mkdir(parts[1])
             return
@@ -10213,12 +10543,121 @@ class SecurityTerminal:
         elif parts[0] == "touch" and len(parts) == 2:
             self.touch(parts[1])
             return
- 
+
         elif parts[0] == "ls":
             self.ls()
             return
 
-            # Fix 2: Add the missing command handlers
+        # ==================== ADD HARDENING COMMANDS HERE ====================
+        # Hardening commands
+        elif parts[0] == "harden":
+            if len(parts) == 1:
+                self.harden_system()
+            elif len(parts) == 2:
+                subcmd = parts[1].lower()
+                if subcmd == "dashboard" or subcmd == "menu":
+                    self.launch_hardening_dashboard()
+                elif subcmd == "list":
+                    self.list_hardening_modules()
+                elif subcmd == "status":
+                    self.show_hardening_status()
+                elif subcmd == "report":
+                    self.generate_hardening_report()
+                elif subcmd == "rollback":
+                    self.rollback_hardening()
+                elif subcmd == "full":
+                    self.harden_system_full()
+                elif subcmd == "quick":
+                    self.harden_system_quick()
+                elif subcmd == "dry-run":
+                    self.harden_system_dry_run()
+                elif subcmd == "users":
+                    self.harden_users_only()
+                elif subcmd == "firewall":
+                    self.harden_firewall_only()
+                elif subcmd == "ssh":
+                    self.harden_ssh_only()
+                else:
+                    print(f"{Fore.RED}[!] Unknown hardening command: harden {subcmd}{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.RED}[!] Usage: harden [dashboard|list|status|report|rollback|full|quick|dry-run|users|firewall|ssh]{Style.RESET_ALL}")
+            return
+        
+        # Also support direct commands like 'harden-status' without space
+        elif parts[0] == "harden-status":
+            self.show_hardening_status()
+            return
+        elif parts[0] == "harden-list":
+            self.list_hardening_modules()
+            return
+        elif parts[0] == "harden-dashboard":
+            self.launch_hardening_dashboard()
+            return
+        elif parts[0] == "harden-report":
+            self.generate_hardening_report()
+            return
+        elif parts[0] == "harden-rollback":
+            self.rollback_hardening()
+            return
+        elif parts[0] == "harden-full":
+            self.harden_system_full()
+            return
+        elif parts[0] == "harden-quick":
+            self.harden_system_quick()
+            return
+        elif parts[0] == "harden-dry-run":
+            self.harden_system_dry_run()
+            return
+        elif parts[0] == "harden-users":
+            self.harden_users_only()
+            return
+        elif parts[0] == "harden-firewall":
+            self.harden_firewall_only()
+            return
+        elif parts[0] == "harden-ssh":
+            self.harden_ssh_only()
+            return
+        # ==================== END HARDENING COMMANDS ====================
+
+        elif cmd == "harden":
+            self.harden_system()
+            return
+        elif cmd == "harden-status":
+            self.show_hardening_status()
+            return
+        elif cmd == "harden-list":
+            self.list_hardening_modules()
+            return
+        elif cmd == "harden-dashboard":
+            self.launch_hardening_dashboard()
+            return
+        elif cmd == "harden-report":
+            self.generate_hardening_report()
+            return
+        elif cmd == "harden-rollback":
+            self.rollback_hardening()
+            return
+        elif cmd == "harden-full":
+            self.harden_system_full()
+            return
+        elif cmd == "harden-quick":
+            self.harden_system_quick()
+            return
+        elif cmd == "harden-dry-run":
+            self.harden_system_dry_run()
+            return
+        elif cmd == "harden-users":
+            self.harden_users_only()
+            return
+        elif cmd == "harden-firewall":
+            self.harden_firewall_only()
+            return
+        elif cmd == "harden-ssh":
+            self.harden_ssh_only()
+            return
+    # ==================== END HARDENING COMMANDS ====================
+
+        # Crypto commands
         elif cmd == "crypto-list":
             self.crypto.crypto_list()
             return

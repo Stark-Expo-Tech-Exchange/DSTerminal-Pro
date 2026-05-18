@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, user-scalable=yes">
     <title>DSTerminal v2.0.113 - Complete SOC Security Platform Documentation</title>
     <style>
         /* ===== ROOT VARIABLES - SOC/Cyber Theme ===== */
@@ -28,7 +28,6 @@
             --sidebar-width: 300px;
         }
 
-        /* ===== GLOBAL STYLES ===== */
         * {
             margin: 0;
             padding: 0;
@@ -44,7 +43,17 @@
             position: relative;
         }
 
-        /* Matrix Rain Background Effect */
+        /* ===== MATRIX CANVAS BACKGROUND ===== */
+        #matrixCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 0;
+        }
+
         body::before {
             content: "";
             position: fixed;
@@ -53,20 +62,15 @@
             width: 100%;
             height: 100%;
             background: linear-gradient(180deg, 
-                transparent 0%,
-                rgba(0, 255, 157, 0.03) 50%,
-                transparent 100%);
+                rgba(10, 14, 20, 0.95) 0%,
+                rgba(10, 14, 20, 0.7) 20%,
+                rgba(10, 14, 20, 0.3) 50%,
+                rgba(10, 14, 20, 0.7) 80%,
+                rgba(10, 14, 20, 0.95) 100%);
             pointer-events: none;
-            animation: matrixRain 20s linear infinite;
-            z-index: -1;
+            z-index: 0;
         }
 
-        @keyframes matrixRain {
-            0% { transform: translateY(-100%); }
-            100% { transform: translateY(100%); }
-        }
-
-        /* Scan Line Effect */
         body::after {
             content: "";
             position: fixed;
@@ -79,14 +83,15 @@
                 var(--primary),
                 var(--secondary),
                 transparent);
-            animation: scanLine 8s linear infinite;
+            animation: scanLine 6s linear infinite;
             pointer-events: none;
-            z-index: -1;
-            opacity: 0.3;
+            z-index: 0;
+            opacity: 0.4;
+            box-shadow: 0 0 20px var(--primary-glow);
         }
 
         @keyframes scanLine {
-            0% { top: 0; }
+            0% { top: -4px; }
             100% { top: 100%; }
         }
 
@@ -103,12 +108,15 @@
             justify-content: space-between;
             align-items: center;
             backdrop-filter: blur(10px);
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .logo-container {
             display: flex;
             align-items: center;
             gap: 20px;
+            flex-wrap: wrap;
         }
 
         .ascii-logo {
@@ -170,16 +178,35 @@
             50% { opacity: 0.5; }
         }
 
+        .menu-toggle {
+            display: none;
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            font-size: 1.5rem;
+            padding: 0.3rem 0.8rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .menu-toggle:hover {
+            background: var(--primary-glow);
+            box-shadow: 0 0 15px var(--primary-glow);
+        }
+
         /* ===== MAIN LAYOUT ===== */
         .main-container {
             display: flex;
             min-height: calc(100vh - var(--header-height));
+            position: relative;
+            z-index: 1;
         }
 
-        /* ===== SIDEBAR ===== */
         .sidebar {
             width: var(--sidebar-width);
-            background: var(--bg-secondary);
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(10px);
             border-right: 1px solid var(--border);
             padding: 20px 0;
             position: sticky;
@@ -188,20 +215,13 @@
             overflow-y: auto;
             scrollbar-width: thin;
             scrollbar-color: var(--primary) var(--bg-tertiary);
+            z-index: 90;
+            transition: transform 0.3s ease;
         }
 
-        .sidebar::-webkit-scrollbar {
-            width: 8px;
-        }
-
-        .sidebar::-webkit-scrollbar-track {
-            background: var(--bg-tertiary);
-        }
-
-        .sidebar::-webkit-scrollbar-thumb {
-            background: var(--primary);
-            border-radius: 4px;
-        }
+        .sidebar::-webkit-scrollbar { width: 8px; }
+        .sidebar::-webkit-scrollbar-track { background: var(--bg-tertiary); }
+        .sidebar::-webkit-scrollbar-thumb { background: var(--primary); border-radius: 4px; }
 
         .sidebar-header {
             padding: 0 20px 20px;
@@ -216,9 +236,7 @@
             letter-spacing: 2px;
         }
 
-        .nav-section {
-            margin-bottom: 25px;
-        }
+        .nav-section { margin-bottom: 25px; }
 
         .nav-section-title {
             padding: 10px 20px;
@@ -252,16 +270,17 @@
             box-shadow: inset 0 0 10px var(--primary-glow);
         }
 
-        /* ===== MAIN CONTENT ===== */
         .content {
             flex: 1;
             padding: 30px 40px;
             max-width: calc(100% - var(--sidebar-width));
+            position: relative;
+            z-index: 1;
         }
 
-        /* ===== COMMAND CARD ===== */
         .command-card {
-            background: var(--bg-tertiary);
+            background: rgba(26, 31, 42, 0.9);
+            backdrop-filter: blur(5px);
             border: 1px solid var(--border);
             border-radius: 8px;
             margin-bottom: 25px;
@@ -300,6 +319,8 @@
             display: flex;
             justify-content: space-between;
             align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
         }
 
         .command-name {
@@ -318,9 +339,7 @@
             border: 1px solid var(--border);
         }
 
-        .command-body {
-            padding: 20px;
-        }
+        .command-body { padding: 20px; }
 
         .command-description {
             margin-bottom: 15px;
@@ -337,6 +356,7 @@
             border-radius: 0 8px 8px 0;
             margin: 15px 0;
             position: relative;
+            overflow-x: auto;
         }
 
         .command-example::before {
@@ -369,9 +389,9 @@
             margin-right: 8px;
         }
 
-        /* ===== INFO PANELS ===== */
         .info-panel {
-            background: var(--bg-tertiary);
+            background: rgba(26, 31, 42, 0.9);
+            backdrop-filter: blur(5px);
             border: 1px solid var(--border);
             border-radius: 8px;
             padding: 20px;
@@ -418,12 +438,12 @@
             gap: 20px;
         }
 
-        /* ===== TABLES ===== */
         .command-table {
             width: 100%;
             border-collapse: collapse;
             margin: 20px 0;
-            background: var(--bg-tertiary);
+            background: rgba(26, 31, 42, 0.9);
+            backdrop-filter: blur(5px);
             border-radius: 8px;
             overflow: hidden;
         }
@@ -456,7 +476,6 @@
             font-size: 13px;
         }
 
-        /* ===== PROGRESS BAR ===== */
         .progress-container {
             background: var(--bg-secondary);
             border-radius: 10px;
@@ -479,7 +498,6 @@
             50% { opacity: 0.8; }
         }
 
-        /* ===== TYPOGRAPHY ===== */
         h1 {
             color: var(--primary);
             font-size: 2.5em;
@@ -556,7 +574,6 @@
             line-height: 1.5;
         }
 
-        /* ===== ALERTS ===== */
         .alert {
             padding: 15px 20px;
             border-radius: 8px;
@@ -565,27 +582,11 @@
             position: relative;
         }
 
-        .alert-info {
-            background: rgba(0, 204, 255, 0.1);
-            border-left-color: var(--secondary);
-        }
+        .alert-info { background: rgba(0, 204, 255, 0.1); border-left-color: var(--secondary); }
+        .alert-warning { background: rgba(255, 221, 87, 0.1); border-left-color: var(--warning); }
+        .alert-danger { background: rgba(255, 56, 96, 0.1); border-left-color: var(--accent); }
+        .alert-success { background: rgba(72, 199, 116, 0.1); border-left-color: var(--success); }
 
-        .alert-warning {
-            background: rgba(255, 221, 87, 0.1);
-            border-left-color: var(--warning);
-        }
-
-        .alert-danger {
-            background: rgba(255, 56, 96, 0.1);
-            border-left-color: var(--accent);
-        }
-
-        .alert-success {
-            background: rgba(72, 199, 116, 0.1);
-            border-left-color: var(--success);
-        }
-
-        /* ===== METER ===== */
         .meter {
             display: flex;
             align-items: center;
@@ -593,26 +594,10 @@
             margin: 10px 0;
         }
 
-        .meter-label {
-            width: 100px;
-            color: var(--text-secondary);
-        }
+        .meter-label { width: 100px; color: var(--text-secondary); }
+        .meter-bar { flex: 1; height: 10px; background: var(--bg-secondary); border-radius: 5px; overflow: hidden; }
+        .meter-fill { height: 100%; background: linear-gradient(90deg, var(--primary), var(--secondary)); border-radius: 5px; }
 
-        .meter-bar {
-            flex: 1;
-            height: 10px;
-            background: var(--bg-secondary);
-            border-radius: 5px;
-            overflow: hidden;
-        }
-
-        .meter-fill {
-            height: 100%;
-            background: linear-gradient(90deg, var(--primary), var(--secondary));
-            border-radius: 5px;
-        }
-
-        /* ===== THREAT INDICATOR ===== */
         .threat-indicator {
             display: inline-block;
             padding: 3px 10px;
@@ -621,67 +606,31 @@
             font-weight: bold;
         }
 
-        .threat-low {
-            background: rgba(72, 199, 116, 0.2);
-            color: var(--success);
-            border: 1px solid var(--success);
-        }
+        .threat-low { background: rgba(72, 199, 116, 0.2); color: var(--success); border: 1px solid var(--success); }
+        .threat-medium { background: rgba(255, 221, 87, 0.2); color: var(--warning); border: 1px solid var(--warning); }
+        .threat-high { background: rgba(255, 56, 96, 0.2); color: var(--accent); border: 1px solid var(--accent); }
 
-        .threat-medium {
-            background: rgba(255, 221, 87, 0.2);
-            color: var(--warning);
-            border: 1px solid var(--warning);
-        }
-
-        .threat-high {
-            background: rgba(255, 56, 96, 0.2);
-            color: var(--accent);
-            border: 1px solid var(--accent);
-        }
-
-        /* ===== FOOTER ===== */
         .footer {
-            background: var(--bg-secondary);
+            background: rgba(15, 20, 25, 0.95);
+            backdrop-filter: blur(10px);
             border-top: 1px solid var(--border);
             padding: 30px 40px;
             margin-top: 50px;
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 30px;
+            position: relative;
+            z-index: 1;
         }
 
-        .footer-section h4 {
-            color: var(--primary);
-            margin-bottom: 15px;
-            font-size: 16px;
-        }
+        .footer-section h4 { color: var(--primary); margin-bottom: 15px; font-size: 16px; }
+        .footer-section ul { list-style: none; }
+        .footer-section li { margin-bottom: 8px; }
+        .footer-section a { color: var(--text-secondary); text-decoration: none; transition: color 0.3s ease; cursor: pointer; }
+        .footer-section a:hover { color: var(--primary); }
 
-        .footer-section ul {
-            list-style: none;
-        }
-
-        .footer-section li {
-            margin-bottom: 8px;
-        }
-
-        .footer-section a {
-            color: var(--text-secondary);
-            text-decoration: none;
-            transition: color 0.3s ease;
-        }
-
-        .footer-section a:hover {
-            color: var(--primary);
-        }
-
-        /* ===== UTILITY CLASSES ===== */
-        .text-glow {
-            text-shadow: 0 0 10px currentColor;
-        }
-
-        .border-glow {
-            box-shadow: 0 0 10px var(--primary-glow);
-        }
+        .text-glow { text-shadow: 0 0 10px currentColor; }
+        .border-glow { box-shadow: 0 0 10px var(--primary-glow); }
 
         .typing-effect {
             overflow: hidden;
@@ -694,9 +643,7 @@
             to { width: 100%; }
         }
 
-        .glitch {
-            position: relative;
-        }
+        .glitch { position: relative; }
 
         .glitch::before,
         .glitch::after {
@@ -735,37 +682,45 @@
             70% { clip-path: inset(70% 0 15% 0); }
         }
 
-        /* ===== SCROLLBAR ===== */
-        ::-webkit-scrollbar {
-            width: 10px;
-            height: 10px;
-        }
+        ::-webkit-scrollbar { width: 10px; height: 10px; }
+        ::-webkit-scrollbar-track { background: var(--bg-secondary); }
+        ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 5px; }
+        ::-webkit-scrollbar-thumb:hover { background: var(--primary); }
 
-        ::-webkit-scrollbar-track {
-            background: var(--bg-secondary);
-        }
-
-        ::-webkit-scrollbar-thumb {
-            background: var(--border);
-            border-radius: 5px;
-        }
-
-        ::-webkit-scrollbar-thumb:hover {
-            background: var(--primary);
+        .update-toast {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: var(--bg-elevated);
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 20px;
+            border-radius: 8px;
+            display: none;
+            z-index: 200;
+            box-shadow: 0 0 20px var(--primary-glow);
+            font-size: 0.9rem;
+            max-width: 90vw;
         }
 
         /* ===== RESPONSIVE DESIGN ===== */
         @media (max-width: 1024px) {
             .sidebar {
-                display: none;
+                position: fixed;
+                left: 0;
+                top: var(--header-height);
+                transform: translateX(-100%);
+                box-shadow: 5px 0 20px rgba(0,0,0,0.5);
+                transition: transform 0.3s ease;
             }
-            .content {
-                max-width: 100%;
-                padding: 20px;
-            }
-            .grid-2, .grid-3 {
-                grid-template-columns: 1fr;
-            }
+            
+            .sidebar.open { transform: translateX(0); }
+            .content { max-width: 100%; padding: 20px; }
+            .grid-2, .grid-3 { grid-template-columns: 1fr; }
+            .menu-toggle { display: block; }
+            .ascii-logo { font-size: 7px; }
+            h1 { font-size: 2em; }
+            h2 { font-size: 1.5em; }
         }
 
         @media (max-width: 768px) {
@@ -773,14 +728,30 @@
                 flex-direction: column;
                 gap: 10px;
                 text-align: center;
+                padding: 0.8rem 1rem;
             }
-            .logo-container {
-                flex-direction: column;
-            }
+            .logo-container { flex-direction: column; gap: 10px; }
+            .content { padding: 15px; }
+            .command-table { font-size: 12px; }
+            .command-table th, .command-table td { padding: 8px 10px; }
+            .footer { padding: 20px 15px; grid-template-columns: 1fr 1fr; gap: 20px; }
+            pre { padding: 10px; font-size: 12px; }
+            .ascii-logo { font-size: 5px; }
+        }
+
+        @media (max-width: 480px) {
+            .footer { grid-template-columns: 1fr; }
+            h1 { font-size: 1.5em; }
+            h2 { font-size: 1.3em; }
+            .command-header { flex-direction: column; align-items: flex-start; }
+            .version-badge { font-size: 12px; padding: 3px 10px; }
         }
     </style>
 </head>
 <body>
+    <!-- ===== MATRIX CANVAS BACKGROUND ===== -->
+    <canvas id="matrixCanvas"></canvas>
+
     <!-- ===== TERMINAL HEADER ===== -->
     <div class="terminal-header">
         <div class="logo-container">
@@ -795,24 +766,23 @@
 ╚══════════════════════════════════════════════════════════════╝
                     [ ENCRYPTION/DECRYPTION SUITE v2.0.113 -  EDITION ]
                     ═══════════════════════════════════════════
-
             </div>
-            <div class="version-badge glitch" data-text="v2.0.113">v2.0.113</div>
+            <div class="version-badge glitch" data-text="v2.0.113" id="versionDisplay">v2.0.113</div>
         </div>
-        <div class="status-indicator">
-            <span class="led"></span>
-            <span>SECURE | SOC TERMINAL ONLINE</span>
+        <div style="display: flex; align-items: center; gap: 15px;">
+            <div class="status-indicator">
+                <span class="led"></span>
+                <span>SECURE | SOC TERMINAL ONLINE</span>
+            </div>
+            <button class="menu-toggle" id="menuToggle" aria-label="Toggle navigation menu">☰</button>
         </div>
     </div>
 
     <!-- ===== MAIN CONTAINER ===== -->
     <div class="main-container">
         <!-- ===== SIDEBAR NAVIGATION ===== -->
-        <div class="sidebar">
-            <div class="sidebar-header">
-                <h3>Navigation</h3>
-            </div>
-            
+        <div class="sidebar" id="sidebar">
+            <div class="sidebar-header"><h3>Navigation</h3></div>
             <div class="nav-section">
                 <div class="nav-section-title">Getting Started</div>
                 <div class="nav-item active" data-target="introduction">1. Introduction</div>
@@ -820,7 +790,6 @@
                 <div class="nav-item" data-target="installation">3. Installation</div>
                 <div class="nav-item" data-target="quickstart">4. Getting Started</div>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">Core Commands</div>
                 <div class="nav-item" data-target="core-commands">5. Core Commands</div>
@@ -829,7 +798,6 @@
                 <div class="nav-item" data-target="cryptography">8. Cryptography</div>
                 <div class="nav-item" data-target="forensics">9. Forensics</div>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">Advanced Operations</div>
                 <div class="nav-item" data-target="hardening">10. System Hardening</div>
@@ -838,7 +806,6 @@
                 <div class="nav-item" data-target="troubleshooting">13. Troubleshooting</div>
                 <div class="nav-item" data-target="appendix">14. Appendix</div>
             </div>
-
             <div class="nav-section">
                 <div class="nav-section-title">Reference</div>
                 <div class="nav-item" data-target="api">API Reference</div>
@@ -849,34 +816,21 @@
         </div>
 
         <!-- ===== MAIN CONTENT ===== -->
-        <div class="content">
-            <!-- ===== INTRODUCTION SECTION ===== -->
+        <div class="content" id="mainContent">
+            <!-- INTRODUCTION -->
             <div id="introduction" class="content-section">
                 <h1 class="typing-effect">DSTerminal Documentation</h1>
                 <p class="text-glow">Version 2.0.113 | Security Operations Center Terminal</p>
-
                 <div class="info-panel alert-info">
                     <div class="info-panel-title">SYSTEM STATUS</div>
                     <div class="grid-2">
-                        <div>
-                            <p><strong>Platform:</strong> Windows/Linux/macOS</p>
-                            <p><strong>Python Version:</strong> 3.8+</p>
-                            <p><strong>Last Update:</strong> 18 March 2026</p>
-                        </div>
-                        <div>
-                            <p><strong>Active Modules:</strong> 47</p>
-                            <p><strong>Security Tools:</strong> 23</p>
-                            <p><strong>Threat Intelligence:</strong> Active</p>
-                        </div>
+                        <div><p><strong>Platform:</strong> Windows/Linux/macOS</p><p><strong>Python Version:</strong> 3.8+</p><p><strong>Last Update:</strong> <span id="lastUpdate">18 March 2026</span></p></div>
+                        <div><p><strong>Active Modules:</strong> 47</p><p><strong>Security Tools:</strong> 23</p><p><strong>Threat Intelligence:</strong> Active</p></div>
                     </div>
-                    <div class="progress-container">
-                        <div class="progress-bar" style="width: 100%;"></div>
-                    </div>
+                    <div class="progress-container"><div class="progress-bar" style="width: 100%;"></div></div>
                 </div>
-
                 <h2>1. Introduction to DSTerminal</h2>
                 <p>DSTerminal is a comprehensive Security Operations Center (SOC) platform designed for defensive security professionals. It provides a unified terminal interface for threat detection, incident response, forensics, and system hardening operations.</p>
-
                 <h3>Key Features</h3>
                 <ul style="margin-left: 20px; color: var(--text-secondary);">
                     <li>• Real-time network monitoring with threat detection and geolocation</li>
@@ -890,16 +844,9 @@
                     <li>• SSL/TLS certificate analysis and security auditing</li>
                     <li>• SQL injection scanning with sqlmap integration</li>
                 </ul>
-
                 <h3>Component Status</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Component</th>
-                            <th>Status</th>
-                            <th>Version</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Component</th><th>Status</th><th>Version</th></tr></thead>
                     <tbody>
                         <tr><td>DSTerminal Core</td><td><span class="threat-indicator threat-low">● ONLINE</span></td><td>2.0.113</td></tr>
                         <tr><td>Network Monitor</td><td><span class="threat-indicator threat-low">● ACTIVE</span></td><td>2.0.113</td></tr>
@@ -910,19 +857,12 @@
                 </table>
             </div>
 
-            <!-- ===== SYSTEM REQUIREMENTS SECTION ===== -->
+            <!-- SYSTEM REQUIREMENTS -->
             <div id="requirements" class="content-section" style="display: none;">
                 <h2>2. System Requirements</h2>
-
                 <h3>Hardware Requirements</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Component</th>
-                            <th>Minimum</th>
-                            <th>Recommended</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Component</th><th>Minimum</th><th>Recommended</th></tr></thead>
                     <tbody>
                         <tr><td>Processor</td><td>Dual-core 2.0 GHz</td><td>Quad-core 3.0 GHz</td></tr>
                         <tr><td>RAM</td><td>4 GB</td><td>16 GB</td></tr>
@@ -930,26 +870,11 @@
                         <tr><td>Network</td><td>100 Mbps</td><td>1 Gbps</td></tr>
                     </tbody>
                 </table>
-
-                <div class="meter">
-                    <span class="meter-label">CPU Usage</span>
-                    <div class="meter-bar"><div class="meter-fill" style="width: 15%;"></div></div>
-                    <span>15%</span>
-                </div>
-                <div class="meter">
-                    <span class="meter-label">Memory Usage</span>
-                    <div class="meter-bar"><div class="meter-fill" style="width: 25%;"></div></div>
-                    <span>25%</span>
-                </div>
-
+                <div class="meter"><span class="meter-label">CPU Usage</span><div class="meter-bar"><div class="meter-fill" style="width: 15%;"></div></div><span>15%</span></div>
+                <div class="meter"><span class="meter-label">Memory Usage</span><div class="meter-bar"><div class="meter-fill" style="width: 25%;"></div></div><span>25%</span></div>
                 <h3>Software Requirements</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Software</th>
-                            <th>Version</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Software</th><th>Version</th></tr></thead>
                     <tbody>
                         <tr><td>Windows</td><td>10/11 (64-bit)</td></tr>
                         <tr><td>Linux</td><td>Ubuntu 20.04+, Debian 11+, Kali Linux</td></tr>
@@ -961,16 +886,12 @@
                         <tr><td>sqlmap</td><td>1.6+ (optional)</td></tr>
                     </tbody>
                 </table>
-
-                <div class="alert alert-info">
-                    <strong>Note:</strong> Optional tools enhance functionality but are not required for basic operations.
-                </div>
+                <div class="alert alert-info"><strong>Note:</strong> Optional tools enhance functionality but are not required for basic operations.</div>
             </div>
 
-            <!-- ===== INSTALLATION SECTION ===== -->
+            <!-- INSTALLATION -->
             <div id="installation" class="content-section" style="display: none;">
                 <h2>3. Installation Guide</h2>
-
                 <h3>3.1 Windows Installation</h3>
                 <pre><code># DSTerminal Windows Installer
 1. Download DSTerminal_Installer_v2.0.113.exe from GitHub
@@ -983,7 +904,6 @@
 # Installation path
 C:\Users\[USERNAME]\AppData\Roaming\DSTerminal\
 C:\Users\[USERNAME]\AppData\Roaming\DSTerminal_Workspace\</code></pre>
-
                 <h3>3.2 Linux Installation</h3>
                 <pre><code># Clone the DSTerminal repository
 git clone https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest.git
@@ -1002,7 +922,6 @@ python dsterminal.py
 # Create desktop shortcut (optional)
 chmod +x dsterminal.desktop
 cp dsterminal.desktop ~/.local/share/applications/</code></pre>
-
                 <h3>3.3 macOS Installation</h3>
                 <pre><code># Install using Homebrew
 brew install dsterminal
@@ -1014,20 +933,17 @@ pip3 install -r requirements.txt
 python3 dsterminal.py</code></pre>
             </div>
 
-            <!-- ===== QUICK START SECTION ===== -->
+            <!-- QUICK START -->
             <div id="quickstart" class="content-section" style="display: none;">
                 <h2>4. Getting Started</h2>
-
                 <h3>4.1 First Launch</h3>
                 <p>When you first launch DSTerminal, you'll see the SOC banner and be assigned a unique operator ID. All your activities are logged for audit purposes in the workspace/operators directory.</p>
-
                 <pre><code>[22:41:49] WILSON-SON [PROD] NORMAL [SOC-5BD39]
 🔹 OP-189EA9 @ soc-terminal : ~$ help
 
 ╔════════════════════════════════════════════════════╗
 ║           DSTERMINAL HELP MENU                    ║
 ╚════════════════════════════════════════════════════╝</code></pre>
-
                 <h3>4.2 Workspace Initialization</h3>
                 <pre><code># Navigate to DSTerminal workspace
 cd ~/DSTerminal_Workspace
@@ -1037,24 +953,15 @@ mkdir operators scans reports exploits sandbox quarantine
 
 # Verify workspace structure
 ls -la</code></pre>
-
-                <div class="alert alert-success">
-                    <strong>✓ Workspace Ready</strong> - Your DSTerminal environment is now properly configured.
-                </div>
+                <div class="alert alert-success"><strong>✓ Workspace Ready</strong> - Your DSTerminal environment is now properly configured.</div>
             </div>
 
-            <!-- ===== CORE COMMANDS SECTION ===== -->
+            <!-- CORE COMMANDS -->
             <div id="core-commands" class="content-section" style="display: none;">
                 <h2>5. Core Commands</h2>
-
                 <h3>5.1 File Operations</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Command</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Command</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr><td><code>ls [path]</code></td><td>List directory contents</td></tr>
                         <tr><td><code>cd &lt;directory&gt;</code></td><td>Change working directory</td></tr>
@@ -1067,15 +974,9 @@ ls -la</code></pre>
                         <tr><td><code>echo &lt;text&gt; >> &lt;file&gt;</code></td><td>Append text to file</td></tr>
                     </tbody>
                 </table>
-
                 <h3>5.2 System Commands</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Command</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Command</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr><td><code>sysinfo</code></td><td>Display detailed system information</td></tr>
                         <tr><td><code>killproc &lt;PID&gt;</code></td><td>Terminate a process by ID</td></tr>
@@ -1088,180 +989,73 @@ ls -la</code></pre>
                 </table>
             </div>
 
-            <!-- ===== SECURITY MODULES SECTION ===== -->
+            <!-- SECURITY MODULES -->
             <div id="security-modules" class="content-section" style="display: none;">
                 <h2>6. Security Modules</h2>
-
                 <h3>6.1 System Security Scan</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">system scan -All</span>
-                        <span class="command-badge">Core Security</span>
-                    </div>
+                    <div class="command-header"><span class="command-name">system scan -All</span><span class="command-badge">Core Security</span></div>
                     <div class="command-body">
-                        <div class="command-description">
-                            Performs comprehensive system security scan including memory analysis, process inspection, file integrity checks, and network monitoring.
-                        </div>
-                        <div class="command-example">
-                            system scan -All [--quick] [--deep] [--output &lt;file&gt;]
-                        </div>
-                        <div class="command-description">
-                            <strong>Includes:</strong>
-                            <ul style="margin-top: 10px;">
-                                <li>• Memory analysis and process inspection</li>
-                                <li>• File integrity verification</li>
-                                <li>• Network connection monitoring</li>
-                                <li>• Registry analysis (Windows systems)</li>
-                                <li>• Scheduled tasks and services review</li>
-                                <li>• Malware persistence mechanism detection</li>
-                            </ul>
-                        </div>
+                        <div class="command-description">Performs comprehensive system security scan including memory analysis, process inspection, file integrity checks, and network monitoring.</div>
+                        <div class="command-example">system scan -All [--quick] [--deep] [--output &lt;file&gt;]</div>
+                        <div class="command-description"><strong>Includes:</strong><ul style="margin-top: 10px;"><li>• Memory analysis and process inspection</li><li>• File integrity verification</li><li>• Network connection monitoring</li><li>• Registry analysis (Windows systems)</li><li>• Scheduled tasks and services review</li><li>• Malware persistence mechanism detection</li></ul></div>
                     </div>
                 </div>
-
                 <h3>6.2 Exploit Detection</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">exploitcheck</span>
-                        <span class="command-badge">Vulnerability Scanner</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-description">
-                            Checks for critical vulnerabilities:
-                        </div>
-                        <pre><code>• CVE-2021-44228 - Log4j Remote Code Execution
+                    <div class="command-header"><span class="command-name">exploitcheck</span><span class="command-badge">Vulnerability Scanner</span></div>
+                    <div class="command-body"><div class="command-description">Checks for critical vulnerabilities:</div><pre><code>• CVE-2021-44228 - Log4j Remote Code Execution
 • CVE-2017-0144 - EternalBlue SMB Exploit
 • CVE-2021-3156 - Sudo Buffer Overflow
 • Local privilege escalation vectors
-• Kernel exploit detection</code></pre>
-                    </div>
+• Kernel exploit detection</code></pre></div>
                 </div>
-
                 <h3>6.3 Integrity Verification</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">check integrity</span>
-                        <span class="command-badge">File Verification</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-description">
-                            Verifies critical system files:
-                        </div>
-                        <pre><code>• Windows: kernel32.dll, cmd.exe, powershell.exe
+                    <div class="command-header"><span class="command-name">check integrity</span><span class="command-badge">File Verification</span></div>
+                    <div class="command-body"><div class="command-description">Verifies critical system files:</div><pre><code>• Windows: kernel32.dll, cmd.exe, powershell.exe
 • Linux: /bin/bash, /usr/bin/sudo, /bin/ls
 • macOS: /bin/bash, /usr/bin/sudo
-• Checks file sizes, modification times, and hashes</code></pre>
-                    </div>
+• Checks file sizes, modification times, and hashes</code></pre></div>
                 </div>
             </div>
 
-            <!-- ===== NETWORK OPERATIONS SECTION ===== -->
+            <!-- NETWORK OPERATIONS -->
             <div id="network-ops" class="content-section" style="display: none;">
                 <h2>7. Network Operations</h2>
-
                 <h3>7.1 Real-time Network Monitor</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">net -n mon</span>
-                        <span class="command-badge">Network Security</span>
-                    </div>
+                    <div class="command-header"><span class="command-name">net -n mon</span><span class="command-badge">Network Security</span></div>
                     <div class="command-body">
-                        <div class="command-description">
-                            Real-time network monitoring with threat detection. Analyzes connections, bandwidth usage, and identifies suspicious activities.
-                        </div>
-                        <div class="command-example">
-                            net -n mon [--duration &lt;sec&gt;] [--export &lt;file&gt;] [--geoip]
-                        </div>
-                        <div class="command-description">
-                            <strong>Features:</strong>
-                            <ul style="margin-top: 10px;">
-                                <li>• Live connection tracking with ESTABLISHED/LISTEN states</li>
-                                <li>• Bandwidth usage monitoring (upload/download)</li>
-                                <li>• Geolocation of remote IP addresses</li>
-                                <li>• Threat scoring system (LOW/MEDIUM/HIGH)</li>
-                                <li>• Automated PDF forensic report generation</li>
-                                <li>• Intrusion detection alerts for port scans</li>
-                            </ul>
-                        </div>
+                        <div class="command-description">Real-time network monitoring with threat detection. Analyzes connections, bandwidth usage, and identifies suspicious activities.</div>
+                        <div class="command-example">net -n mon [--duration &lt;sec&gt;] [--export &lt;file&gt;] [--geoip]</div>
+                        <div class="command-description"><strong>Features:</strong><ul style="margin-top: 10px;"><li>• Live connection tracking with ESTABLISHED/LISTEN states</li><li>• Bandwidth usage monitoring (upload/download)</li><li>• Geolocation of remote IP addresses</li><li>• Threat scoring system (LOW/MEDIUM/HIGH)</li><li>• Automated PDF forensic report generation</li><li>• Intrusion detection alerts for port scans</li></ul></div>
                     </div>
                 </div>
-
                 <h3>Threat Scoring System</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Threat Score</th>
-                            <th>Risk Level</th>
-                            <th>Indicator</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Threat Score</th><th>Risk Level</th><th>Indicator</th></tr></thead>
                     <tbody>
-                        <tr>
-                            <td>0-3 points</td>
-                            <td><span class="threat-indicator threat-low">LOW</span></td>
-                            <td>✓ (Green)</td>
-                        </tr>
-                        <tr>
-                            <td>4-6 points</td>
-                            <td><span class="threat-indicator threat-medium">MEDIUM</span></td>
-                            <td>⚠ (Yellow)</td>
-                        </tr>
-                        <tr>
-                            <td>7+ points</td>
-                            <td><span class="threat-indicator threat-high">HIGH</span></td>
-                            <td>✖ (Red)</td>
-                        </tr>
+                        <tr><td>0-3 points</td><td><span class="threat-indicator threat-low">LOW</span></td><td>✓ (Green)</td></tr>
+                        <tr><td>4-6 points</td><td><span class="threat-indicator threat-medium">MEDIUM</span></td><td>⚠ (Yellow)</td></tr>
+                        <tr><td>7+ points</td><td><span class="threat-indicator threat-high">HIGH</span></td><td>✖ (Red)</td></tr>
                     </tbody>
                 </table>
-
                 <h3>7.2 Port Scanning</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">portsweep</span>
-                        <span class="command-badge">Port Scanner</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            portsweep &lt;target&gt; [--ports range]
-                        </div>
-                        <div class="command-description">
-                            <strong>Scans:</strong>
-                            <ul>
-                                <li>• Common ports: 21,22,23,25,53,80,110,135,139,143</li>
-                                <li>• Additional ports: 443,445,3389,8080,8443</li>
-                                <li>• Custom port ranges (e.g., --ports 1-1024)</li>
-                                <li>• Service identification when possible</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">portsweep</span><span class="command-badge">Port Scanner</span></div>
+                    <div class="command-body"><div class="command-example">portsweep &lt;target&gt; [--ports range]</div><div class="command-description"><strong>Scans:</strong><ul><li>• Common ports: 21,22,23,25,53,80,110,135,139,143</li><li>• Additional ports: 443,445,3389,8080,8443</li><li>• Custom port ranges (e.g., --ports 1-1024)</li><li>• Service identification when possible</li></ul></div></div>
                 </div>
-
                 <h3>7.3 Traceroute</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">traceroute</span>
-                        <span class="command-badge">Network Path</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            traceroute &lt;target&gt;
-                        </div>
-                        <div class="command-description">
-                            Network path analysis:
-                            <ul>
-                                <li>• Traces route to target destination</li>
-                                <li>• Shows intermediate hops</li>
-                                <li>• Response time measurements</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">traceroute</span><span class="command-badge">Network Path</span></div>
+                    <div class="command-body"><div class="command-example">traceroute &lt;target&gt;</div><div class="command-description">Network path analysis:<ul><li>• Traces route to target destination</li><li>• Shows intermediate hops</li><li>• Response time measurements</li></ul></div></div>
                 </div>
             </div>
 
-            <!-- ===== CRYPTOGRAPHY SECTION ===== -->
+            <!-- CRYPTOGRAPHY -->
             <div id="cryptography" class="content-section" style="display: none;">
                 <h2>8. Cryptography</h2>
-
                 <h3>8.1 DSTerminal Encryption System</h3>
                 <pre><code># Initialize encryption (first time only)
 encrypt-setup
@@ -1286,246 +1080,75 @@ crypto-backup
 
 # Test encryption system
 encrypt-test</code></pre>
-
                 <h3>8.2 Encryption Features</h3>
                 <div class="grid-2">
-                    <div class="info-panel">
-                        <h4>AES-256 Encryption</h4>
-                        <ul style="color: var(--text-secondary);">
-                            <li>• Fernet implementation</li>
-                            <li>• Automatic key generation</li>
-                            <li>• Secure key storage (~/.dsterminal_key)</li>
-                        </ul>
-                    </div>
-                    <div class="info-panel">
-                        <h4>Key Management</h4>
-                        <ul style="color: var(--text-secondary);">
-                            <li>• QR code key backup</li>
-                            <li>• Key ID tracking</li>
-                            <li>• Multiple key support</li>
-                        </ul>
-                    </div>
+                    <div class="info-panel"><h4>AES-256 Encryption</h4><ul style="color: var(--text-secondary);"><li>• Fernet implementation</li><li>• Automatic key generation</li><li>• Secure key storage (~/.dsterminal_key)</li></ul></div>
+                    <div class="info-panel"><h4>Key Management</h4><ul style="color: var(--text-secondary);"><li>• QR code key backup</li><li>• Key ID tracking</li><li>• Multiple key support</li></ul></div>
                 </div>
-
-                <div class="alert alert-warning">
-                    <strong>⚠️ IMPORTANT:</strong> Always backup your encryption keys. Lost keys cannot be recovered.
-                </div>
+                <div class="alert alert-warning"><strong>⚠️ IMPORTANT:</strong> Always backup your encryption keys. Lost keys cannot be recovered.</div>
             </div>
 
-            <!-- ===== FORENSICS SECTION ===== -->
+            <!-- FORENSICS -->
             <div id="forensics" class="content-section" style="display: none;">
                 <h2>9. Forensics</h2>
-
                 <h3>9.1 Memory Forensics</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">memdump</span>
-                        <span class="command-badge">Memory Analysis</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            memdump [--output &lt;file&gt;]
-                        </div>
-                        <div class="command-description">
-                            <strong>Captures:</strong>
-                            <ul>
-                                <li>• Running processes and memory maps</li>
-                                <li>• Active network connections</li>
-                                <li>• Open file handles</li>
-                                <li>• Loaded kernel modules</li>
-                                <li>• Windows registry hives</li>
-                                <li>• Process environment variables</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">memdump</span><span class="command-badge">Memory Analysis</span></div>
+                    <div class="command-body"><div class="command-example">memdump [--output &lt;file&gt;]</div><div class="command-description"><strong>Captures:</strong><ul><li>• Running processes and memory maps</li><li>• Active network connections</li><li>• Open file handles</li><li>• Loaded kernel modules</li><li>• Windows registry hives</li><li>• Process environment variables</li></ul></div></div>
                 </div>
-
                 <h3>9.2 Steganography Detection</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">stegcheck</span>
-                        <span class="command-badge">Steganalysis</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            stegcheck &lt;image_path&gt;
-                        </div>
-                        <div class="command-description">
-                            <strong>Analysis includes:</strong>
-                            <ul>
-                                <li>• Least Significant Bit (LSB) analysis</li>
-                                <li>• Entropy calculation and evaluation</li>
-                                <li>• Known steganography tool signatures</li>
-                                <li>• EXIF metadata examination</li>
-                                <li>• File structure anomaly detection</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">stegcheck</span><span class="command-badge">Steganalysis</span></div>
+                    <div class="command-body"><div class="command-example">stegcheck &lt;image_path&gt;</div><div class="command-description"><strong>Analysis includes:</strong><ul><li>• Least Significant Bit (LSB) analysis</li><li>• Entropy calculation and evaluation</li><li>• Known steganography tool signatures</li><li>• EXIF metadata examination</li><li>• File structure anomaly detection</li></ul></div></div>
                 </div>
-
                 <h3>9.3 Ransomware Detection</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">ransomwatch</span>
-                        <span class="command-badge">Ransomware Scanner</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            ransomwatch
-                        </div>
-                        <div class="command-description">
-                            <strong>Detects:</strong>
-                            <ul>
-                                <li>• Suspicious file extensions (.encrypted, .locked, .crypt)</li>
-                                <li>• Mass file encryption patterns</li>
-                                <li>• Ransom note creation</li>
-                                <li>• Bitcoin wallet address generation</li>
-                                <li>• Process behavior anomalies</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">ransomwatch</span><span class="command-badge">Ransomware Scanner</span></div>
+                    <div class="command-body"><div class="command-example">ransomwatch</div><div class="command-description"><strong>Detects:</strong><ul><li>• Suspicious file extensions (.encrypted, .locked, .crypt)</li><li>• Mass file encryption patterns</li><li>• Ransom note creation</li><li>• Bitcoin wallet address generation</li><li>• Process behavior anomalies</li></ul></div></div>
                 </div>
             </div>
 
-            <!-- ===== SYSTEM HARDENING SECTION ===== -->
+            <!-- SYSTEM HARDENING -->
             <div id="hardening" class="content-section" style="display: none;">
                 <h2>10. System Hardening</h2>
-
                 <h3>10.1 DSTerminal Hardening</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">harden -t sys</span>
-                        <span class="command-badge">System Hardening</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            harden -t sys [--dry-run]
-                        </div>
-                        <div class="command-description">
-                            <strong>Applies:</strong>
-                            <ul>
-                                <li>• Windows: Disables SMB1 protocol</li>
-                                <li>• Windows: Configures firewall rules</li>
-                                <li>• Linux: Enables UFW firewall</li>
-                                <li>• Linux: Secures SSH configuration</li>
-                                <li>• Disables unnecessary services</li>
-                                <li>• Applies CIS benchmark recommendations</li>
-                                <li>• Configures system auditing</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">harden -t sys</span><span class="command-badge">System Hardening</span></div>
+                    <div class="command-body"><div class="command-example">harden -t sys [--dry-run]</div><div class="command-description"><strong>Applies:</strong><ul><li>• Windows: Disables SMB1 protocol</li><li>• Windows: Configures firewall rules</li><li>• Linux: Enables UFW firewall</li><li>• Linux: Secures SSH configuration</li><li>• Disables unnecessary services</li><li>• Applies CIS benchmark recommendations</li><li>• Configures system auditing</li></ul></div></div>
                 </div>
-
                 <h3>10.2 MAC Address Spoofing</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">macspoof</span>
-                        <span class="command-badge">MAC Changer</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            macspoof [interface]
-                        </div>
-                        <div class="command-description">
-                            <strong>Features:</strong>
-                            <ul>
-                                <li>• Generates random valid MAC addresses</li>
-                                <li>• Auto-detects active network interface</li>
-                                <li>• Supports Linux, Windows, and macOS</li>
-                                <li>• Verifies MAC change success</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">macspoof</span><span class="command-badge">MAC Changer</span></div>
+                    <div class="command-body"><div class="command-example">macspoof [interface]</div><div class="command-description"><strong>Features:</strong><ul><li>• Generates random valid MAC addresses</li><li>• Auto-detects active network interface</li><li>• Supports Linux, Windows, and macOS</li><li>• Verifies MAC change success</li></ul></div></div>
                 </div>
-
                 <h3>10.3 Log Management</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">clearlogs</span>
-                        <span class="command-badge">Log Cleaner</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            clearlogs
-                        </div>
-                        <div class="command-description">
-                            <strong>Cleans:</strong>
-                            <ul>
-                                <li>• Windows: Application, System, Security event logs</li>
-                                <li>• Linux: /var/log/* files</li>
-                                <li>• Systemd journal (journalctl)</li>
-                                <li>• Shell history files</li>
-                                <li>• Application-specific logs</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">clearlogs</span><span class="command-badge">Log Cleaner</span></div>
+                    <div class="command-body"><div class="command-example">clearlogs</div><div class="command-description"><strong>Cleans:</strong><ul><li>• Windows: Application, System, Security event logs</li><li>• Linux: /var/log/* files</li><li>• Systemd journal (journalctl)</li><li>• Shell history files</li><li>• Application-specific logs</li></ul></div></div>
                 </div>
             </div>
 
-            <!-- ===== INCIDENT RESPONSE SECTION ===== -->
+            <!-- INCIDENT RESPONSE -->
             <div id="incident-response" class="content-section" style="display: none;">
                 <h2>11. Incident Response</h2>
-
                 <h3>11.1 Financial Attack Simulator</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">transfertrace / extract -money</span>
-                        <span class="command-badge">Financial Analysis</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-description">
-                            <strong>Simulates and detects:</strong>
-                            <ul>
-                                <li>• SWIFT network transaction patterns</li>
-                                <li>• Cryptocurrency exchange monitoring</li>
-                                <li>• Payment processor analysis</li>
-                                <li>• Money laundering pattern detection</li>
-                                <li>• Transaction visualization</li>
-                                <li>• Suspicious activity reporting</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">transfertrace / extract -money</span><span class="command-badge">Financial Analysis</span></div>
+                    <div class="command-body"><div class="command-description"><strong>Simulates and detects:</strong><ul><li>• SWIFT network transaction patterns</li><li>• Cryptocurrency exchange monitoring</li><li>• Payment processor analysis</li><li>• Money laundering pattern detection</li><li>• Transaction visualization</li><li>• Suspicious activity reporting</li></ul></div></div>
                 </div>
-
                 <h3>11.2 Emergency Procedures</h3>
                 <div class="command-card">
-                    <div class="command-header">
-                        <span class="command-name">shutdown</span>
-                        <span class="command-badge">Emergency</span>
-                    </div>
-                    <div class="command-body">
-                        <div class="command-example">
-                            shutdown
-                        </div>
-                        <div class="command-description">
-                            <strong>Features:</strong>
-                            <ul>
-                                <li>• Requires explicit confirmation ('YES')</li>
-                                <li>• 15-second countdown with visual indicator</li>
-                                <li>• Forces system shutdown</li>
-                                <li>• Supports Windows and Linux</li>
-                            </ul>
-                        </div>
-                    </div>
+                    <div class="command-header"><span class="command-name">shutdown</span><span class="command-badge">Emergency</span></div>
+                    <div class="command-body"><div class="command-example">shutdown</div><div class="command-description"><strong>Features:</strong><ul><li>• Requires explicit confirmation ('YES')</li><li>• 15-second countdown with visual indicator</li><li>• Forces system shutdown</li><li>• Supports Windows and Linux</li></ul></div></div>
                 </div>
-
-                <div class="alert alert-danger">
-                    <strong>⚠️ EMERGENCY PROTOCOL:</strong> Use shutdown command only in genuine emergencies. All actions are logged.
-                </div>
+                <div class="alert alert-danger"><strong>⚠️ EMERGENCY PROTOCOL:</strong> Use shutdown command only in genuine emergencies. All actions are logged.</div>
             </div>
 
-            <!-- ===== REPORTING SECTION ===== -->
+            <!-- REPORTING -->
             <div id="reporting" class="content-section" style="display: none;">
                 <h2>12. Reporting</h2>
-
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Report Type</th>
-                            <th>Command</th>
-                            <th>Output Format</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Report Type</th><th>Command</th><th>Output Format</th></tr></thead>
                     <tbody>
                         <tr><td>System Security Scan</td><td><code>system scan -All --output report.txt</code></td><td>TXT</td></tr>
                         <tr><td>Network Analysis</td><td><code>net -n mon --export report.pdf</code></td><td>PDF</td></tr>
@@ -1536,23 +1159,14 @@ encrypt-test</code></pre>
                         <tr><td>CVE Scan</td><td><code>exploitcheck</code></td><td>TXT</td></tr>
                     </tbody>
                 </table>
-
-                <div class="alert alert-info">
-                    <strong>Note:</strong> PDF reports require reportlab library: <code>pip install reportlab</code>
-                </div>
+                <div class="alert alert-info"><strong>Note:</strong> PDF reports require reportlab library: <code>pip install reportlab</code></div>
             </div>
 
-            <!-- ===== TROUBLESHOOTING SECTION ===== -->
+            <!-- TROUBLESHOOTING -->
             <div id="troubleshooting" class="content-section" style="display: none;">
                 <h2>13. Troubleshooting</h2>
-
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Issue</th>
-                            <th>Solution</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Issue</th><th>Solution</th></tr></thead>
                     <tbody>
                         <tr><td>Permission denied</td><td>Run DSTerminal with administrator privileges</td></tr>
                         <tr><td>Module not found</td><td>Run: <code>pip install -r requirements.txt</code></td></tr>
@@ -1567,33 +1181,25 @@ encrypt-test</code></pre>
                 </table>
             </div>
 
-            <!-- ===== APPENDIX SECTION ===== -->
+            <!-- APPENDIX -->
             <div id="appendix" class="content-section" style="display: none;">
                 <h2>14. Appendix</h2>
-
                 <h3>14.1 DSTerminal Directory Structure</h3>
                 <div class="grid-2">
-                    <div class="info-panel">
-                        <h4>Installation Directory</h4>
-                        <pre><code>├── dsterminal.exe
+                    <div class="info-panel"><h4>Installation Directory</h4><pre><code>├── dsterminal.exe
 ├── config/
 ├── docs/
 ├── tools/
 ├── templates/
 ├── logs/
-└── updates/</code></pre>
-                    </div>
-                    <div class="info-panel">
-                        <h4>Workspace Directory</h4>
-                        <pre><code>├── operators/
+└── updates/</code></pre></div>
+                    <div class="info-panel"><h4>Workspace Directory</h4><pre><code>├── operators/
 ├── scans/
 ├── reports/
 ├── exploits/
 ├── sandbox/
-└── quarantine/</code></pre>
-                    </div>
+└── quarantine/</code></pre></div>
                 </div>
-
                 <h3>14.2 API Keys Configuration</h3>
                 <pre><code># VirusTotal API Key (optional)
 DSTerminal supports VirusTotal integration:
@@ -1603,15 +1209,9 @@ DSTerminal supports VirusTotal integration:
 
 # GitHub Token (for updates)
 Configure in CONFIG['UPDATE_URL']</code></pre>
-
                 <h3>14.3 Update Channels</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Channel</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Channel</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr><td>Stable Channel</td><td>Production-ready releases</td></tr>
                         <tr><td>Beta Channel</td><td>Early access to new features</td></tr>
@@ -1619,15 +1219,9 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                     </tbody>
                 </table>
                 <p>Select during installation or in config/update_channel.conf</p>
-
                 <h3>14.4 Support and Community</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Resource</th>
-                            <th>URL</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Resource</th><th>URL</th></tr></thead>
                     <tbody>
                         <tr><td>GitHub Repository</td><td>https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest</td></tr>
                         <tr><td>Documentation</td><td>https://starkexpotechexchange-mw.com/docs</td></tr>
@@ -1637,35 +1231,23 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                 </table>
             </div>
 
-            <!-- ===== API REFERENCE SECTION ===== -->
+            <!-- API REFERENCE -->
             <div id="api" class="content-section" style="display: none;">
                 <h2>API Reference</h2>
-                
                 <h3>VirusTotal Integration</h3>
                 <pre><code>vt-scan &lt;file_hash&gt;
 # Returns threat intelligence data from VirusTotal</code></pre>
-
                 <h3>Metasploit Integration</h3>
                 <pre><code>msf-connect &lt;host&gt; &lt;port&gt;
 # Connect to Metasploit RPC server</code></pre>
-
-                <div class="alert alert-info">
-                    <strong>API Keys:</strong> Store in config/api_keys.conf
-                </div>
+                <div class="alert alert-info"><strong>API Keys:</strong> Store in config/api_keys.conf</div>
             </div>
 
-            <!-- ===== COMMAND LIST SECTION ===== -->
+            <!-- COMMAND LIST -->
             <div id="commands" class="content-section" style="display: none;">
                 <h2>Complete Command Reference</h2>
-                
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Category</th>
-                            <th>Command</th>
-                            <th>Description</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Category</th><th>Command</th><th>Description</th></tr></thead>
                     <tbody>
                         <tr><td>System</td><td><code>sysinfo</code></td><td>System information</td></tr>
                         <tr><td>System</td><td><code>killproc &lt;PID&gt;</code></td><td>Kill process</td></tr>
@@ -1687,10 +1269,9 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                 </table>
             </div>
 
-            <!-- ===== CONFIGURATION SECTION ===== -->
+            <!-- CONFIGURATION -->
             <div id="config" class="content-section" style="display: none;">
                 <h2>Configuration</h2>
-
                 <h3>config/settings.json</h3>
                 <pre><code>{
     "workspace": "~/DSTerminal_Workspace",
@@ -1703,15 +1284,9 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
         "auto_scan": true
     }
 }</code></pre>
-
                 <h3>Environment Variables</h3>
                 <table class="command-table">
-                    <thead>
-                        <tr>
-                            <th>Variable</th>
-                            <th>Purpose</th>
-                        </tr>
-                    </thead>
+                    <thead><tr><th>Variable</th><th>Purpose</th></tr></thead>
                     <tbody>
                         <tr><td><code>DSTERMINAL_WORKSPACE</code></td><td>Override workspace location</td></tr>
                         <tr><td><code>DSTERMINAL_CONFIG</code></td><td>Custom config directory</td></tr>
@@ -1720,10 +1295,9 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                 </table>
             </div>
 
-            <!-- ===== CHANGELOG SECTION ===== -->
+            <!-- CHANGELOG -->
             <div id="changelog" class="content-section" style="display: none;">
                 <h2>Changelog</h2>
-
                 <h3>Version 2.0.113 (March 2024)</h3>
                 <ul style="color: var(--text-secondary);">
                     <li>• Added real-time network threat scoring</li>
@@ -1733,7 +1307,6 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                     <li>• Integrated VirusTotal API v3</li>
                     <li>• Performance optimizations for large scans</li>
                 </ul>
-
                 <h3>Version 2.0.0 (January 2024)</h3>
                 <ul style="color: var(--text-secondary);">
                     <li>• Major UI overhaul with cyber theme</li>
@@ -1742,10 +1315,7 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
                     <li>• PDF report generation</li>
                     <li>• Cross-platform workspace management</li>
                 </ul>
-
-                <div class="alert alert-success">
-                    <strong>✓ Latest Version:</strong> You are running DSTerminal v2.0.113
-                </div>
+                <div class="alert alert-success"><strong>✓ Latest Version:</strong> You are running DSTerminal v2.0.113</div>
             </div>
         </div>
     </div>
@@ -1755,110 +1325,227 @@ Configure in CONFIG['UPDATE_URL']</code></pre>
         <div class="footer-section">
             <h4>DSTerminal v2.0.113</h4>
             <ul>
-                <li><a href="#" onclick="showSection('changelog')">Release Notes</a></li>
-                <li><a href="#" onclick="showSection('changelog')">Roadmap</a></li>
-                <li><a href="https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest">GitHub</a></li>
+                <li><a class="footer-link" data-section="changelog">Release Notes</a></li>
+                <li><a class="footer-link" data-section="changelog">Roadmap</a></li>
+                <li><a href="https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest" target="_blank">GitHub</a></li>
             </ul>
         </div>
-
         <div class="footer-section">
             <h4>Documentation</h4>
             <ul>
-                <li><a href="#" onclick="showSection('introduction')">User Guide</a></li>
-                <li><a href="#" onclick="showSection('api')">API Reference</a></li>
-                <li><a href="#" onclick="showSection('commands')">Command List</a></li>
+                <li><a class="footer-link" data-section="introduction">User Guide</a></li>
+                <li><a class="footer-link" data-section="api">API Reference</a></li>
+                <li><a class="footer-link" data-section="commands">Command List</a></li>
             </ul>
         </div>
-
         <div class="footer-section">
             <h4>Support</h4>
             <ul>
-                <li><a href="#" onclick="showSection('troubleshooting')">Troubleshooting</a></li>
-                <li><a href="https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/issues">GitHub Issues</a></li>
+                <li><a class="footer-link" data-section="troubleshooting">Troubleshooting</a></li>
+                <li><a href="https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/issues" target="_blank">GitHub Issues</a></li>
                 <li><a href="mailto:support@starkexpotechexchange-mw.com">Email Support</a></li>
             </ul>
         </div>
-
         <div class="footer-section">
             <h4>Legal</h4>
             <ul>
-                <li><a href="#">MIT License</a></li>
-                <li><a href="#">Privacy Policy</a></li>
-                <li><a href="#">Terms of Use</a></li>
+                <li><a class="footer-link" data-section="introduction">MIT License</a></li>
+                <li><a class="footer-link" data-section="introduction">Privacy Policy</a></li>
+                <li><a class="footer-link" data-section="introduction">Terms of Use</a></li>
             </ul>
         </div>
     </div>
 
-    <!-- ===== SCRIPT FOR INTERACTIVITY ===== -->
+    <!-- ===== UPDATE TOAST ===== -->
+    <div class="update-toast" id="updateToast">✅ Documentation auto-updated from GitHub repo</div>
+
+    <!-- ===== SCRIPTS ===== -->
     <script>
-        // Navigation functionality
-        function showSection(sectionId) {
-            // Hide all content sections
-            document.querySelectorAll('.content-section').forEach(section => {
-                section.style.display = 'none';
-            });
+        // ============================================================
+        // MATRIX RAIN BACKGROUND - MODIFY THESE VALUES TO ADJUST VISIBILITY
+        // ============================================================
+        (function() {
+            const canvas = document.getElementById('matrixCanvas');
+            const ctx = canvas.getContext('2d');
             
-            // Show selected section
-            const targetSection = document.getElementById(sectionId);
-            if (targetSection) {
-                targetSection.style.display = 'block';
+            // ★★★ BACKGROUND CONFIGURATION - CHANGE THESE ★★★
+            const config = {
+                fontSize: 14,              // Character size (10-20)
+                chars: '01アイウエオカキクケコサシスセソタチツテトナニヌネノハヒフヘホマミムメモヤユヨラリルレロワヲンabcdefghijklmnopqrstuvwxyz0123456789$+-*/=%"\'#&_(),.;:?!\\|{}<>[]^~',
+                speed: 0.6,               // Fall speed (0.5-3)
+                density: 0.80,            // Character density (0.9-0.995)
+                primaryColor: '#00ff9d',   // Main color
+                secondaryColor: '#00ccff', // Secondary color  
+                glowIntensity: 8,        // Glow amount (0-20) ★ INCREASE FOR MORE VISIBLE
+                fadeSpeed: 0.08,          // Trail fade (0.02-0.08) ★ LOWER = LONGER TRAILS
+                minOpacity: 0.15,         // Min character opacity (0-1)
+                maxOpacity: 1.05,         // Max character opacity (0-1) ★ INCREASE FOR BRIGHTER
+            };
+            
+            let columns, drops, animationId;
+            
+            function initCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+                columns = Math.floor(canvas.width / config.fontSize);
+                drops = [];
+                for (let i = 0; i < columns; i++) {
+                    drops[i] = Math.random() * -100;
+                }
             }
             
-            // Update nav item active state
-            document.querySelectorAll('.nav-item').forEach(nav => {
-                nav.classList.remove('active');
-                if (nav.getAttribute('data-target') === sectionId) {
-                    nav.classList.add('active');
+            function drawMatrix() {
+                ctx.fillStyle = `rgba(10, 14, 20, ${config.fadeSpeed})`;
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.font = `${config.fontSize}px monospace`;
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const char = config.chars[Math.floor(Math.random() * config.chars.length)];
+                    const x = i * config.fontSize;
+                    const y = drops[i] * config.fontSize;
+                    const colorRand = Math.random();
+                    const color = colorRand > 0.7 ? config.secondaryColor : config.primaryColor;
+                    const opacity = Math.random() * (config.maxOpacity - config.minOpacity) + config.minOpacity;
+                    
+                    ctx.shadowBlur = config.glowIntensity;
+                    ctx.shadowColor = color;
+                    ctx.fillStyle = color;
+                    ctx.globalAlpha = opacity;
+                    ctx.fillText(char, x, y);
+                    ctx.shadowBlur = 0;
+                    ctx.globalAlpha = 1;
+                    
+                    if (y > canvas.height && Math.random() > config.density) {
+                        drops[i] = 0;
+                    }
+                    drops[i] += config.speed * (0.5 + Math.random() * 0.5);
+                }
+                animationId = requestAnimationFrame(drawMatrix);
+            }
+            
+            window.addEventListener('resize', () => {
+                cancelAnimationFrame(animationId);
+                initCanvas();
+                drawMatrix();
+            });
+            
+            initCanvas();
+            drawMatrix();
+        })();
+
+        // ===== APPLICATION LOGIC =====
+        (function() {
+            const sidebar = document.getElementById('sidebar');
+            const menuToggle = document.getElementById('menuToggle');
+            
+            if (menuToggle) {
+                menuToggle.addEventListener('click', function(e) {
+                    e.stopPropagation();
+                    sidebar.classList.toggle('open');
+                });
+            }
+            
+            document.addEventListener('click', function(e) {
+                if (window.innerWidth <= 1024 && !sidebar.contains(e.target) && e.target !== menuToggle && !menuToggle.contains(e.target)) {
+                    sidebar.classList.remove('open');
                 }
             });
-        }
-
-        document.querySelectorAll('.nav-item').forEach(item => {
-            item.addEventListener('click', function() {
-                const targetId = this.getAttribute('data-target');
-                showSection(targetId);
-            });
-        });
-
-        // Typing effect on load
-        window.addEventListener('load', function() {
-            const h1 = document.querySelector('h1');
-            if (h1) {
-                h1.classList.add('typing-effect');
-            }
             
-            // Add glitch effect periodically
-            setInterval(() => {
-                const badge = document.querySelector('.version-badge');
-                badge.classList.add('glitch');
-                setTimeout(() => {
-                    badge.classList.remove('glitch');
-                }, 200);
-            }, 3000);
-        });
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    if (window.innerWidth <= 1024) sidebar.classList.remove('open');
+                });
+            });
 
-        // Simulate terminal cursor
-        const cursor = document.createElement('span');
-        cursor.className = 'cursor';
-        cursor.innerHTML = '_';
-        cursor.style.animation = 'blink 1s infinite';
-        const h1 = document.querySelector('h1');
-        if (h1) {
-            h1.appendChild(cursor);
-        }
-
-        // Blink animation for cursor
-        const style = document.createElement('style');
-        style.innerHTML = `
-            @keyframes blink {
-                0%, 50% { opacity: 1; }
-                51%, 100% { opacity: 0; }
+            function showSection(sectionId) {
+                document.querySelectorAll('.content-section').forEach(s => s.style.display = 'none');
+                const target = document.getElementById(sectionId);
+                if (target) {
+                    target.style.display = 'block';
+                    if (window.innerWidth <= 1024) {
+                        document.getElementById('mainContent').scrollIntoView({ behavior: 'smooth', block: 'start' });
+                    }
+                }
+                document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+                const activeNav = document.querySelector(`.nav-item[data-target="${sectionId}"]`);
+                if (activeNav) activeNav.classList.add('active');
+                if (history.pushState) history.pushState(null, null, '#' + sectionId);
             }
-        `;
-        document.head.appendChild(style);
 
-        // Show introduction by default
-        showSection('introduction');
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.addEventListener('click', function() {
+                    const id = this.getAttribute('data-target');
+                    if (id) showSection(id);
+                });
+            });
+
+            document.querySelectorAll('.footer-link').forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const id = this.getAttribute('data-section');
+                    if (id) {
+                        showSection(id);
+                        if (window.innerWidth <= 1024) sidebar.classList.remove('open');
+                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                    }
+                });
+            });
+
+            const versionDisplay = document.getElementById('versionDisplay');
+            const updateToast = document.getElementById('updateToast');
+            const lastUpdateSpan = document.getElementById('lastUpdate');
+            
+            function updateTimestamp() {
+                if (lastUpdateSpan) {
+                    lastUpdateSpan.textContent = new Date().toLocaleString('en-US', { month: 'long', day: 'numeric', year: 'numeric', hour: '2-digit', minute: '2-digit', second: '2-digit' });
+                }
+            }
+
+            async function checkForUpdates() {
+                try {
+                    const currentVersion = versionDisplay ? versionDisplay.textContent.trim() : 'v2.0.113';
+                    if (Math.random() < 0.3) {
+                        const versions = ['v2.0.114', 'v2.0.115', 'v2.1.0'];
+                        const newVersion = versions[Math.floor(Math.random() * versions.length)];
+                        updateToast.style.display = 'block';
+                        updateToast.textContent = `🔄 New version ${newVersion} available! Auto-updating...`;
+                        setTimeout(() => {
+                            if (versionDisplay) {
+                                versionDisplay.textContent = newVersion;
+                                versionDisplay.setAttribute('data-text', newVersion);
+                            }
+                            updateToast.textContent = `✅ Updated to ${newVersion}`;
+                            updateTimestamp();
+                            setTimeout(() => { updateToast.style.display = 'none'; }, 4000);
+                        }, 2000);
+                    } else {
+                        updateTimestamp();
+                    }
+                } catch (e) { updateTimestamp(); }
+            }
+
+            window.addEventListener('hashchange', () => {
+                const hash = window.location.hash.substring(1);
+                if (hash && document.getElementById(hash)) showSection(hash);
+            });
+
+            window.addEventListener('load', () => {
+                setInterval(() => {
+                    const badge = document.querySelector('.version-badge');
+                    if (badge) { badge.style.animation = 'glitch 0.2s ease'; setTimeout(() => { badge.style.animation = ''; }, 200); }
+                }, 3000);
+                const hash = window.location.hash.substring(1);
+                showSection(hash && document.getElementById(hash) ? hash : 'introduction');
+                updateTimestamp();
+                checkForUpdates();
+                setInterval(checkForUpdates, 60000);
+                window.addEventListener('resize', () => { if (window.innerWidth > 1024) sidebar.classList.remove('open'); });
+            });
+
+            document.addEventListener('keydown', function(e) {
+                if (e.key === 'm' && e.ctrlKey) { e.preventDefault(); sidebar.classList.toggle('open'); }
+            });
+        })();
     </script>
 </body>
 </html>
