@@ -152,92 +152,13 @@ class CryptoEngine:
         self.cipher = None
         self.matrix = MatrixRain()
         self.init_cipher()
-        self.show_banner()
-
-#     def show_banner(self):
-#         """Show hacker-style banner"""
-#         os.system('clear' if os.name == 'posix' else 'cls')
-#         colors = [
-#             '\033[92m',  # Light Green (Matrix style)
-#             '\033[38;5;46m',  # Matrix Green
-#             '\033[38;5;82m',  # Bright Green
-#             '\033[38;5;118m',  # Lime Green
-#             '\033[38;5;154m',  # Yellow-Green
-#             '\033[38;5;190m',  # Light Yellow-Green
-#             '\033[38;5;226m',  # Bright Yellow
-#             '\033[38;5;220m',  # Gold
-#             '\033[38;5;214m',  # Orange
-#             '\033[38;5;202m',  # Bright Orange
-#             '\033[38;5;196m',  # Bright Red
-#             '\033[38;5;201m',  # Pink/Magenta
-#             '\033[38;5;165m',  # Purple
-#             '\033[38;5;129m',  # Violet
-#             '\033[38;5;93m',   # Deep Purple
-#             '\033[38;5;63m',   # Blue-Purple
-#             '\033[38;5;69m',   # Blue
-#             '\033[38;5;75m',   # Light Blue
-#             '\033[38;5;81m',   # Cyan
-#             '\033[38;5;87m',   # Light Cyan
-#             '\033[96m',        # Cyan
-#             '\033[95m',        # Magenta
-#             '\033[91m',        # Light Red
-#             '\033[93m',        # Light Yellow
-#         ]
-    
-#         # Add blinking effects for some colors
-#         BLINK = '\033[5m'
-#         BOLD = '\033[1m'
-    
-#         # Mix in some blinking and bold variants
-#         extended_colors = []
-#         for color in colors:
-#             extended_colors.append(color)
-#             extended_colors.append(color + BOLD)
-#             if random.random() > 0.7:  # Add blinking to some colors randomly
-#                 extended_colors.append(color + BLINK)
-    
-#         color = random.choice(extended_colors)
-#         terminal_width = shutil.get_terminal_size((80, 20)).columns
-
-#         banner = [f"""
-# ╔══════════════════════════════════════════════════════════════╗
-# ║  ██████╗ ███████╗████████╗███████╗██████╗ ███╗   ███╗██╗███╗   ██╗ █████╗ ██╗         ║
-# ║  ██╔══██╗██╔════╝╚══██╔══╝██╔════╝██╔══██╗████╗ ████║██║████╗  ██║██╔══██╗██║         ║
-# ║  ██║  ██║███████╗   ██║   █████╗  ██████╔╝██╔████╔██║██║██╔██╗ ██║███████║██║         ║
-# ║  ██║  ██║╚════██║   ██║   ██╔══╝  ██╔══██╗██║╚██╔╝██║██║██║╚██╗██║██╔══██║██║         ║
-# ║  ██████╔╝███████║   ██║   ███████╗██║  ██║██║ ╚═╝ ██║██║██║ ╚████║██║  ██║███████╗    ║
-# ║  ╚═════╝ ╚══════╝   ╚═╝   ╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚═╝╚═╝  ╚═══╝╚═╝  ╚═╝╚══════╝    ║
-# ╚══════════════════════════════════════════════════════════════╝
-#                         [ ENCRYPTION SUITE v2.0.113 -  EDITION ]
-#                        ══════════════════════════════════════════
-# """
-#         ]
-#         def glitch_char(c):
-#             if c.isspace():
-#                 return c
-#             return random.choice(["#", "@", "%", "&", "*", c])
-
-#         def type_line(line, delay=0.002, glitch=False):
-#             centered = line.center(terminal_width)
-#             for char in centered:
-#                 if glitch and random.random() < 0.04:
-#                     sys.stdout.write(color + glitch_char(char))
-#                     sys.stdout.flush()
-#                     time.sleep(delay * 1)
-#                     sys.stdout.write('\b' + color + char)
-#                     sys.stdout.flush()
-#                 else:
-#                     sys.stdout.write(color + char)
-#                     sys.stdout.flush()
-#                 time.sleep(delay)
-#             sys.stdout.write("\n")
-#             time.sleep(0.01)
-
-#         for line in banner:
-#             type_line(line, glitch=True)
-         
-#         # print(banner_lines)
-#         # time.sleep(1)
+        self.show_banner() 
+    def main(self):
+        """Launch the crypto engine menu - calls the standalone main function"""
+        # Import the standalone main function and call it
+        from crypto_engine import main as crypto_main
+        crypto_main()
+        
     def show_banner(self):
         """Show hacker-style banner (single display without blinking)"""
     
@@ -347,6 +268,109 @@ class CryptoEngine:
     # =============================
     # SETUP
     # =============================
+    def import_encryption_key(self, key_string=None):
+        """Import encryption key from a string (for sharing between machines)"""
+        
+        os.system('clear' if os.name == 'posix' else 'cls')
+        box = RotatingBox(50, " IMPORT ENCRYPTION KEY ")
+        
+        if not key_string:
+            print(f"{Colors.YELLOW}▶ Paste the encryption key you received:{Colors.END}")
+            print(f"{Colors.CYAN}  (The key looks like: gAAAAAB...){Colors.END}")
+            key_string = input(f"\n{Colors.GREEN}Key: {Colors.END}").strip()
+        
+        # Validate key format
+        try:
+            # Test if it's a valid Fernet key
+            test_cipher = Fernet(key_string.encode())
+            
+            # Test encryption/decryption with the imported key
+            test_data = b"DSTerminal_key_import_test"
+            encrypted = test_cipher.encrypt(test_data)
+            decrypted = test_cipher.decrypt(encrypted)
+            
+            if test_data == decrypted:
+                # Key is valid, save it
+                with open(KEY_FILE, "w") as f:
+                    f.write(key_string)
+                os.chmod(KEY_FILE, 0o600)
+                
+                # Reinitialize cipher with new key
+                self.cipher = Fernet(key_string.encode())
+                
+                key_id = hashlib.sha256(key_string.encode()).hexdigest()[:16]
+                
+                content = [
+                    f"{Colors.GREEN}✅ ENCRYPTION KEY IMPORTED SUCCESSFULLY{Colors.END}",
+                    f"{Colors.BOLD}Key ID:{Colors.END} {Colors.CYAN}{key_id}{Colors.END}",
+                    f"{Colors.BOLD}Location:{Colors.END} {KEY_FILE}",
+                    "",
+                    f"{Colors.GREEN}✓ You can now decrypt files encrypted with this key{Colors.END}"
+                ]
+                box.render(content, color=Colors.GREEN)
+                
+                input(f"\n{Colors.YELLOW}Press ENTER to continue...{Colors.END}")
+                return True
+            else:
+                raise ValueError("Test decryption failed")
+                
+        except Exception as e:
+            content = [
+                f"{Colors.RED}❌ INVALID KEY FORMAT{Colors.END}",
+                "",
+                f"{Colors.YELLOW}The key you provided is not valid.{Colors.END}",
+                f"{Colors.CYAN}Make sure you copied the ENTIRE key string.{Colors.END}",
+                "",
+                f"{Colors.RED}Error: {str(e)}{Colors.END}"
+            ]
+            box.render(content, color=Colors.RED)
+            input(f"\n{Colors.YELLOW}Press ENTER to continue...{Colors.END}")
+            return False
+
+    def export_encryption_key(self):
+        """Export encryption key to share with another machine"""
+        
+        os.system('clear' if os.name == 'posix' else 'cls')
+        box = RotatingBox(50, " EXPORT ENCRYPTION KEY ")
+        
+        if not os.path.exists(KEY_FILE):
+            content = [
+                f"{Colors.RED}❌ No encryption key found{Colors.END}",
+                f"{Colors.YELLOW}Run 'Setup Encryption System' first.{Colors.END}"
+            ]
+            box.render(content, color=Colors.RED)
+            input(f"\n{Colors.YELLOW}Press ENTER to continue...{Colors.END}")
+            return
+        
+        with open(KEY_FILE, "r") as f:
+            key = f.read().strip()
+        
+        key_id = hashlib.sha256(key.encode()).hexdigest()[:16]
+        
+        content = [
+            f"{Colors.GREEN}✅ YOUR ENCRYPTION KEY{Colors.END}",
+            f"{Colors.BOLD}Key ID:{Colors.END} {Colors.CYAN}{key_id}{Colors.END}",
+            "",
+            f"{Colors.YELLOW}╔════════════════════════════════════════════════════════╗{Colors.END}",
+            f"{Colors.BOLD}{key}{Colors.END}",
+            f"{Colors.YELLOW}╚════════════════════════════════════════════════════════╝{Colors.END}",
+            "",
+            f"{Colors.RED}⚠️  COPY THIS KEY EXACTLY AS SHOWN ABOVE{Colors.END}",
+            f"{Colors.RED}⚠️  Share it securely with the recipient{Colors.END}",
+            "",
+            f"{Colors.CYAN}The recipient should use 'Import Key' option{Colors.END}"
+        ]
+        box.render(content, color=Colors.YELLOW)
+        
+        # Copy to clipboard if pyperclip is available
+        try:
+            import pyperclip
+            pyperclip.copy(key)
+            print(f"{Colors.GREEN}✓ Key copied to clipboard!{Colors.END}")
+        except ImportError:
+            print(f"{Colors.YELLOW}Tip: Install 'pyperclip' for auto-copy: pip install pyperclip{Colors.END}")
+        
+        input(f"\n{Colors.YELLOW}Press ENTER to continue...{Colors.END}")
 
     def encrypt_setup(self):
         os.system('clear' if os.name == 'posix' else 'cls')
@@ -376,7 +400,7 @@ class CryptoEngine:
         
         for i in range(3):
             print(f"{Colors.CYAN}   Entropy pool: {''.join(random.choices('01', k=20))}{Colors.END}")
-            time.sleep(0.3)
+            time.sleep(1.3)
         
         key = Fernet.generate_key().decode()
         
@@ -825,26 +849,27 @@ class CryptoEngine:
 
 def main():
     crypto = CryptoEngine()
-    
+        
     while True:
         os.system('clear' if os.name == 'posix' else 'cls')
         crypto.show_banner()
-        
+            
         menu = f"""
 {Colors.CYAN}╔══════════════════════════════════════════════════════════════╗
 ║{Colors.YELLOW}                      MAIN MENU                              {Colors.CYAN}║
 ╠══════════════════════════════════════════════════════════════╣
-║{Colors.GREEN}  1.{Colors.END} 🔐 Setup Encryption System        {Colors.GREEN}6.{Colors.END} 📋 List Encrypted Files   {Colors.CYAN}║
-║{Colors.GREEN}  2.{Colors.END} 📊 System Status                {Colors.GREEN}7.{Colors.END} ℹ️  File Information      {Colors.CYAN}║
-║{Colors.GREEN}  3.{Colors.END} 🧪 Run Encryption Test          {Colors.GREEN}8.{Colors.END} 🔍 Verify System         {Colors.CYAN}║
-║{Colors.GREEN}  4.{Colors.END} 🔒 Encrypt File                  {Colors.GREEN}9.{Colors.END} 💾 Backup Key            {Colors.CYAN}║
-║{Colors.GREEN}  5.{Colors.END} 🔓 Decrypt File                  {Colors.GREEN}0.{Colors.END} 🚪 Exit                   {Colors.CYAN}║
+║{Colors.GREEN}  1.{Colors.END} 🔐 Setup Encryption System        {Colors.GREEN}7.{Colors.END} 📤 Export Key (Share)      {Colors.CYAN}║
+║{Colors.GREEN}  2.{Colors.END} 📊 System Status                {Colors.GREEN}8.{Colors.END} 📥 Import Key (Receive)     {Colors.CYAN}║
+║{Colors.GREEN}  3.{Colors.END} 🧪 Run Encryption Test          {Colors.GREEN}9.{Colors.END} 📋 List Encrypted Files   {Colors.CYAN}║
+║{Colors.GREEN}  4.{Colors.END} 🔒 Encrypt File                  {Colors.GREEN}10.{Colors.END} ℹ️  File Information      {Colors.CYAN}║
+║{Colors.GREEN}  5.{Colors.END} 🔓 Decrypt File                  {Colors.GREEN}11.{Colors.END} 🔍 Verify System         {Colors.CYAN}║
+║{Colors.GREEN}  6.{Colors.END} 💾 Backup Key                    {Colors.GREEN}0.{Colors.END} 🚪 Exit                   {Colors.CYAN}║
 ╚══════════════════════════════════════════════════════════════╝{Colors.END}
 """
         print(menu)
-        
+            
         choice = input(f"{Colors.YELLOW}Select option [0-9]: {Colors.END}").strip()
-        
+            
         if choice == '1':
             crypto.encrypt_setup()
         elif choice == '2':
@@ -870,6 +895,10 @@ def main():
         elif choice == '8':
             crypto.crypto_verify()
         elif choice == '9':
+            crypto.export_encryption_key()
+        elif choice == '10':
+            crypto.import_encryption_key()
+        elif choice == '12':
             crypto.crypto_backup()
         elif choice == '0':
             print(f"\n{Colors.RED}╔══════════════════════════════════════════════════════════════╗")

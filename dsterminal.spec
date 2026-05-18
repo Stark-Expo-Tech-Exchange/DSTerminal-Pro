@@ -6,10 +6,10 @@ from PyInstaller.utils.hooks import collect_data_files, collect_submodules, coll
 
 # Exclude heavy/unnecessary modules
 excludes = [
-    'unittest', 'pytest', 'PyQt5', 'PyQt6', 
+    'pytest', 'PyQt5', 'PyQt6', 
     'IPython', 'jupyter', 'matplotlib.tests', 'numpy.tests', 
     'pandas.tests', 'scipy', 'scipy.tests', 'setuptools.tests',
-    'distutils.tests', '_posixshmem', 'resource', 'fcntl'
+    'distutils.tests', '_posixshmem', 'resource', 'fcntl',
 ]
 
 # Collect data files from directories
@@ -57,7 +57,31 @@ hiddenimports = [
     'rich.live', 'rich.layout', 'rich.progress', 'rich.syntax', 'rich.traceback',
     'rich.markdown', 'rich.columns', 'rich.tree', 'rich.prompt', 'rich.status',
     'rich.box', 'rich.text', 'rich.style', 'rich.color', 'rich.theme',
-    'rich.segment', 'rich.measure', 'rich.padding', 'rich.control',
+    'rich.segment', 'rich.measure', 'rich.padding', 'rich.control', 'unittest',
+    'unittest.mock', 'unittest.case', 'unittest.suite',
+    'unittest.loader', 'unittest.runner', 'unittest.result',
+    'matplotlib', 
+    'matplotlib.pyplot',
+    'matplotlib.backends',
+    'matplotlib.backends.backend_agg',
+    'matplotlib.figure',
+    'matplotlib.patches',
+    'matplotlib.lines',
+    'matplotlib.text',
+    'matplotlib.collections',
+    'matplotlib.path',
+    'matplotlib.transforms',
+    'matplotlib.axes',
+    'matplotlib.axis',
+    'matplotlib.spines',
+    'matplotlib.legend',
+    'matplotlib.ticker',
+    'matplotlib.gridspec',
+    'matplotlib.colors',
+    'matplotlib.cm',
+    'matplotlib.markers',
+    'matplotlib.font_manager',
+    'matplotlib.rcsetup',
     
     # Colorama for cross-platform colors
     'colorama', 'colorama.initialise', 'colorama.ansitowin32',

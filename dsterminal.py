@@ -399,10 +399,13 @@ from reportlab.platypus import (
     TableStyle,
     PageBreak
 )
-import matplotlib
-matplotlib.use('Agg')  # Use non-interactive backend
-import matplotlib.pyplot as plt
-from matplotlib.animation import FuncAnimation
+try:
+    import matplotlib
+    matplotlib.use('Agg')  # Only if absolutely needed
+    MATPLOTLIB_AVAILABLE = True
+except ImportError:
+    MATPLOTLIB_AVAILABLE = False
+    
 # Replace the cartopy imports with:
 try:
     import cartopy.crs as ccrs
@@ -550,11 +553,116 @@ EDUCATION_TIPS = {
     - [blue]Unusual network listeners[/blue] (`netstat -tulnp`)\n
     """,
     "net -n mon": """
-    [bold]🔍 Network Monitoring Tip[/bold]\n
-    Monitor for:\n
-    1. [red]Unexpected outbound connections[/red] (could indicate data exfiltration)\n
-    2. Ports in `LISTEN` state that shouldn't be open\n
-    3. Use tools like [green]Wireshark[/green] for deep packet inspection.\n
+    [bold cyan]🌐 NETWORK MONITORING: REAL-TIME THREAT VISUALIZATION[/bold cyan]
+
+    [bold yellow]📡 WHAT YOU'RE SEEING ON THE MAP[/bold yellow]
+
+    The threat map shows [green]live connections[/green] from your system to servers worldwide.
+    Each colored line tells a story about your network traffic.
+
+    [bold red]🔴 RED LINES = HIGH RISK[/bold red]
+    → Known malicious IP addresses
+    → Active C2 (Command & Control) communication
+    → Connections to sanctioned countries (North Korea, Iran, Russia)
+    → High threat score (3-5 out of 5)
+
+    [bold yellow]🟡 YELLOW/ORANGE LINES = MEDIUM RISK[/bold yellow]
+    → Unusual ports or protocols
+    → Recently registered domains (<30 days old)
+    → Geographic anomalies (unexpected server locations)
+    → Hosting providers frequently abused by attackers
+
+    [bold green]🟢 GREEN LINES = LOW RISK[/bold green]
+    → Normal HTTPS web browsing (ports 443/80)
+    → Trusted services (Microsoft, Google, Cloudflare, AWS)
+    → Expected geographic locations
+    → Established connections with clean reputation
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold white]🎯 WHAT TO INVESTIGATE IMMEDIATELY[/bold white]
+
+    ✓ Multiple [red]red lines[/red] from the same process
+    ✓ Connections to [yellow]unusual ports[/yellow] (not 80,443,22,3389)
+    ✓ [cyan]Beaconing patterns[/cyan] - regular intervals to same IP
+    ✓ [magenta]High data upload[/magenta] without user action
+    ✓ Processes with [red]no digital signature[/red] making network calls
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold green]📏 UNDERSTANDING DISTANCE METRICS[/bold green]
+
+    Each connection line displays the [yellow]great-circle distance[/yellow] between you and the server:
+
+    → [cyan]Short distances[/cyan] (<1000km) = Low latency, likely regional services
+    → [yellow]Medium distances[/yellow] (1000-5000km) = Typical cross-continent traffic
+    → [red]Long distances[/red] (>5000km) = Potentially abnormal routing
+
+    [bold]Watch for geographic mismatches:[/bold] A "local" bank connecting to Eastern Europe
+    or a software update fetching from 15,000km away when local mirrors exist.
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold magenta]🔬 BROWSER CONNECTION ANALYSIS[/bold magenta]
+
+    Browser connections (🌐 WEB) require special attention because:
+
+    • [red]Drive-by downloads[/red] - Malicious scripts establishing hidden connections
+    • [yellow]Cryptominers[/yellow] - Running in tabs, connecting to mining pools
+    • [cyan]Data exfiltration[/cyan] - Form data sent to unexpected domains
+    • [magenta]C2 via WebSockets[/magenta] - Real-time communication channels
+
+    [bold]Suspicious indicators:[/bold]
+    → Connections to [red]non-standard ports[/red] (not 443/80)
+    → [cyan]Multiple connections[/cyan] from different tabs to same IP
+    → [yellow]WebRTC leaks[/yellow] revealing local IP addresses
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold red]⚠️ IMMEDIATE ACTION REQUIRED - RED FLAGS[/bold red]
+
+    If you observe ANY of these, investigate immediately:
+
+    1. [white]Connections to [red]unallocated IP space[/red][/white]
+    2. [yellow]Traffic to [red]TOR exit nodes[/red] or [red]known VPN endpoints[/red][/yellow]
+    3. [cyan]Processes [red]hiding network connections[/red] (rootkit behavior)[/cyan]
+    4. [magenta]Outbound [red]ICMP tunneling[/red] (unusual ping patterns)[/magenta]
+    5. [green]Large data [red]exfiltration[/red] to unrecognized destinations[/green]
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold white]🎯 INCIDENT RESPONSE WORKFLOW[/bold white]
+
+    [white]1. IMMEDIATE[/white]
+    → [red]Document everything[/red] (screenshots, logs, timestamps)
+    → [yellow]Disconnect[/yellow] confirmed malicious hosts from network
+
+    [white]2. ANALYSIS[/white]
+    → [cyan]Capture traffic[/cyan] (Wireshark/tcpdump) for deeper inspection
+    → [green]Memory analysis[/green] of suspicious processes (Volatility)
+    → [magenta]Check against threat intel[/magenta] (VirusTotal, MISP)
+
+    [white]3. REMEDIATION[/white]
+    → [red]Kill malicious processes[/red]
+    → [yellow]Remove persistence[/yellow]
+    → [cyan]Block IOCs[/cyan] (firewall, DNS sinkhole)
+
+    [white]4. RECOVERY[/white]
+    → [green]Restore from known-good backups[/green]
+    → [magenta]Apply security patches[/magenta]
+    → [blue]Reset compromised credentials[/blue]
+
+    [bold cyan]━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━[/bold cyan]
+
+    [bold blue]📚 CONTINUOUS LEARNING RESOURCES[/bold blue]
+
+    • [cyan]MITRE ATT&CK Framework[/cyan] - Understand adversary tactics & techniques
+    • [yellow]SANS Reading Room[/yellow] - Network monitoring white papers
+    • [red]CISA Alerts[/red] - Current threat intelligence
+    • [green]VirusTotal[/green] - Hash lookups and sandbox analysis
+    • [magenta]Any.Run[/magenta] - Interactive malware analysis
+
+    [dim italic]"The network doesn't lie - it just waits for someone to read its story."[/dim italic]
     """,
     "harden -t sys": """
     [bold]🛡️ Hardening Pro Tip[/bold]\n
@@ -953,6 +1061,69 @@ EDUCATION_TIPS = {
     """,
 
     }
+
+# ==================typewriting education tips
+#==============================================
+def typewrite_effect(text, delay=0.02, color_effects=True):
+    """Display text with pen-writing (typewriter) animation effect"""
+    lines = text.split('\n')
+    for line in lines:
+        for char in line:
+            if color_effects:
+                # Color coding for special characters
+                if char == '•':
+                    console.print(f"[bold yellow]{char}[/bold yellow]", end='')
+                elif char == '→':
+                    console.print(f"[cyan]{char}[/cyan]", end='')
+                elif char == '✓':
+                    console.print(f"[bold green]{char}[/bold green]", end='')
+                elif char == '⚠':
+                    console.print(f"[bold red]{char}[/bold red]", end='')
+                elif char == '★':
+                    console.print(f"[bold magenta]{char}[/bold magenta]", end='')
+                elif char == '📡' or char == '🌐' or char == '🔍' or char == '💡' or char == '🔐':
+                    console.print(f"[cyan]{char}[/cyan]", end='')
+                elif char.isdigit() and line.strip().startswith(char):
+                    console.print(f"[bold red]{char}[/bold red]", end='')
+                else:
+                    console.print(char, end='')
+            else:
+                console.print(char, end='')
+            sys.stdout.flush()
+            time.sleep(delay)
+        console.print()  # New line
+        time.sleep(delay * 1.5)
+
+def show_educational_tip(tip_key, education_tips_dict):
+    """Display educational tip with typewriter animation"""
+    if tip_key in education_tips_dict:
+        tip_content = education_tips_dict[tip_key]
+    else:
+        tip_content = education_tips_dict.get("default", "No educational tip available.")
+    
+    console.print()
+    
+    # Animated border top
+    for _ in range(2):
+        console.print("[dim]╭─────────────────────────────────────────────────────────────────────────────╮[/dim]", end='\r')
+        time.sleep(0.03)
+    console.print("[dim]╭─────────────────────────────────────────────────────────────────────────────╮[/dim]")
+    
+    time.sleep(0.1)
+    
+    # Typewriter effect for content
+    typewrite_effect(tip_content, delay=0.018)
+    
+    time.sleep(0.1)
+    
+    # Animated border bottom
+    for _ in range(2):
+        console.print("[dim]╰─────────────────────────────────────────────────────────────────────────────╯[/dim]", end='\r')
+        time.sleep(0.03)
+    console.print("[dim]╰─────────────────────────────────────────────────────────────────────────────╯[/dim]")
+    console.print()
+#==================================================
+# ==================================================
 
 SUSPICIOUS_PORTS = {23, 3389, 4444, 5555, 6667, 1337}
 HIGH_RISK_COUNTRIES = {"RU", "KP", "IR", "SY"}
@@ -1721,7 +1892,7 @@ class SecurityTerminal:
             "╠════════════════════════════════════════════════════════════════════════════╣",
             f"║     Defensive Security Terminal v2.0.113 | {platform.system()} {platform.release():<20}║",
             "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange    ║",
-            "║     Type 'help' for available commands                                                 ║",
+            "║     Type 'help' for available commands: Always Operate as an Administrator              ║",
             f"║     CLI Mode: {'ADMIN' if self.is_admin() else 'USER'} 🔒                              ║",
             "╚════════════════════════════════════════════════════════════════════════════╝"    
         ]
@@ -1776,7 +1947,7 @@ class SecurityTerminal:
             # Calculate widths
                 panel_width = 24
                 banner_width = 80
-                spacing = 40
+                spacing = 20
             
             # Clear and reposition cursor at top
                 sys.stdout.write('\033[H')
@@ -1847,14 +2018,14 @@ class SecurityTerminal:
         color = '\033[92m'  # Default green
     
         for i in range(max(len(left_panels[0]), len(main_banner), len(right_panels[0]))):
-            left_text = left_panels[0][i] if i < len(left_panels[0]) else ' ' * 24
+            left_text = left_panels[0][i] if i < len(left_panels[0]) else ' ' * 20
             banner_text = main_banner[i] if i < len(main_banner) else ' ' * 80
-            right_text = right_panels[0][i] if i < len(right_panels[0]) else ' ' * 24
+            right_text = right_panels[0][i] if i < len(right_panels[0]) else ' ' * 20
         
             sys.stdout.write(f"{color}{left_text:<24}")
-            sys.stdout.write(' ' * 50)
+            sys.stdout.write(' ' * 40)
             sys.stdout.write(f"{color}{banner_text:<80}")
-            sys.stdout.write(' ' * 50)
+            sys.stdout.write(' ' * 40)
             sys.stdout.write(f"{color}{right_text:<24}")
             sys.stdout.write('\n')
 
@@ -4037,12 +4208,203 @@ class SecurityTerminal:
             return workspace
 
         # Get local machine's public IP and geolocation
-        def get_local_machine_location():
-            """Get the public IP and geolocation of the local machine (REAL LOCATION)"""
+        # def get_local_machine_location():
+        #     """Get the public IP and geolocation of the local machine (REAL LOCATION)"""
             
-            # ========== METHOD 1: Try Free IP Geolocation APIs ==========
+        #     # ========== METHOD 1: Try Free IP Geolocation APIs ==========
+        #     try:
+        #         # Use ipapi.co directly (no API key needed)
+        #         response = requests.get('https://ipapi.co/json/', timeout=5)
+        #         if response.status_code == 200:
+        #             geo_data = response.json()
+        #             lat = geo_data.get('latitude')
+        #             lon = geo_data.get('longitude')
+        #             public_ip = geo_data.get('ip')
+                    
+        #             if lat and lon and public_ip:
+        #                 console.print(f"[green]✓ Location detected via ipapi.co: {geo_data.get('country_name')}[/green]")
+        #                 return {
+        #                     'ip': public_ip,
+        #                     'lat': float(lat),
+        #                     'lon': float(lon),
+        #                     'country': geo_data.get('country_name', 'Unknown'),
+        #                     'city': geo_data.get('city', 'Unknown'),
+        #                     'region': geo_data.get('region', 'Unknown'),
+        #                     'isp': geo_data.get('org', geo_data.get('isp', 'Unknown')),
+        #                     'org': geo_data.get('org', 'Unknown'),
+        #                     'timezone': geo_data.get('timezone', 'Unknown'),
+        #                     'postal': geo_data.get('postal', ''),
+        #                     'loc': f"{lat},{lon}"
+        #                 }
+        #     except Exception as e:
+        #         console.print(f"[yellow]⚠ ipapi.co failed: {e}[/yellow]")
+            
+        #     # Try freegeoip.app as backup
+        #     try:
+        #         response = requests.get('https://freegeoip.app/json/', timeout=5)
+        #         if response.status_code == 200:
+        #             geo_data = response.json()
+        #             lat = geo_data.get('latitude')
+        #             lon = geo_data.get('longitude')
+        #             public_ip = geo_data.get('ip')
+                    
+        #             if lat and lon and public_ip:
+        #                 console.print(f"[green]✓ Location detected via freegeoip.app: {geo_data.get('country_name')}[/green]")
+        #                 return {
+        #                     'ip': public_ip,
+        #                     'lat': float(lat),
+        #                     'lon': float(lon),
+        #                     'country': geo_data.get('country_name', 'Unknown'),
+        #                     'city': geo_data.get('city', 'Unknown'),
+        #                     'region': geo_data.get('region_name', 'Unknown'),
+        #                     'isp': geo_data.get('isp', 'Unknown'),
+        #                     'org': geo_data.get('org', 'Unknown'),
+        #                     'timezone': geo_data.get('timezone', 'Unknown'),
+        #                     'postal': geo_data.get('zip_code', ''),
+        #                     'loc': f"{lat},{lon}"
+        #                 }
+        #     except Exception as e:
+        #         console.print(f"[yellow]⚠ freegeoip.app failed: {e}[/yellow]")
+            
+        #     # Try ipwho.is as another backup
+        #     try:
+        #         response = requests.get('https://ipwho.is/json/', timeout=5)
+        #         if response.status_code == 200:
+        #             geo_data = response.json()
+        #             lat = geo_data.get('latitude')
+        #             lon = geo_data.get('longitude')
+        #             public_ip = geo_data.get('ip')
+                    
+        #             if lat and lon and public_ip and not geo_data.get('success') == False:
+        #                 console.print(f"[green]✓ Location detected via ipwho.is: {geo_data.get('country')}[/green]")
+        #                 return {
+        #                     'ip': public_ip,
+        #                     'lat': float(lat),
+        #                     'lon': float(lon),
+        #                     'country': geo_data.get('country', 'Unknown'),
+        #                     'city': geo_data.get('city', 'Unknown'),
+        #                     'region': geo_data.get('region', 'Unknown'),
+        #                     'isp': geo_data.get('isp', 'Unknown'),
+        #                     'org': geo_data.get('org', 'Unknown'),
+        #                     'timezone': geo_data.get('timezone', 'Unknown'),
+        #                     'postal': geo_data.get('postal', ''),
+        #                     'loc': f"{lat},{lon}"
+        #                 }
+        #     except Exception as e:
+        #         console.print(f"[yellow]⚠ ipwho.is failed: {e}[/yellow]")
+            
+        #     # ========== METHOD 2: Fallback to Timezone Detection (NO external libraries) ==========
+        #     try:
+        #         import time
+        #         import datetime
+                
+        #         # Get local timezone offset in hours
+        #         if hasattr(time, 'timezone'):
+        #             local_offset = -time.timezone // 3600
+        #         else:
+        #             # Alternative method for Windows
+        #             local_offset = datetime.datetime.now().astimezone().utcoffset().total_seconds() // 3600
+        #             local_offset = int(local_offset)
+                
+        #         # Map UTC offset to country (based on common timezones)
+        #         tz_country_map = {
+        #             2: 'Malawi',        # UTC+2 (Malawi, South Africa, Zimbabwe, Egypt)
+        #             1: 'South Africa',  # UTC+1 (South Africa, Nigeria, Algeria)
+        #             0: 'United Kingdom',# UTC+0 (UK, Ireland, Portugal)
+        #             -5: 'United States',# UTC-5 (US East Coast - New York)
+        #             -6: 'United States',# UTC-6 (US Central - Chicago)
+        #             -7: 'United States',# UTC-7 (US Mountain - Denver)
+        #             -8: 'United States',# UTC-8 (US West Coast - Los Angeles)
+        #             8: 'China',         # UTC+8 (China, Singapore, Malaysia)
+        #             9: 'Japan',         # UTC+9 (Japan, Korea)
+        #             10: 'Australia',    # UTC+10 (Australia East - Sydney)
+        #             -3: 'Brazil',       # UTC-3 (Brazil, Argentina)
+        #             5: 'India',         # UTC+5 (India, Pakistan)
+        #             3: 'Kenya',         # UTC+3 (Kenya, Ethiopia, Saudi Arabia)
+        #             4: 'United Arab Emirates', # UTC+4 (Dubai, Moscow)
+        #             11: 'Australia',    # UTC+11 (Australia East - Vladivostok)
+        #             12: 'New Zealand',  # UTC+12 (New Zealand, Fiji)
+        #             -4: 'Canada',       # UTC-4 (Canada East - Halifax)
+        #             -2: 'Brazil',       # UTC-2 (Brazil - Fernando de Noronha)
+        #             6: 'Bangladesh',    # UTC+6 (Bangladesh, Bhutan)
+        #             7: 'Thailand',      # UTC+7 (Thailand, Vietnam, Indonesia)
+        #         }
+                
+        #         # Precise coordinates for countries
+        #         country_coords = {
+        #             'Malawi': [-13.2543, 34.3015],
+        #             'South Africa': [-30.5595, 22.9375],
+        #             'United States': [37.0902, -95.7129],
+        #             'United Kingdom': [51.5074, -0.1278],
+        #             'Canada': [56.1304, -106.3468],
+        #             'Germany': [51.1657, 10.4515],
+        #             'France': [46.2276, 2.2137],
+        #             'Australia': [-25.2744, 133.7751],
+        #             'India': [20.5937, 78.9629],
+        #             'Japan': [36.2048, 138.2529],
+        #             'China': [35.8617, 104.1954],
+        #             'Brazil': [-14.2350, -51.9253],
+        #             'Kenya': [-1.2864, 36.8172],
+        #             'United Arab Emirates': [23.4241, 53.8478],
+        #             'New Zealand': [-40.9006, 174.8860],
+        #             'Russia': [61.5240, 105.3188],
+        #             'Thailand': [13.7367, 100.5231],
+        #             'Bangladesh': [23.6850, 90.3563],
+        #             'Egypt': [26.8206, 30.8025],
+        #             'Nigeria': [9.0820, 8.6753],
+        #         }
+                
+        #         country = tz_country_map.get(local_offset, 'Malawi')
+        #         coords = country_coords.get(country, [-13.2543, 34.3015])
+                
+        #         # Get local IP
+        #         try:
+        #             hostname = socket.gethostname()
+        #             local_ip = socket.gethostbyname(hostname)
+        #         except:
+        #             local_ip = '127.0.0.1'
+                
+        #         console.print(f"[yellow]⚠ Using timezone detection: {country} (UTC{local_offset:+d})[/yellow]")
+                
+        #         return {
+        #             'ip': local_ip,
+        #             'lat': coords[0],
+        #             'lon': coords[1],
+        #             'country': country,
+        #             'city': f'Timezone Detection (UTC{local_offset:+d})',
+        #             'region': 'Detected',
+        #             'isp': 'Local Network',
+        #             'org': 'DSTerminal Host',
+        #             'timezone': f"UTC{local_offset:+d}",
+        #             'loc': f"{coords[0]},{coords[1]}"
+        #         }
+        #     except Exception as e:
+        #         console.print(f"[yellow]⚠ Timezone detection failed: {e}[/yellow]")
+            
+        #     # ========== METHOD 3: Final Fallback - Default to Malawi ==========
+        #     console.print("[yellow]⚠ All detection methods failed, defaulting to Malawi (UTC+2)[/yellow]")
+        #     return {
+        #         'ip': '192.168.1.181',
+        #         'lat': -13.2543,
+        #         'lon': 34.3015,
+        #         'country': 'Malawi',
+        #         'city': 'Lilongwe',
+        #         'region': 'Central Region',
+        #         'isp': 'Local Network',
+        #         'org': 'DSTerminal Host',
+        #         'timezone': 'UTC+2',
+        #         'postal': '',
+        #         'loc': '-13.2543,34.3015'
+        #     }
+        def get_local_machine_location():
+            """Get precise location with exact place within city"""
+            
+            # ============================================
+            # METHOD 1: High-precision IP Geolocation
+            # ============================================
+            
             try:
-                # Use ipapi.co directly (no API key needed)
+                # Use ipapi.co with detailed parameters for better accuracy
                 response = requests.get('https://ipapi.co/json/', timeout=5)
                 if response.status_code == 200:
                     geo_data = response.json()
@@ -4051,181 +4413,237 @@ class SecurityTerminal:
                     public_ip = geo_data.get('ip')
                     
                     if lat and lon and public_ip:
-                        console.print(f"[green]✓ Location detected via ipapi.co: {geo_data.get('country_name')}[/green]")
+                        # Get more detailed location info
+                        city = geo_data.get('city', 'Unknown')
+                        region = geo_data.get('region', 'Unknown')
+                        postal = geo_data.get('postal', '')
+                        
+                        # Try to get neighborhood/district information
+                        area_response = requests.get(f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=18&addressdetails=1', 
+                                                    timeout=5, headers={'User-Agent': 'DSTerminal/2.0'})
+                        if area_response.status_code == 200:
+                            area_data = area_response.json()
+                            address = area_data.get('address', {})
+                            suburb = address.get('suburb', '')
+                            neighbourhood = address.get('neighbourhood', '')
+                            road = address.get('road', '')
+                            
+                            # Build precise location description
+                            precise_location = city
+                            if suburb:
+                                precise_location = f"{suburb}, {city}"
+                            if neighbourhood:
+                                precise_location = f"{neighbourhood}, {precise_location}"
+                            if road:
+                                precise_location = f"{road}, {precise_location}"
+                        else:
+                            precise_location = city
+                            suburb = "Unknown Area"
+                            neighbourhood = "Unknown Neighborhood"
+                        
+                        console.print(f"[green]✓ Precise location detected: {precise_location}[/green]")
+                        console.print(f"[dim]📍 Coordinates: {lat:.6f}, {lon:.6f} (high precision)[/dim]")
+                        
                         return {
                             'ip': public_ip,
                             'lat': float(lat),
                             'lon': float(lon),
                             'country': geo_data.get('country_name', 'Unknown'),
-                            'city': geo_data.get('city', 'Unknown'),
-                            'region': geo_data.get('region', 'Unknown'),
+                            'city': city,
+                            'precise_location': precise_location,
+                            'suburb': suburb,
+                            'neighbourhood': neighbourhood,
+                            'district': geo_data.get('district', ''),
+                            'postal_code': postal,
+                            'region': region,
                             'isp': geo_data.get('org', geo_data.get('isp', 'Unknown')),
                             'org': geo_data.get('org', 'Unknown'),
                             'timezone': geo_data.get('timezone', 'Unknown'),
-                            'postal': geo_data.get('postal', ''),
                             'loc': f"{lat},{lon}"
                         }
             except Exception as e:
-                console.print(f"[yellow]⚠ ipapi.co failed: {e}[/yellow]")
+                console.print(f"[yellow]⚠ High-precision geolocation failed: {e}[/yellow]")
             
-            # Try freegeoip.app as backup
-            try:
-                response = requests.get('https://freegeoip.app/json/', timeout=5)
-                if response.status_code == 200:
-                    geo_data = response.json()
-                    lat = geo_data.get('latitude')
-                    lon = geo_data.get('longitude')
-                    public_ip = geo_data.get('ip')
-                    
-                    if lat and lon and public_ip:
-                        console.print(f"[green]✓ Location detected via freegeoip.app: {geo_data.get('country_name')}[/green]")
-                        return {
-                            'ip': public_ip,
-                            'lat': float(lat),
-                            'lon': float(lon),
-                            'country': geo_data.get('country_name', 'Unknown'),
-                            'city': geo_data.get('city', 'Unknown'),
-                            'region': geo_data.get('region_name', 'Unknown'),
-                            'isp': geo_data.get('isp', 'Unknown'),
-                            'org': geo_data.get('org', 'Unknown'),
-                            'timezone': geo_data.get('timezone', 'Unknown'),
-                            'postal': geo_data.get('zip_code', ''),
-                            'loc': f"{lat},{lon}"
-                        }
-            except Exception as e:
-                console.print(f"[yellow]⚠ freegeoip.app failed: {e}[/yellow]")
+            # ============================================
+            # METHOD 2: WiFi Access Point Triangulation (Windows)
+            # ============================================
             
-            # Try ipwho.is as another backup
-            try:
-                response = requests.get('https://ipwho.is/json/', timeout=5)
-                if response.status_code == 200:
-                    geo_data = response.json()
-                    lat = geo_data.get('latitude')
-                    lon = geo_data.get('longitude')
-                    public_ip = geo_data.get('ip')
-                    
-                    if lat and lon and public_ip and not geo_data.get('success') == False:
-                        console.print(f"[green]✓ Location detected via ipwho.is: {geo_data.get('country')}[/green]")
-                        return {
-                            'ip': public_ip,
-                            'lat': float(lat),
-                            'lon': float(lon),
-                            'country': geo_data.get('country', 'Unknown'),
-                            'city': geo_data.get('city', 'Unknown'),
-                            'region': geo_data.get('region', 'Unknown'),
-                            'isp': geo_data.get('isp', 'Unknown'),
-                            'org': geo_data.get('org', 'Unknown'),
-                            'timezone': geo_data.get('timezone', 'Unknown'),
-                            'postal': geo_data.get('postal', ''),
-                            'loc': f"{lat},{lon}"
-                        }
-            except Exception as e:
-                console.print(f"[yellow]⚠ ipwho.is failed: {e}[/yellow]")
-            
-            # ========== METHOD 2: Fallback to Timezone Detection (NO external libraries) ==========
-            try:
-                import time
-                import datetime
-                
-                # Get local timezone offset in hours
-                if hasattr(time, 'timezone'):
-                    local_offset = -time.timezone // 3600
-                else:
-                    # Alternative method for Windows
-                    local_offset = datetime.datetime.now().astimezone().utcoffset().total_seconds() // 3600
-                    local_offset = int(local_offset)
-                
-                # Map UTC offset to country (based on common timezones)
-                tz_country_map = {
-                    2: 'Malawi',        # UTC+2 (Malawi, South Africa, Zimbabwe, Egypt)
-                    1: 'South Africa',  # UTC+1 (South Africa, Nigeria, Algeria)
-                    0: 'United Kingdom',# UTC+0 (UK, Ireland, Portugal)
-                    -5: 'United States',# UTC-5 (US East Coast - New York)
-                    -6: 'United States',# UTC-6 (US Central - Chicago)
-                    -7: 'United States',# UTC-7 (US Mountain - Denver)
-                    -8: 'United States',# UTC-8 (US West Coast - Los Angeles)
-                    8: 'China',         # UTC+8 (China, Singapore, Malaysia)
-                    9: 'Japan',         # UTC+9 (Japan, Korea)
-                    10: 'Australia',    # UTC+10 (Australia East - Sydney)
-                    -3: 'Brazil',       # UTC-3 (Brazil, Argentina)
-                    5: 'India',         # UTC+5 (India, Pakistan)
-                    3: 'Kenya',         # UTC+3 (Kenya, Ethiopia, Saudi Arabia)
-                    4: 'United Arab Emirates', # UTC+4 (Dubai, Moscow)
-                    11: 'Australia',    # UTC+11 (Australia East - Vladivostok)
-                    12: 'New Zealand',  # UTC+12 (New Zealand, Fiji)
-                    -4: 'Canada',       # UTC-4 (Canada East - Halifax)
-                    -2: 'Brazil',       # UTC-2 (Brazil - Fernando de Noronha)
-                    6: 'Bangladesh',    # UTC+6 (Bangladesh, Bhutan)
-                    7: 'Thailand',      # UTC+7 (Thailand, Vietnam, Indonesia)
-                }
-                
-                # Precise coordinates for countries
-                country_coords = {
-                    'Malawi': [-13.2543, 34.3015],
-                    'South Africa': [-30.5595, 22.9375],
-                    'United States': [37.0902, -95.7129],
-                    'United Kingdom': [51.5074, -0.1278],
-                    'Canada': [56.1304, -106.3468],
-                    'Germany': [51.1657, 10.4515],
-                    'France': [46.2276, 2.2137],
-                    'Australia': [-25.2744, 133.7751],
-                    'India': [20.5937, 78.9629],
-                    'Japan': [36.2048, 138.2529],
-                    'China': [35.8617, 104.1954],
-                    'Brazil': [-14.2350, -51.9253],
-                    'Kenya': [-1.2864, 36.8172],
-                    'United Arab Emirates': [23.4241, 53.8478],
-                    'New Zealand': [-40.9006, 174.8860],
-                    'Russia': [61.5240, 105.3188],
-                    'Thailand': [13.7367, 100.5231],
-                    'Bangladesh': [23.6850, 90.3563],
-                    'Egypt': [26.8206, 30.8025],
-                    'Nigeria': [9.0820, 8.6753],
-                }
-                
-                country = tz_country_map.get(local_offset, 'Malawi')
-                coords = country_coords.get(country, [-13.2543, 34.3015])
-                
-                # Get local IP
+            if platform.system() == "Windows":
                 try:
-                    hostname = socket.gethostname()
-                    local_ip = socket.gethostbyname(hostname)
+                    import subprocess
+                    import re
+                    
+                    # Get nearby WiFi access points
+                    result = subprocess.run(['netsh', 'wlan', 'show', 'networks', 'mode=bssid'], 
+                                        capture_output=True, text=True, timeout=10)
+                    output = result.stdout
+                    
+                    # Parse BSSID (MAC addresses) and signal strength
+                    bssids = re.findall(r'BSSID\s+:\s+([0-9A-Fa-f:]+)', output)
+                    signals = re.findall(r'Signal\s+:\s+(\d+)%', output)
+                    
+                    if bssids and signals:
+                        console.print(f"[cyan]📡 Detected {len(bssids)} nearby WiFi networks for triangulation[/cyan]")
+                        # Note: This would require a WiFi geolocation database API
+                        # For now, we store that WiFi positioning is available
+                        wifi_available = True
                 except:
-                    local_ip = '127.0.0.1'
-                
-                console.print(f"[yellow]⚠ Using timezone detection: {country} (UTC{local_offset:+d})[/yellow]")
-                
-                return {
-                    'ip': local_ip,
-                    'lat': coords[0],
-                    'lon': coords[1],
-                    'country': country,
-                    'city': f'Timezone Detection (UTC{local_offset:+d})',
-                    'region': 'Detected',
-                    'isp': 'Local Network',
-                    'org': 'DSTerminal Host',
-                    'timezone': f"UTC{local_offset:+d}",
-                    'loc': f"{coords[0]},{coords[1]}"
-                }
-            except Exception as e:
-                console.print(f"[yellow]⚠ Timezone detection failed: {e}[/yellow]")
+                    pass
             
-            # ========== METHOD 3: Final Fallback - Default to Malawi ==========
-            console.print("[yellow]⚠ All detection methods failed, defaulting to Malawi (UTC+2)[/yellow]")
+            # ============================================
+            # METHOD 3: GPS/GLONASS Detection (if available)
+            # ============================================
+            
+            try:
+                # Check for GPS hardware on Windows
+                if platform.system() == "Windows":
+                    import serial.tools.list_ports
+                    gps_ports = []
+                    for port in serial.tools.list_ports.comports():
+                        if 'GPS' in port.description or 'GNSS' in port.description:
+                            gps_ports.append(port.device)
+                            console.print(f"[cyan]🛰️ GPS device detected on {port.device}[/cyan]")
+                    
+                    if gps_ports:
+                        # Attempt to read NMEA data from GPS
+                        for gps_port in gps_ports:
+                            try:
+                                ser = serial.Serial(gps_port, 9600, timeout=5)
+                                # Read NMEA sentences
+                                for _ in range(20):
+                                    line = ser.readline().decode('ascii', errors='ignore')
+                                    if line.startswith('$GPGGA'):
+                                        # Parse GGA sentence
+                                        parts = line.split(',')
+                                        if len(parts) > 5 and parts[2] and parts[4]:
+                                            lat_deg = float(parts[2][:2]) + float(parts[2][2:])/60
+                                            lon_deg = float(parts[4][:3]) + float(parts[4][3:])/60
+                                            if parts[3] == 'S':
+                                                lat_deg = -lat_deg
+                                            if parts[5] == 'W':
+                                                lon_deg = -lon_deg
+                                            
+                                            console.print(f"[green]✓ GPS location acquired: {lat_deg:.6f}, {lon_deg:.6f}[/green]")
+                                            return {
+                                                'ip': 'GPS',
+                                                'lat': lat_deg,
+                                                'lon': lon_deg,
+                                                'country': 'GPS',
+                                                'city': 'GPS Location',
+                                                'precise_location': f"GPS Coordinates: {lat_deg:.6f}, {lon_deg:.6f}",
+                                                'isp': 'GPS',
+                                                'org': 'GPS Hardware',
+                                                'timezone': 'GPS',
+                                                'loc': f"{lat_deg},{lon_deg}"
+                                            }
+                                ser.close()
+                            except:
+                                continue
+            except Exception as e:
+                console.print(f"[yellow]⚠ GPS detection: {e}[/yellow]")
+            
+            # ============================================
+            # METHOD 4: Google Geolocation API (requires API key)
+            # ============================================
+            
+            # Uncomment if you have a Google Maps API key
+            """
+            try:
+                api_key = "YOUR_GOOGLE_MAPS_API_KEY"
+                # Use WiFi/ cell tower triangulation for high precision
+                response = requests.post(
+                    'https://www.googleapis.com/geolocation/v1/geolocate?key=' + api_key,
+                    json={}, timeout=10
+                )
+                if response.status_code == 200:
+                    data = response.json()
+                    lat = data['location']['lat']
+                    lon = data['location']['lng']
+                    accuracy = data.get('accuracy', 'unknown')
+                    console.print(f"[green]✓ Google Geolocation: {lat:.6f}, {lon:.6f} (accuracy: {accuracy}m)[/green]")
+                    # ... return precise location
+            except:
+                pass
+            """
+            
+            # ============================================
+            # METHOD 5: Fallback with OpenStreetMap Nominatim
+            # ============================================
+            
+            try:
+                # If we have coordinates but want precise area, reverse geocode
+                response = requests.get('https://ipapi.co/json/', timeout=5)
+                if response.status_code == 200:
+                    geo_data = response.json()
+                    lat = geo_data.get('latitude')
+                    lon = geo_data.get('longitude')
+                    if lat and lon:
+                        # Get precise area from OpenStreetMap
+                        osm_response = requests.get(
+                            f'https://nominatim.openstreetmap.org/reverse?lat={lat}&lon={lon}&format=json&zoom=18&addressdetails=1',
+                            timeout=5,
+                            headers={'User-Agent': 'DSTerminal/2.0'}
+                        )
+                        if osm_response.status_code == 200:
+                            osm_data = osm_response.json()
+                            address = osm_data.get('address', {})
+                            
+                            # Build precise location from OSM data
+                            suburb = address.get('suburb', address.get('neighbourhood', ''))
+                            road = address.get('road', '')
+                            house_number = address.get('house_number', '')
+                            
+                            precise_parts = []
+                            if house_number:
+                                precise_parts.append(house_number)
+                            if road:
+                                precise_parts.append(road)
+                            if suburb:
+                                precise_parts.append(suburb)
+                            precise_parts.append(geo_data.get('city', 'Lilongwe'))
+                            
+                            precise_location = ', '.join(precise_parts) if precise_parts else geo_data.get('city', 'Lilongwe')
+                            
+                            console.print(f"[cyan]📍 Precise location: {precise_location}[/cyan]")
+                            console.print(f"[dim]📌 Coordinates: {lat:.6f}, {lon:.6f}[/dim]")
+                            
+                            return {
+                                'ip': geo_data.get('ip', 'Unknown'),
+                                'lat': float(lat),
+                                'lon': float(lon),
+                                'country': geo_data.get('country_name', 'Malawi'),
+                                'city': geo_data.get('city', 'Lilongwe'),
+                                'precise_location': precise_location,
+                                'suburb': suburb,
+                                'road': road,
+                                'house_number': house_number,
+                                'district': address.get('suburb', ''),
+                                'postal_code': address.get('postcode', ''),
+                                'region': address.get('state', geo_data.get('region', '')),
+                                'isp': geo_data.get('org', 'Local Network'),
+                                'timezone': geo_data.get('timezone', 'Africa/Blantyre'),
+                                'loc': f"{lat},{lon}"
+                            }
+            except Exception as e:
+                console.print(f"[yellow]⚠ OpenStreetMap reverse geocoding: {e}[/yellow]")
+            
+            # ============================================
+            # FALLBACK: Standard city-level location
+            # ============================================
+            
+            console.print("[yellow]⚠ Using standard city-level location[/yellow]")
             return {
-                'ip': '192.168.1.181',
-                'lat': -13.2543,
-                'lon': 34.3015,
+                'ip': '192.168.1.1',
+                'lat': -13.9833,
+                'lon': 33.7833,
                 'country': 'Malawi',
                 'city': 'Lilongwe',
-                'region': 'Central Region',
+                'precise_location': 'Lilongwe, Malawi',
                 'isp': 'Local Network',
                 'org': 'DSTerminal Host',
-                'timezone': 'UTC+2',
-                'postal': '',
-                'loc': '-13.2543,34.3015'
+                'timezone': 'Africa/Blantyre',
+                'loc': '-13.9833,33.7833'
             }
-
         # Generate connection table
         def generate_connection_table(connections, browser_connections=None):
             rich_table = RichTable()
@@ -4989,8 +5407,623 @@ class SecurityTerminal:
             except:
                 return ip
 
+        # def generate_enhanced_threat_map(connections, local_machine, browser_connections):
+        #     """Generate interactive threat map with browser connections and blinking lines"""
+            
+        #     if not local_machine or local_machine.get('lat', 0) == 0:
+        #         local_machine = {
+        #             'ip': 'Unknown',
+        #             'lat': -13.2543,
+        #             'lon': 34.3015,
+        #             'country': 'Malawi',
+        #             'city': 'Lilongwe',
+        #             'isp': 'Local Network',
+        #             'org': 'DSTerminal Host'
+        #         }
+            
+        #     # Create base map centered on local machine
+        #     map_center = [local_machine['lat'], local_machine['lon']]
+        #     zoom_start = 3
+            
+        #     threat_map = folium.Map(
+        #         location=map_center,
+        #         zoom_start=zoom_start,
+        #         tiles='CartoDB dark_matter',
+        #         control_scale=True
+        #     )
+            
+        #     # Threat level colors
+        #     threat_colors = {
+        #         0: 'green',
+        #         1: 'lightgreen',
+        #         2: 'yellow',
+        #         3: 'orange',
+        #         4: 'red',
+        #         5: 'darkred'
+        #     }
+            
+        #     # Browser connection colors
+        #     browser_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#F0E68C']
+            
+        #     # Add local machine marker
+        #     local_popup = f"""
+        #     <div style="font-family: monospace; min-width: 300px; background: #1a1a1a; color: #00ff00;">
+        #         <b><span style="color: #00ff00;">🖥️ DSTERMINAL HOST MACHINE</span></b><br>
+        #         <hr style="border-color: #00ff00;">
+        #         <b>📍 IP:</b> {local_machine['ip']}<br>
+        #         <b>🌍 Location:</b> {local_machine['country']}<br>
+        #         <b>🏙️ City:</b> {local_machine['city']}<br>
+        #         <b>🏢 ISP:</b> {local_machine['isp']}<br>
+        #         <b>🌐 Active Browser Connections:</b> {len(browser_connections)}<br>
+        #         <b>🟢 Status:</b> REAL-TIME MONITORING
+        #     </div>
+        #     """
+            
+        #     folium.Marker(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         popup=folium.Popup(local_popup, max_width=400),
+        #         icon=folium.Icon(color='red', icon='flag', prefix='fa'),
+        #         tooltip=f"📍 DSTerminal Host - {local_machine['country']}"
+        #     ).add_to(threat_map)
+            
+        #     # Add radar sweep rings
+        #     for radius in [200000, 400000, 600000]:
+        #         folium.Circle(
+        #             location=[local_machine['lat'], local_machine['lon']],
+        #             radius=radius,
+        #             color='cyan',
+        #             fill=False,
+        #             weight=1,
+        #             opacity=0.2,
+        #             dash_array='10, 10'
+        #         ).add_to(threat_map)
+            
+        #     # Store connection data
+        #     all_connections = []
+        #     connection_scripts = []
+        #     import random
+        #     import json
+            
+        #     # Process browser connections (REAL-TIME WEB ACTIVITY)
+        #     for idx, browser_conn in enumerate(browser_connections):
+        #         conn = browser_conn['conn']
+        #         geo = browser_conn['geo']
+        #         process_name = browser_conn['process_name']
+        #         domain = browser_conn.get('url_domain', conn.raddr.ip)
+                
+        #         # Calculate threat score based on domain reputation
+        #         suspicious_domains = ['malware', 'phishing', 'cryptominer', 'torrent']
+        #         score = 1  # Default low risk
+        #         if any(sus in domain.lower() for sus in suspicious_domains):
+        #             score = 4
+                
+        #         color = browser_colors[idx % len(browser_colors)]
+        #         marker_size = 12
+                
+        #         # Prepare popup with browser info
+        #         popup_text = f"""
+        #         <div style="font-family: monospace; min-width: 250px;">
+        #             <b><span style="color: #FF6B6B;">🌐 BROWSER CONNECTION</span></b><br>
+        #             <hr>
+        #             <b>🌍 Service:</b> {domain}<br>
+        #             <b>📍 IP:</b> {conn.raddr.ip}<br>
+        #             <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
+        #             <b>🏙️ City:</b> {geo.get('city', 'N/A')}<br>
+        #             <b>🌐 Browser:</b> {process_name.upper()}<br>
+        #             <b>🔌 Local Port:</b> {conn.laddr.port}<br>
+        #             <b>📊 Status:</b> ACTIVE<br>
+        #             <b>⚠ Risk:</b> {'LOW' if score < 3 else 'MEDIUM'}
+        #         </div>
+        #         """
+                
+        #         folium.CircleMarker(
+        #             location=[geo['lat'], geo['lon']],
+        #             radius=marker_size,
+        #             popup=folium.Popup(popup_text, max_width=400),
+        #             color=color,
+        #             fill=True,
+        #             fill_color=color,
+        #             fill_opacity=0.8,
+        #             weight=3
+        #         ).add_to(threat_map)
+                
+        #         # Add connection line from local machine
+        #         line_id = f"browser_line_{idx}_{random.randint(1000, 9999)}"
+        #         blink_delay = random.uniform(0.3, 1.5)  # Faster blink for browser traffic
+        #         colors_for_line = random.sample(browser_colors, k=min(3, len(browser_colors)))
+                
+        #         line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
+                
+        #         folium.PolyLine(
+        #             line_points,
+        #             color=colors_for_line[0],
+        #             weight=4,
+        #             opacity=0.9,
+        #             tooltip=f"🌐 BROWSER: {domain} → {geo.get('country', 'Unknown')}"
+        #         ).add_to(threat_map)
+                
+        #         all_connections.append({
+        #             'type': 'browser',
+        #             'domain': domain,
+        #             'country': geo.get('country', 'Unknown'),
+        #             'score': score
+        #         })
+            
+        #     # Process system connections (background services)
+        #     for idx, conn in enumerate(connections):
+        #         if conn.status == "ESTABLISHED" and conn.raddr:
+        #             geo = get_geo_ip(conn.raddr.ip)
+        #             if geo and geo.get('lat') and geo.get('lon'):
+        #                 level, icon, score = calculate_threat_score(conn, geo)
+                        
+        #                 # Skip if already processed as browser connection
+        #                 is_duplicate = False
+        #                 for bc in all_connections:
+        #                     if bc.get('type') == 'browser' and bc.get('country') == geo.get('country'):
+        #                         is_duplicate = True
+        #                         break
+                        
+        #                 if not is_duplicate:
+        #                     # Prepare popup for system connection
+        #                     popup_text = f"""
+        #                     <div style="font-family: monospace; min-width: 200px;">
+        #                         <b><span style="color: #ffaa00;">⚙️ SYSTEM SERVICE</span></b><br>
+        #                         <hr>
+        #                         <b>📍 IP:</b> {conn.raddr.ip}<br>
+        #                         <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
+        #                         <b>🏢 ISP:</b> {geo.get('isp', 'N/A')}<br>
+        #                         <b>⚠ Threat Score:</b> {score}/5<br>
+        #                         <b>🔌 PID:</b> {conn.pid if conn.pid else 'N/A'}
+        #                     </div>
+        #                     """
+                            
+        #                     color = threat_colors.get(score, 'white')
+        #                     marker_size = 8 + (score * 3)
+                            
+        #                     folium.CircleMarker(
+        #                         location=[geo['lat'], geo['lon']],
+        #                         radius=marker_size,
+        #                         popup=folium.Popup(popup_text, max_width=350),
+        #                         color=color,
+        #                         fill=True,
+        #                         fill_color=color,
+        #                         fill_opacity=0.7,
+        #                         weight=2
+        #                     ).add_to(threat_map)
+                            
+        #                     # Add connection line with slower blink for system traffic
+        #                     line_id = f"system_line_{idx}_{random.randint(1000, 9999)}"
+        #                     blink_delay = random.uniform(1, 3)
+        #                     colors_for_line = ['#ffff00', '#ffaa00', '#ff6600']
+                            
+        #                     line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
+                            
+        #                     folium.PolyLine(
+        #                         line_points,
+        #                         color='#ffff00' if score == 2 else '#ff6600' if score == 3 else '#ff0000' if score >= 4 else '#00ff00',
+        #                         weight=2,
+        #                         opacity=0.7,
+        #                         tooltip=f"⚙️ SYSTEM: {geo.get('country', 'Unknown')} | Threat: {score}/5"
+        #                     ).add_to(threat_map)
+                            
+        #                     all_connections.append({
+        #                         'type': 'system',
+        #                         'country': geo.get('country', 'Unknown'),
+        #                         'score': score
+        #                     })
+            
+        #     # Add JavaScript for blinking animation
+        #     blink_script = '''
+        #     <script>
+        #     // Make all connection lines blink with random colors
+        #     setInterval(function() {
+        #         var lines = document.querySelectorAll('path');
+        #         lines.forEach(function(line) {
+        #             if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
+        #                 // Random color for browser connections
+        #                 var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        #                 var currentOpacity = parseFloat(line.getAttribute('opacity') || 1);
+        #                 var newOpacity = 0.4 + Math.random() * 0.6;
+                        
+        #                 // Random blink effect
+        #                 if (Math.random() > 0.7) {
+        #                     line.setAttribute('stroke', randomColor);
+        #                 }
+        #                 line.setAttribute('opacity', newOpacity);
+                        
+        #                 // Add glow effect
+        #                 line.setAttribute('stroke-width', Math.random() * 2 + 2);
+        #             }
+        #         });
+        #     }, 800);
+        #     </script>
+        #     '''
+        #     threat_map.get_root().html.add_child(folium.Element(blink_script))
+            
+        #     # Add connection statistics panel
+        #     browser_count = sum(1 for c in all_connections if c['type'] == 'browser')
+        #     system_count = sum(1 for c in all_connections if c['type'] == 'system')
+        #     unique_countries = len(set(c['country'] for c in all_connections if c['country'] != 'N/A'))
+            
+        #     stats_html = f'''
+        #     <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 15px; border-radius: 8px; border: 2px solid cyan; font-family: monospace; font-size: 12px; min-width: 280px; backdrop-filter: blur(5px);">
+        #         <b><span style="color: cyan;">📡 REAL-TIME NETWORK MAP</span></b><br>
+        #         <hr style="margin: 5px 0;">
+        #         <span style="color: #00ff00;">🖥️ Host:</span> <b>{local_machine['country']}</b><br>
+        #         <span style="color: #FF6B6B;">🌐 Browser Connections:</span> <b>{browser_count}</b><br>
+        #         <span style="color: #ffaa00;">⚙️ System Services:</span> <b>{system_count}</b><br>
+        #         <span style="color: #ffff00;">🌍 Active Countries:</span> <b>{unique_countries}</b><br>
+        #         <span style="color: cyan;">📡 Total Connections:</span> <b>{len(all_connections)}</b><br>
+        #         <hr style="margin: 5px 0;">
+        #         <span style="color: cyan;">✨ Live Traffic:</span> ACTIVE<br>
+        #         <span style="color: cyan;">🎨 Blinking Lines:</span> ENABLED<br>
+        #         <span style="color: cyan;">🌐 Browser Tracking:</span> ACTIVE
+        #     </div>
+        #     '''
+            
+        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
+            
+        #     # Add legend
+        #     legend_html = '''
+        #     <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 12px; border-radius: 5px; border: 2px solid cyan; font-family: monospace; font-size: 11px; min-width: 220px;">
+        #         <b><span style="color: cyan;">📡 CONNECTION TYPES</span></b><br>
+        #         <span style="color: #FF6B6B;">●</span> Browser/Web Traffic<br>
+        #         <span style="color: #00ff00;">●</span> Low Risk System<br>
+        #         <span style="color: #ffff00;">●</span> Medium Risk System<br>
+        #         <span style="color: #ff0000;">●</span> High Risk System<br>
+        #         <hr style="margin: 5px 0;">
+        #         <span style="color: #ff0000;">🔴</span> DSTerminal Host<br>
+        #         <span style="color: cyan;">━━━</span> Active Connection<br>
+        #         <span style="color: #ff00ff;">✨</span> Blinking Lines<br>
+        #         <span style="color: #00ffff;">🌐</span> Real-time Updates
+        #     </div>
+        #     '''
+        #     threat_map.get_root().html.add_child(folium.Element(legend_html))
+            
+        #     # Save map
+        #     workspace = get_workspace_dir()
+        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
+        #     os.makedirs(map_dir, exist_ok=True)
+        #     map_file = os.path.join(map_dir, f'realtime_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
+        #     threat_map.save(map_file)
+            
+        #     return map_file
+        # def generate_enhanced_threat_map(connections, local_machine, browser_connections):
+        #     """Generate interactive threat map with side panel and pulsing red circle"""
+            
+        #     if not local_machine or local_machine.get('lat', 0) == 0:
+        #         local_machine = {
+        #             'ip': 'Unknown',
+        #             'lat': -13.2543,
+        #             'lon': 34.3015,
+        #             'country': 'Malawi',
+        #             'city': 'Lilongwe',
+        #             'isp': 'Local Network',
+        #             'org': 'DSTerminal Host'
+        #         }
+            
+        #     # Create base map centered on local machine
+        #     map_center = [local_machine['lat'], local_machine['lon']]
+        #     zoom_start = 6
+            
+        #     threat_map = folium.Map(
+        #         location=map_center,
+        #         zoom_start=zoom_start,
+        #         tiles='CartoDB dark_matter',
+        #         control_scale=True
+        #     )
+            
+        #     # ============================================
+        #     # PROMINENT RED PULSING CIRCLE FOR LOCAL MACHINE
+        #     # ============================================
+            
+        #     # Outer pulsing red circle (large) - BRIGHTER
+        #     folium.Circle(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         radius=120000,
+        #         color='#ff3333',
+        #         fill=True,
+        #         fill_opacity=0.35,
+        #         weight=4,
+        #         popup=f"📍 DSTerminal Host - {local_machine['country']}"
+        #     ).add_to(threat_map)
+            
+        #     # Middle red circle - BRIGHTER
+        #     folium.Circle(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         radius=60000,
+        #         color='#ff6666',
+        #         fill=True,
+        #         fill_opacity=0.5,
+        #         weight=3,
+        #         popup="Active Monitoring Zone"
+        #     ).add_to(threat_map)
+            
+        #     # Inner solid red circle (core)
+        #     folium.Circle(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         radius=25000,
+        #         color='#ff0000',
+        #         fill=True,
+        #         fill_opacity=0.7,
+        #         weight=3,
+        #         popup="DSTerminal Core"
+        #     ).add_to(threat_map)
+            
+        #     # Center marker with flag
+        #     folium.Marker(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         popup=folium.Popup(f"""
+        #         <div style="font-family: monospace; text-align: center;">
+        #             <b><span style="color: #ff0000;">🔴 DSTERMINAL HOST</span></b><br>
+        #             📍 {local_machine['country']}<br>
+        #             🏙️ {local_machine['city']}<br>
+        #             <span style="color: #00ff00;">● ACTIVE MONITORING ●</span>
+        #         </div>
+        #         """, max_width=250),
+        #         icon=folium.Icon(color='red', icon='flag', prefix='fa', icon_color='white')
+        #     ).add_to(threat_map)
+            
+        #     # Radar sweep rings (outer detection) - BRIGHTER CYAN
+        #     sweep_rings = [
+        #         (200000, 0.25, '#00ffff'),
+        #         (300000, 0.2, '#00ffff'),
+        #         (400000, 0.15, '#00ffff')
+        #     ]
+        #     for radius, opacity, color in sweep_rings:
+        #         folium.Circle(
+        #             location=[local_machine['lat'], local_machine['lon']],
+        #             radius=radius,
+        #             color=color,
+        #             fill=False,
+        #             weight=2,
+        #             opacity=opacity,
+        #             dash_array='8, 8'
+        #         ).add_to(threat_map)
+            
+        #     # Additional bright ring for visibility
+        #     folium.Circle(
+        #         location=[local_machine['lat'], local_machine['lon']],
+        #         radius=500000,
+        #         color='#00ffff',
+        #         fill=False,
+        #         weight=1.5,
+        #         opacity=0.1,
+        #         dash_array='15, 15'
+        #     ).add_to(threat_map)
+            
+        #     # Threat level colors
+        #     threat_colors = {
+        #         0: '#00ff00',     # Green - Low
+        #         1: '#00ff00',
+        #         2: '#ffff00',     # Yellow - Medium
+        #         3: '#ff6600',     # Orange - High
+        #         4: '#ff0000',     # Red - Critical
+        #         5: '#8b0000'      # Dark Red - Extreme
+        #     }
+            
+        #     # Browser connection colors
+        #     browser_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
+            
+        #     # Statistics counters
+        #     high_risk = 0
+        #     medium_risk = 0
+        #     low_risk = 0
+        #     active_countries = set()
+            
+        #     # Process browser connections
+        #     for idx, browser_conn in enumerate(browser_connections):
+        #         conn = browser_conn['conn']
+        #         geo = browser_conn['geo']
+        #         process_name = browser_conn['process_name']
+                
+        #         color = browser_colors[idx % len(browser_colors)]
+                
+        #         popup_text = f"""
+        #         <div style="font-family: monospace;">
+        #             <b><span style="color: #FF6B6B;">🌐 BROWSER</span></b><br>
+        #             📍 {geo.get('country', 'Unknown')}<br>
+        #             🌐 {process_name.upper()}<br>
+        #             🔌 {conn.raddr.ip}:{conn.raddr.port}
+        #         </div>
+        #         """
+                
+        #         folium.CircleMarker(
+        #             location=[geo['lat'], geo['lon']],
+        #             radius=8,
+        #             popup=folium.Popup(popup_text, max_width=250),
+        #             color=color,
+        #             fill=True,
+        #             fill_color=color,
+        #             fill_opacity=0.7,
+        #             weight=2
+        #         ).add_to(threat_map)
+                
+        #         # Connection line from local machine
+        #         folium.PolyLine(
+        #             [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
+        #             color=color,
+        #             weight=2,
+        #             opacity=0.5,
+        #             tooltip=f"Browser → {geo.get('country', 'Unknown')}"
+        #         ).add_to(threat_map)
+                
+        #         if geo.get('country') and geo.get('country') != 'N/A':
+        #             active_countries.add(geo.get('country'))
+        #         low_risk += 1
+            
+        #     # Process system connections
+        #     for conn in connections:
+        #         if conn.status == "ESTABLISHED" and conn.raddr:
+        #             geo = get_geo_ip(conn.raddr.ip)
+        #             if geo and geo.get('lat') and geo.get('lon'):
+        #                 level, icon, score = calculate_threat_score(conn, geo)
+        #                 color = threat_colors.get(score, '#ffffff')
+                        
+        #                 if score >= 3:
+        #                     high_risk += 1
+        #                     size = 10
+        #                 elif score == 2:
+        #                     medium_risk += 1
+        #                     size = 8
+        #                 else:
+        #                     low_risk += 1
+        #                     size = 6
+                        
+        #                 popup_text = f"""
+        #                 <div style="font-family: monospace;">
+        #                     <b><span style="color: {color};">⚙️ SYSTEM</span></b><br>
+        #                     📍 {geo.get('country', 'Unknown')}<br>
+        #                     📡 {conn.raddr.ip}<br>
+        #                     ⚠ Threat Score: {score}/5
+        #                 </div>
+        #                 """
+                        
+        #                 folium.CircleMarker(
+        #                     location=[geo['lat'], geo['lon']],
+        #                     radius=size,
+        #                     popup=folium.Popup(popup_text, max_width=250),
+        #                     color=color,
+        #                     fill=True,
+        #                     fill_color=color,
+        #                     fill_opacity=0.6,
+        #                     weight=1
+        #                 ).add_to(threat_map)
+                        
+        #                 # Connection line
+        #                 folium.PolyLine(
+        #                     [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
+        #                     color=color,
+        #                     weight=1.5,
+        #                     opacity=0.4,
+        #                     tooltip=f"System → {geo.get('country', 'Unknown')} (Score: {score})"
+        #                 ).add_to(threat_map)
+                        
+        #                 if geo.get('country') and geo.get('country') != 'N/A':
+        #                     active_countries.add(geo.get('country'))
+            
+        #     total_connections = len(browser_connections) + high_risk + medium_risk + low_risk
+            
+        #     # ============================================
+        #     # LEFT SIDE STATISTICS PANEL
+        #     # ============================================
+            
+        #     stats_html = f'''
+        #     <div style="position: fixed; top: 20px; left: 20px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 20px; border-radius: 10px; border: 2px solid #00ff00; font-family: 'Courier New', monospace; min-width: 280px; backdrop-filter: blur(8px); box-shadow: 0 0 20px rgba(0,255,0,0.2);">
+                
+        #         <div style="text-align: center; margin-bottom: 15px;">
+        #             <span style="color: #00ff00; font-size: 16px; font-weight: bold;">┌─────────────────────────────┐</span><br>
+        #             <span style="color: #00ff00; font-size: 14px; font-weight: bold;">│    DSTERMINAL NETWORK MAP    │</span><br>
+        #             <span style="color: #00ff00; font-size: 16px; font-weight: bold;">└─────────────────────────────┘</span>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <div style="color: #ff0000; font-size: 14px;">⬤</div>
+        #             <div><span style="color: #ffffff;">Host Location:</span> <span style="color: #00ff00; font-weight: bold;">{local_machine['country']}</span></div>
+        #             <div><span style="color: #ffffff;">Coordinates:</span> <span style="color: #ffff00;">{local_machine['lat']:.2f}, {local_machine['lon']:.2f}</span></div>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <span style="color: #00ff00;">─────────────────────────────</span>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <div><span style="color: #ff4444;">⚠</span> <span style="color: #ffffff;">High Risk (3-5):</span> <span style="color: #ff4444; font-weight: bold;">{high_risk}</span></div>
+        #             <div><span style="color: #ffaa00;">⚠</span> <span style="color: #ffffff;">Medium Risk (2):</span> <span style="color: #ffaa00; font-weight: bold;">{medium_risk}</span></div>
+        #             <div><span style="color: #00ff00;">✓</span> <span style="color: #ffffff;">Low Risk (0-1):</span> <span style="color: #00ff00; font-weight: bold;">{low_risk}</span></div>
+        #             <div><span style="color: #00ffff;">🌐</span> <span style="color: #ffffff;">Browser Connections:</span> <span style="color: #00ffff; font-weight: bold;">{len(browser_connections)}</span></div>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <span style="color: #00ff00;">─────────────────────────────</span>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <div><span style="color: #00ff00;">🌍</span> <span style="color: #ffffff;">Active Countries:</span> <span style="color: #00ff00; font-weight: bold;">{len(active_countries)}</span></div>
+        #             <div><span style="color: #00ff00;">🔗</span> <span style="color: #ffffff;">Total Connections:</span> <span style="color: #00ff00; font-weight: bold;">{total_connections}</span></div>
+        #             <div><span style="color: #00ff00;">✨</span> <span style="color: #ffffff;">Status:</span> <span style="color: #00ff00; font-weight: bold;">ACTIVE</span></div>
+        #         </div>
+                
+        #         <div style="margin-bottom: 15px;">
+        #             <span style="color: #00ff00;">─────────────────────────────</span>
+        #         </div>
+                
+        #         <div>
+        #             <div style="color: #ffff00; margin-bottom: 8px;">⬤ LEGEND</div>
+        #             <div><span style="color: #ff0000;">⬤</span> <span style="color: #ffffff;">High Risk</span></div>
+        #             <div><span style="color: #ffaa00;">⬤</span> <span style="color: #ffffff;">Medium Risk</span></div>
+        #             <div><span style="color: #00ff00;">⬤</span> <span style="color: #ffffff;">Low Risk</span></div>
+        #             <div><span style="color: #FF6B6B;">⬤</span> <span style="color: #ffffff;">Browser Traffic</span></div>
+        #             <div><span style="color: #ff0000;">🔴</span> <span style="color: #ffffff;">DSTerminal Host</span></div>
+        #         </div>
+                
+        #         <div style="margin-top: 15px;">
+        #             <span style="color: #00ff00;">─────────────────────────────</span>
+        #         </div>
+                
+        #         <div style="margin-top: 10px; text-align: center;">
+        #             <span style="color: #ff6600; font-size: 10px;">● LIVE MONITORING ●</span>
+        #         </div>
+        #     </div>
+        #     '''
+            
+        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
+            
+        #     # ============================================
+        #     # JAVASCRIPT FOR PULSING EFFECTS
+        #     # ============================================
+            
+        #     pulse_script = '''
+        #     <script>
+        #     // Pulse animation for red circles
+        #     var circles = document.querySelectorAll('circle');
+        #     var pulseDirection = 1;
+        #     var pulseStep = 0;
+            
+        #     setInterval(function() {
+        #         circles.forEach(function(circle) {
+        #             var fillColor = circle.getAttribute('fill');
+        #             if (fillColor && (fillColor.indexOf('red') !== -1 || fillColor.indexOf('#ff') !== -1)) {
+        #                 var currentOpacity = parseFloat(circle.getAttribute('fill-opacity') || 0.3);
+        #                 var newOpacity = currentOpacity + (pulseDirection * 0.02);
+        #                 if (newOpacity >= 0.7) pulseDirection = -1;
+        #                 if (newOpacity <= 0.15) pulseDirection = 1;
+        #                 circle.setAttribute('fill-opacity', newOpacity);
+        #             }
+        #         });
+                
+        #         // Blinking effect for connection lines
+        #         var lines = document.querySelectorAll('path');
+        #         lines.forEach(function(line) {
+        #             if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
+        #                 var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+        #                 if (Math.random() > 0.85) {
+        #                     line.setAttribute('stroke', randomColor);
+        #                 }
+        #                 var currentOp = parseFloat(line.getAttribute('opacity') || 0.5);
+        #                 line.setAttribute('opacity', 0.3 + Math.random() * 0.5);
+        #             }
+        #         });
+        #     }, 300);
+        #     </script>
+        #     '''
+            
+        #     threat_map.get_root().html.add_child(folium.Element(pulse_script))
+            
+        #     # Save map
+        #     workspace = get_workspace_dir()
+        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
+        #     os.makedirs(map_dir, exist_ok=True)
+        #     map_file = os.path.join(map_dir, f'realtime_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
+        #     threat_map.save(map_file)
+            
+        #     console.print(f"[green]✓ Threat map saved to: {map_file}[/green]")
+        #     console.print(f"[red]🔴 Host location: {local_machine['country']} ({local_machine['lat']:.2f}, {local_machine['lon']:.2f})[/red]")
+        #     console.print(f"[cyan]🌐 Active Connections: {total_connections} | Countries: {len(active_countries)}[/cyan]")
+            
+        #     return map_file
         def generate_enhanced_threat_map(connections, local_machine, browser_connections):
-            """Generate interactive threat map with browser connections and blinking lines"""
+            """Generate interactive threat map with distance circles and connection lines"""
             
             if not local_machine or local_machine.get('lat', 0) == 0:
                 local_machine = {
@@ -5005,7 +6038,7 @@ class SecurityTerminal:
             
             # Create base map centered on local machine
             map_center = [local_machine['lat'], local_machine['lon']]
-            zoom_start = 3
+            zoom_start = 5
             
             threat_map = folium.Map(
                 location=map_center,
@@ -5014,253 +6047,425 @@ class SecurityTerminal:
                 control_scale=True
             )
             
+            # ============================================
+            # DISTANCE CIRCLES WITH RADIUS LABELS (in km)
+            # ============================================
+            
+            # Distance radii in kilometers
+            distance_radii = [
+                (500, 0.1, '#00ff00', '500km'),      # 500km - Green
+                (1000, 0.15, '#00ffff', '1000km'),   # 1000km - Cyan
+                (2000, 0.2, '#ffff00', '2000km'),    # 2000km - Yellow
+                (5000, 0.25, '#ff6600', '5000km'),   # 5000km - Orange
+                (10000, 0.3, '#ff0000', '10000km')   # 10000km - Red
+            ]
+            
+            for radius, opacity, color, label in distance_radii:
+                # Add the circle
+                folium.Circle(
+                    location=[local_machine['lat'], local_machine['lon']],
+                    radius=radius * 1000,  # Convert km to meters
+                    color=color,
+                    fill=False,
+                    weight=1.5,
+                    opacity=opacity,
+                    dash_array='5, 10'
+                ).add_to(threat_map)
+                
+                # Add distance label on the circle edge
+                # Calculate a point at 45 degrees on the circle edge for label placement
+                import math
+                angle_rad = math.radians(45)
+                lat_offset = (radius / 111) * math.cos(angle_rad)  # 1 degree ≈ 111 km
+                lon_offset = (radius / 111) * math.sin(angle_rad) / math.cos(math.radians(local_machine['lat']))
+                
+                label_lat = local_machine['lat'] + lat_offset
+                label_lon = local_machine['lon'] + lon_offset
+                
+                from folium import DivIcon
+                folium.map.Marker(
+                    [label_lat, label_lon],
+                    icon=DivIcon(
+                        icon_size=(50, 20),
+                        icon_anchor=(25, 10),
+                        html=f'<div style="font-size: 9px; color: {color}; background: rgba(0,0,0,0.7); padding: 2px 6px; border-radius: 10px; font-weight: bold;">{label}</div>'
+                    )
+                ).add_to(threat_map)
+            
+            # ============================================
+            # PROMINENT RED PULSING CIRCLE FOR LOCAL MACHINE
+            # ============================================
+            
+            # Outer pulsing red circle
+            folium.Circle(
+                location=[local_machine['lat'], local_machine['lon']],
+                radius=150000,
+                color='#ff3333',
+                fill=True,
+                fill_opacity=0.3,
+                weight=3,
+                popup=f"📍 DSTerminal Host - {local_machine['country']}"
+            ).add_to(threat_map)
+            
+            # Middle red circle
+            folium.Circle(
+                location=[local_machine['lat'], local_machine['lon']],
+                radius=75000,
+                color='#ff6666',
+                fill=True,
+                fill_opacity=0.45,
+                weight=2.5,
+                popup="Active Monitoring Zone"
+            ).add_to(threat_map)
+            
+            # Inner solid red circle (core)
+            folium.Circle(
+                location=[local_machine['lat'], local_machine['lon']],
+                radius=30000,
+                color='#ff0000',
+                fill=True,
+                fill_opacity=0.7,
+                weight=3,
+                popup="DSTerminal Core"
+            ).add_to(threat_map)
+            
+            # Center marker with flag
+            folium.Marker(
+                location=[local_machine['lat'], local_machine['lon']],
+                popup=folium.Popup(f"""
+                <div style="font-family: monospace; text-align: center;">
+                    <b><span style="color: #ff0000;">🔴 DSTERMINAL HOST</span></b><br>
+                    📍 {local_machine['country']}<br>
+                    🏙️ {local_machine['city']}<br>
+                    📡 IP: {local_machine['ip']}<br>
+                    <span style="color: #00ff00;">● ACTIVE MONITORING ●</span>
+                </div>
+                """, max_width=280),
+                icon=folium.Icon(color='red', icon='flag', prefix='fa', icon_color='white')
+            ).add_to(threat_map)
+            
             # Threat level colors
             threat_colors = {
-                0: 'green',
-                1: 'lightgreen',
-                2: 'yellow',
-                3: 'orange',
-                4: 'red',
-                5: 'darkred'
+                0: '#00ff00',
+                1: '#00ff00',
+                2: '#ffff00',
+                3: '#ff6600',
+                4: '#ff0000',
+                5: '#8b0000'
             }
             
             # Browser connection colors
             browser_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#F0E68C']
             
-            # Add local machine marker
-            local_popup = f"""
-            <div style="font-family: monospace; min-width: 300px; background: #1a1a1a; color: #00ff00;">
-                <b><span style="color: #00ff00;">🖥️ DSTERMINAL HOST MACHINE</span></b><br>
-                <hr style="border-color: #00ff00;">
-                <b>📍 IP:</b> {local_machine['ip']}<br>
-                <b>🌍 Location:</b> {local_machine['country']}<br>
-                <b>🏙️ City:</b> {local_machine['city']}<br>
-                <b>🏢 ISP:</b> {local_machine['isp']}<br>
-                <b>🌐 Active Browser Connections:</b> {len(browser_connections)}<br>
-                <b>🟢 Status:</b> REAL-TIME MONITORING
-            </div>
-            """
+            # Statistics counters
+            high_risk = 0
+            medium_risk = 0
+            low_risk = 0
+            active_countries = set()
+            connection_details = []  # Store connection details for table
             
-            folium.Marker(
-                location=[local_machine['lat'], local_machine['lon']],
-                popup=folium.Popup(local_popup, max_width=400),
-                icon=folium.Icon(color='red', icon='flag', prefix='fa'),
-                tooltip=f"📍 DSTerminal Host - {local_machine['country']}"
-            ).add_to(threat_map)
+            # ============================================
+            # PROCESS ALL CONNECTIONS AND ADD TO MAP
+            # ============================================
             
-            # Add radar sweep rings
-            for radius in [200000, 400000, 600000]:
-                folium.Circle(
-                    location=[local_machine['lat'], local_machine['lon']],
-                    radius=radius,
-                    color='cyan',
-                    fill=False,
-                    weight=1,
-                    opacity=0.2,
-                    dash_array='10, 10'
-                ).add_to(threat_map)
-            
-            # Store connection data
-            all_connections = []
-            connection_scripts = []
-            import random
-            import json
-            
-            # Process browser connections (REAL-TIME WEB ACTIVITY)
+            # Process browser connections (from table)
             for idx, browser_conn in enumerate(browser_connections):
                 conn = browser_conn['conn']
                 geo = browser_conn['geo']
                 process_name = browser_conn['process_name']
                 domain = browser_conn.get('url_domain', conn.raddr.ip)
                 
-                # Calculate threat score based on domain reputation
-                suspicious_domains = ['malware', 'phishing', 'cryptominer', 'torrent']
-                score = 1  # Default low risk
-                if any(sus in domain.lower() for sus in suspicious_domains):
-                    score = 4
-                
                 color = browser_colors[idx % len(browser_colors)]
-                marker_size = 12
                 
-                # Prepare popup with browser info
+                # Calculate distance
+                from math import radians, sin, cos, sqrt, atan2
+                def calc_distance(lat1, lon1, lat2, lon2):
+                    R = 6371
+                    lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+                    dlat = lat2 - lat1
+                    dlon = lon2 - lon1
+                    a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+                    return 2 * R * atan2(sqrt(a), sqrt(1-a))
+                
+                distance = calc_distance(local_machine['lat'], local_machine['lon'], geo['lat'], geo['lon'])
+                
+                # popup_text = f"""
+                # <div style="font-family: monospace; min-width: 220px;">
+                #     <b><span style="color: #FF6B6B;">🌐 BROWSER CONNECTION</span></b><br>
+                #     <hr style="margin: 3px 0;">
+                #     📍 Country: <b>{geo.get('country', 'Unknown')}</b><br>
+                #     📍 City: {geo.get('city', 'N/A')}<br>
+                #     📡 IP: {conn.raddr.ip}:{conn.raddr.port}<br>
+                #     🌐 Browser: {process_name.upper()}<br>
+                #     📏 Distance: {distance:.0f} km<br>
+                #     ⚠ Risk: LOW
+                # </div>
+                # """
+                # In the map's local marker popup, show precise location:
+
                 popup_text = f"""
-                <div style="font-family: monospace; min-width: 250px;">
-                    <b><span style="color: #FF6B6B;">🌐 BROWSER CONNECTION</span></b><br>
+                <div style="font-family: monospace; text-align: center; min-width: 250px;">
+                    <b><span style="color: #ff0000;">🔴 DSTERMINAL HOST</span></b><br>
                     <hr>
-                    <b>🌍 Service:</b> {domain}<br>
-                    <b>📍 IP:</b> {conn.raddr.ip}<br>
-                    <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-                    <b>🏙️ City:</b> {geo.get('city', 'N/A')}<br>
-                    <b>🌐 Browser:</b> {process_name.upper()}<br>
-                    <b>🔌 Local Port:</b> {conn.laddr.port}<br>
-                    <b>📊 Status:</b> ACTIVE<br>
-                    <b>⚠ Risk:</b> {'LOW' if score < 3 else 'MEDIUM'}
+                    📍 <b>Precise Location:</b> {local_machine.get('precise_location', local_machine['city'])}<br>
+                    🏙️ <b>City:</b> {local_machine['city']}<br>
+                    🏘️ <b>Area:</b> {local_machine.get('suburb', 'City Center')}<br>
+                    📡 <b>IP:</b> {local_machine['ip']}<br>
+                    <span style="color: #00ff00;">● ACTIVE MONITORING ●</span>
                 </div>
                 """
                 
+                # Add marker for remote location
                 folium.CircleMarker(
                     location=[geo['lat'], geo['lon']],
-                    radius=marker_size,
-                    popup=folium.Popup(popup_text, max_width=400),
+                    radius=9,
+                    popup=folium.Popup(popup_text, max_width=300),
                     color=color,
                     fill=True,
                     fill_color=color,
                     fill_opacity=0.8,
-                    weight=3
+                    weight=2
                 ).add_to(threat_map)
                 
                 # Add connection line from local machine
-                line_id = f"browser_line_{idx}_{random.randint(1000, 9999)}"
-                blink_delay = random.uniform(0.3, 1.5)  # Faster blink for browser traffic
-                colors_for_line = random.sample(browser_colors, k=min(3, len(browser_colors)))
-                
-                line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
-                
                 folium.PolyLine(
-                    line_points,
-                    color=colors_for_line[0],
-                    weight=4,
-                    opacity=0.9,
-                    tooltip=f"🌐 BROWSER: {domain} → {geo.get('country', 'Unknown')}"
+                    [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
+                    color=color,
+                    weight=2.5,
+                    opacity=0.6,
+                    tooltip=f"🌐 {domain} → {geo.get('country', 'Unknown')} ({distance:.0f}km)"
                 ).add_to(threat_map)
                 
-                all_connections.append({
-                    'type': 'browser',
-                    'domain': domain,
+                # Add distance label at midpoint
+                mid_lat = (local_machine['lat'] + geo['lat']) / 2
+                mid_lon = (local_machine['lon'] + geo['lon']) / 2
+                from folium import DivIcon
+                folium.map.Marker(
+                    [mid_lat, mid_lon],
+                    icon=DivIcon(
+                        icon_size=(40, 16),
+                        icon_anchor=(20, 8),
+                        html=f'<div style="font-size: 7px; color: {color}; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 8px;">{distance:.0f}km</div>'
+                    )
+                ).add_to(threat_map)
+                
+                if geo.get('country') and geo.get('country') != 'N/A':
+                    active_countries.add(geo.get('country'))
+                
+                connection_details.append({
+                    'type': 'Browser',
                     'country': geo.get('country', 'Unknown'),
-                    'score': score
+                    'ip': conn.raddr.ip,
+                    'distance': f"{distance:.0f}km",
+                    'risk': 'Low'
                 })
+                low_risk += 1
             
-            # Process system connections (background services)
+            # Process system connections (from the connections table)
             for idx, conn in enumerate(connections):
                 if conn.status == "ESTABLISHED" and conn.raddr:
                     geo = get_geo_ip(conn.raddr.ip)
                     if geo and geo.get('lat') and geo.get('lon'):
                         level, icon, score = calculate_threat_score(conn, geo)
+                        color = threat_colors.get(score, '#ffffff')
                         
-                        # Skip if already processed as browser connection
-                        is_duplicate = False
-                        for bc in all_connections:
-                            if bc.get('type') == 'browser' and bc.get('country') == geo.get('country'):
-                                is_duplicate = True
-                                break
+                        # Calculate distance
+                        from math import radians, sin, cos, sqrt, atan2
+                        def calc_distance(lat1, lon1, lat2, lon2):
+                            R = 6371
+                            lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
+                            dlat = lat2 - lat1
+                            dlon = lon2 - lon1
+                            a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
+                            return 2 * R * atan2(sqrt(a), sqrt(1-a))
                         
-                        if not is_duplicate:
-                            # Prepare popup for system connection
-                            popup_text = f"""
-                            <div style="font-family: monospace; min-width: 200px;">
-                                <b><span style="color: #ffaa00;">⚙️ SYSTEM SERVICE</span></b><br>
-                                <hr>
-                                <b>📍 IP:</b> {conn.raddr.ip}<br>
-                                <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-                                <b>🏢 ISP:</b> {geo.get('isp', 'N/A')}<br>
-                                <b>⚠ Threat Score:</b> {score}/5<br>
-                                <b>🔌 PID:</b> {conn.pid if conn.pid else 'N/A'}
-                            </div>
-                            """
-                            
-                            color = threat_colors.get(score, 'white')
-                            marker_size = 8 + (score * 3)
-                            
-                            folium.CircleMarker(
-                                location=[geo['lat'], geo['lon']],
-                                radius=marker_size,
-                                popup=folium.Popup(popup_text, max_width=350),
-                                color=color,
-                                fill=True,
-                                fill_color=color,
-                                fill_opacity=0.7,
-                                weight=2
-                            ).add_to(threat_map)
-                            
-                            # Add connection line with slower blink for system traffic
-                            line_id = f"system_line_{idx}_{random.randint(1000, 9999)}"
-                            blink_delay = random.uniform(1, 3)
-                            colors_for_line = ['#ffff00', '#ffaa00', '#ff6600']
-                            
-                            line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
-                            
-                            folium.PolyLine(
-                                line_points,
-                                color='#ffff00' if score == 2 else '#ff6600' if score == 3 else '#ff0000' if score >= 4 else '#00ff00',
-                                weight=2,
-                                opacity=0.7,
-                                tooltip=f"⚙️ SYSTEM: {geo.get('country', 'Unknown')} | Threat: {score}/5"
-                            ).add_to(threat_map)
-                            
-                            all_connections.append({
-                                'type': 'system',
-                                'country': geo.get('country', 'Unknown'),
-                                'score': score
-                            })
+                        distance = calc_distance(local_machine['lat'], local_machine['lon'], geo['lat'], geo['lon'])
+                        
+                        if score >= 3:
+                            risk_level = "HIGH"
+                            risk_color = "#ff0000"
+                            high_risk += 1
+                            size = 11
+                        elif score == 2:
+                            risk_level = "MEDIUM"
+                            risk_color = "#ffaa00"
+                            medium_risk += 1
+                            size = 9
+                        else:
+                            risk_level = "LOW"
+                            risk_color = "#00ff00"
+                            low_risk += 1
+                            size = 7
+                        
+                        popup_text = f"""
+                        <div style="font-family: monospace; min-width: 220px;">
+                            <b><span style="color: {color};">⚙️ SYSTEM CONNECTION</span></b><br>
+                            <hr style="margin: 3px 0;">
+                            📍 Country: <b>{geo.get('country', 'Unknown')}</b><br>
+                            📍 City: {geo.get('city', 'N/A')}<br>
+                            📡 IP: {conn.raddr.ip}:{conn.raddr.port}<br>
+                            🖥️ Local Port: {conn.laddr.port}<br>
+                            📏 Distance: {distance:.0f} km<br>
+                            ⚠ Threat Score: {score}/5<br>
+                            ⚠ Risk: <span style="color: {risk_color}; font-weight: bold;">{risk_level}</span>
+                        </div>
+                        """
+                        
+                        # Add marker for remote location
+                        folium.CircleMarker(
+                            location=[geo['lat'], geo['lon']],
+                            radius=size,
+                            popup=folium.Popup(popup_text, max_width=300),
+                            color=color,
+                            fill=True,
+                            fill_color=color,
+                            fill_opacity=0.7,
+                            weight=2
+                        ).add_to(threat_map)
+                        
+                        # Add connection line from local machine
+                        line_color = '#ff0000' if score >= 3 else '#ffaa00' if score == 2 else '#00ff00'
+                        folium.PolyLine(
+                            [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
+                            color=line_color,
+                            weight=2,
+                            opacity=0.5,
+                            tooltip=f"⚙️ → {geo.get('country', 'Unknown')} | Score: {score}/5 | {distance:.0f}km"
+                        ).add_to(threat_map)
+                        
+                        # Add distance label at midpoint
+                        mid_lat = (local_machine['lat'] + geo['lat']) / 2
+                        mid_lon = (local_machine['lon'] + geo['lon']) / 2
+                        from folium import DivIcon
+                        folium.Marker(
+                            [mid_lat, mid_lon],
+                            icon=DivIcon(
+                                icon_size=(40, 16),
+                                icon_anchor=(20, 8),
+                                html=f'<div style="font-size: 7px; color: {line_color}; background: rgba(0,0,0,0.6); padding: 1px 4px; border-radius: 8px;">{distance:.0f}km</div>'
+                            )
+                        ).add_to(threat_map)
+                        
+                        if geo.get('country') and geo.get('country') != 'N/A':
+                            active_countries.add(geo.get('country'))
+                        
+                        connection_details.append({
+                            'type': 'System',
+                            'country': geo.get('country', 'Unknown'),
+                            'ip': conn.raddr.ip,
+                            'distance': f"{distance:.0f}km",
+                            'risk': risk_level,
+                            'score': score
+                        })
             
-            # Add JavaScript for blinking animation
-            blink_script = '''
-            <script>
-            // Make all connection lines blink with random colors
-            setInterval(function() {
-                var lines = document.querySelectorAll('path');
-                lines.forEach(function(line) {
-                    if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
-                        // Random color for browser connections
-                        var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-                        var currentOpacity = parseFloat(line.getAttribute('opacity') || 1);
-                        var newOpacity = 0.4 + Math.random() * 0.6;
-                        
-                        // Random blink effect
-                        if (Math.random() > 0.7) {
-                            line.setAttribute('stroke', randomColor);
-                        }
-                        line.setAttribute('opacity', newOpacity);
-                        
-                        // Add glow effect
-                        line.setAttribute('stroke-width', Math.random() * 2 + 2);
-                    }
-                });
-            }, 800);
-            </script>
-            '''
-            threat_map.get_root().html.add_child(folium.Element(blink_script))
+            total_connections = len(browser_connections) + high_risk + medium_risk + low_risk
             
-            # Add connection statistics panel
-            browser_count = sum(1 for c in all_connections if c['type'] == 'browser')
-            system_count = sum(1 for c in all_connections if c['type'] == 'system')
-            unique_countries = len(set(c['country'] for c in all_connections if c['country'] != 'N/A'))
+            # ============================================
+            # LEFT SIDE STATISTICS PANEL
+            # ============================================
             
             stats_html = f'''
-            <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 15px; border-radius: 8px; border: 2px solid cyan; font-family: monospace; font-size: 12px; min-width: 280px; backdrop-filter: blur(5px);">
-                <b><span style="color: cyan;">📡 REAL-TIME NETWORK MAP</span></b><br>
-                <hr style="margin: 5px 0;">
-                <span style="color: #00ff00;">🖥️ Host:</span> <b>{local_machine['country']}</b><br>
-                <span style="color: #FF6B6B;">🌐 Browser Connections:</span> <b>{browser_count}</b><br>
-                <span style="color: #ffaa00;">⚙️ System Services:</span> <b>{system_count}</b><br>
-                <span style="color: #ffff00;">🌍 Active Countries:</span> <b>{unique_countries}</b><br>
-                <span style="color: cyan;">📡 Total Connections:</span> <b>{len(all_connections)}</b><br>
-                <hr style="margin: 5px 0;">
-                <span style="color: cyan;">✨ Live Traffic:</span> ACTIVE<br>
-                <span style="color: cyan;">🎨 Blinking Lines:</span> ENABLED<br>
-                <span style="color: cyan;">🌐 Browser Tracking:</span> ACTIVE
+            <div style="position: fixed; top: 20px; left: 20px; z-index: 1000; background-color: rgba(0,0,0,0.92); padding: 18px; border-radius: 10px; border: 2px solid #00ff00; font-family: 'Courier New', monospace; min-width: 280px; backdrop-filter: blur(8px); box-shadow: 0 0 20px rgba(0,255,0,0.2);">
+                
+                <div style="text-align: center; margin-bottom: 12px;">
+                    <span style="color: #00ff00; font-size: 14px; font-weight: bold;">┌─────────────────────────────┐</span><br>
+                    <span style="color: #00ff00; font-size: 13px; font-weight: bold;">│    DSTERMINAL NETWORK MAP    │</span><br>
+                    <span style="color: #00ff00; font-size: 14px; font-weight: bold;">└─────────────────────────────┘</span>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <div><span style="color: #ff0000;">●</span> <span style="color: #ffffff;">Host Location:</span> <span style="color: #00ff00; font-weight: bold;">{local_machine['country']}</span></div>
+                    <div><span style="color: #ff0000;">●</span> <span style="color: #ffffff;">Coordinates:</span> <span style="color: #ffff00;">{local_machine['lat']:.2f}, {local_machine['lon']:.2f}</span></div>
+                    <div><span style="color: #ff0000;">●</span> <span style="color: #ffffff;">Local IP:</span> <span style="color: #00ffff;">{local_machine['ip']}</span></div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <span style="color: #00ff00;">─────────────────────────────</span>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <div><span style="color: #ff4444;">⚠</span> <span style="color: #ffffff;">High Risk (3-5):</span> <span style="color: #ff4444; font-weight: bold;">{high_risk}</span></div>
+                    <div><span style="color: #ffaa00;">⚠</span> <span style="color: #ffffff;">Medium Risk (2):</span> <span style="color: #ffaa00; font-weight: bold;">{medium_risk}</span></div>
+                    <div><span style="color: #00ff00;">✓</span> <span style="color: #ffffff;">Low Risk (0-1):</span> <span style="color: #00ff00; font-weight: bold;">{low_risk}</span></div>
+                    <div><span style="color: #00ffff;">🌐</span> <span style="color: #ffffff;">Browser Connections:</span> <span style="color: #00ffff; font-weight: bold;">{len(browser_connections)}</span></div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <span style="color: #00ff00;">─────────────────────────────</span>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <div><span style="color: #00ff00;">🌍</span> <span style="color: #ffffff;">Active Countries:</span> <span style="color: #00ff00; font-weight: bold;">{len(active_countries)}</span></div>
+                    <div><span style="color: #00ff00;">🔗</span> <span style="color: #ffffff;">Total Connections:</span> <span style="color: #00ff00; font-weight: bold;">{total_connections}</span></div>
+                    <div><span style="color: #00ff00;">📏</span> <span style="color: #ffffff;">Distance Rings:</span> <span style="color: #00ffff;">500-10000km</span></div>
+                    <div><span style="color: #00ff00;">✨</span> <span style="color: #ffffff;">Status:</span> <span style="color: #00ff00; font-weight: bold;">ACTIVE</span></div>
+                </div>
+                
+                <div style="margin-bottom: 12px;">
+                    <span style="color: #00ff00;">─────────────────────────────</span>
+                </div>
+                
+                <div>
+                    <div style="color: #ffff00; margin-bottom: 8px;">⬤ LEGEND</div>
+                    <div><span style="color: #ff0000;">⬤</span> <span style="color: #ffffff;">High Risk (3-5)</span></div>
+                    <div><span style="color: #ffaa00;">⬤</span> <span style="color: #ffffff;">Medium Risk (2)</span></div>
+                    <div><span style="color: #00ff00;">⬤</span> <span style="color: #ffffff;">Low Risk (0-1)</span></div>
+                    <div><span style="color: #FF6B6B;">⬤</span> <span style="color: #ffffff;">Browser Traffic</span></div>
+                    <div><span style="color: #ff0000;">🔴</span> <span style="color: #ffffff;">DSTerminal Host</span></div>
+                    <div><span style="color: #00ffff;">◯</span> <span style="color: #ffffff;">Distance Rings (km)</span></div>
+                </div>
+                
+                <div style="margin-top: 12px;">
+                    <span style="color: #00ff00;">─────────────────────────────</span>
+                </div>
+                
+                <div style="margin-top: 8px; text-align: center;">
+                    <span style="color: #ff6600; font-size: 9px;">● LIVE MONITORING ●</span>
+                </div>
             </div>
             '''
             
             threat_map.get_root().html.add_child(folium.Element(stats_html))
             
-            # Add legend
-            legend_html = '''
-            <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 12px; border-radius: 5px; border: 2px solid cyan; font-family: monospace; font-size: 11px; min-width: 220px;">
-                <b><span style="color: cyan;">📡 CONNECTION TYPES</span></b><br>
-                <span style="color: #FF6B6B;">●</span> Browser/Web Traffic<br>
-                <span style="color: #00ff00;">●</span> Low Risk System<br>
-                <span style="color: #ffff00;">●</span> Medium Risk System<br>
-                <span style="color: #ff0000;">●</span> High Risk System<br>
-                <hr style="margin: 5px 0;">
-                <span style="color: #ff0000;">🔴</span> DSTerminal Host<br>
-                <span style="color: cyan;">━━━</span> Active Connection<br>
-                <span style="color: #ff00ff;">✨</span> Blinking Lines<br>
-                <span style="color: #00ffff;">🌐</span> Real-time Updates
-            </div>
+            # ============================================
+            # JAVASCRIPT FOR PULSING EFFECTS
+            # ============================================
+            
+            pulse_script = '''
+            <script>
+            // Pulse animation for red circles
+            var circles = document.querySelectorAll('circle');
+            var pulseDirection = 1;
+            
+            setInterval(function() {
+                circles.forEach(function(circle) {
+                    var fillColor = circle.getAttribute('fill');
+                    if (fillColor && (fillColor.indexOf('red') !== -1 || fillColor.indexOf('#ff') !== -1)) {
+                        var currentOpacity = parseFloat(circle.getAttribute('fill-opacity') || 0.3);
+                        var newOpacity = currentOpacity + (pulseDirection * 0.02);
+                        if (newOpacity >= 0.7) pulseDirection = -1;
+                        if (newOpacity <= 0.15) pulseDirection = 1;
+                        circle.setAttribute('fill-opacity', newOpacity);
+                    }
+                });
+                
+                // Blinking effect for connection lines
+                var lines = document.querySelectorAll('path');
+                lines.forEach(function(line) {
+                    if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
+                        var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
+                        if (Math.random() > 0.85) {
+                            line.setAttribute('stroke', randomColor);
+                        }
+                        var currentOp = parseFloat(line.getAttribute('opacity') || 0.5);
+                        line.setAttribute('opacity', 0.3 + Math.random() * 0.5);
+                    }
+                });
+            }, 300);
+            </script>
             '''
-            threat_map.get_root().html.add_child(folium.Element(legend_html))
+            
+            threat_map.get_root().html.add_child(folium.Element(pulse_script))
             
             # Save map
             workspace = get_workspace_dir()
@@ -5269,8 +6474,12 @@ class SecurityTerminal:
             map_file = os.path.join(map_dir, f'realtime_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
             threat_map.save(map_file)
             
+            console.print(f"[green]✓ Threat map saved to: {map_file}[/green]")
+            console.print(f"[red]🔴 Host location: {local_machine['country']} ({local_machine['lat']:.2f}, {local_machine['lon']:.2f})[/red]")
+            console.print(f"[cyan]🌐 Active Connections: {total_connections} | Countries: {len(active_countries)}[/cyan]")
+            console.print(f"[yellow]📏 Distance rings: 500km, 1000km, 2000km, 5000km, 10000km[/yellow]")
+            
             return map_file
-
         # Comprehensive PDF Report Generation
         def export_comprehensive_audit_report(connections, local_machine, workspace, operator_id=None):
             """Generate comprehensive PDF audit report in workspace"""
@@ -5466,7 +6675,7 @@ class SecurityTerminal:
             # Footer
             elements.append(Spacer(1, 0.5 * inch))
             elements.append(Paragraph(
-                f"Report generated by DSTerminal v2.0 | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Audit Trail Verified",
+                f"Report autogenerated by DSTerminal v2.0.113 | {datetime.now().strftime('%Y-%m-%d %H:%M:%S')} | Audit Trail Verified",
                 ParagraphStyle('Footer', parent=styles['Normal'], fontSize=8, textColor=colors.grey, alignment=1)
             ))
             
@@ -5756,7 +6965,19 @@ class SecurityTerminal:
         export_comprehensive_audit_report(connections, local_machine, workspace, getattr(self, 'current_operator', None))
     # ==================== NEW ADVANCED COMMANDS ====================
 
+# =================================================
+# In your main SecurityTerminal class
+    def do_encrypt_menu(self):
+        """Enter the encryption suite menu"""
+        if self.crypto:
+            from crypto_engine import main as crypto_main
+            crypto.main()
+        else:
+            print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
 
+ 
+# =========================================================
+# ================for encryption+++++++++++++++++++++++========
     def check_exploits(self):
         vulns = {
             "CVE-2021-44228": "Log4j RCE",
@@ -9013,8 +10234,30 @@ class SecurityTerminal:
         elif cmd == "crypto-backup":
             self.crypto.crypto_backup()
             return
+# ======================================================
+        # NEW: Export/Import key commands for sharing across machines
+        elif cmd == "crypto-export":
+            if self.crypto:
+                self.crypto.export_encryption_key()
+            else:
+                print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
+            return
         
+        elif cmd == "crypto-import":
+            if self.crypto:
+                self.crypto.import_encryption_key()
+            else:
+                print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
+            return
 
+        # Shortcut aliases
+        elif cmd in ["enc", "crypt"]:
+            if self.crypto:
+                self.crypto.main()
+            else:
+                print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
+            return
+# =============================================
         elif cmd == "dst-refresh" or cmd == "dst-reload":
             self.cmd_refresh()
             return
@@ -9063,6 +10306,23 @@ class SecurityTerminal:
                 print(f"{Fore.RED}Full Recon module not available. Make sure recon_full.py is in: {BASE_PATH}{Style.RESET_ALL}")
                 print(f"{Fore.YELLOW}Files in directory: {os.listdir(BASE_PATH)}{Style.RESET_ALL}")
     
+
+
+        elif command == "crypto-import":
+            if self.crypto:
+                self.crypto.import_encryption_key()
+            else:
+                print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
+            return
+     # ========================================
+            # Shortcuts
+        elif command in ["enc", "crypt"]:
+            if self.crypto:
+                from crypto_engine import main as crypto_main
+                crypto_main()
+            else:
+                print(f"{Fore.RED}[!] Crypto engine not available{Style.RESET_ALL}")
+    # ===================================
         # Shortcut aliases
         elif command == 'r1' or command == 'rec':
             if RECON_AVAILABLE:
@@ -9572,6 +10832,20 @@ class SecurityTerminal:
             self.crypto.encrypt_test()
             return
 
+        # NEW: Export/Import key commands for sharing
+        elif cmd == "crypto-export":
+            self.crypto.export_encryption_key()
+            return
+        
+        elif cmd == "crypto-import":
+            self.crypto.import_encryption_key()
+            return
+        
+        # Shortcut aliases
+        elif cmd in ["enc", "crypt"]:
+            self.crypto.main()
+            return
+        
         elif cmd == "encrypt":
             if args:
         # Pass the filename directly - matches encrypt_file(filename)
