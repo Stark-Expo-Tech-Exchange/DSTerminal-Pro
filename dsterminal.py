@@ -76,6 +76,7 @@ from deletion_protection import (
     EncryptionManager
 )
 
+
 # Keep these in the main file since they're UI-only
 # from terminal_ui import TerminalUI  # Extract TerminalUI to its own file, or keep inline
 # from workspace_manager import WorkspaceManager  # Extract WorkspaceManager, or keep inline
@@ -144,13 +145,28 @@ except ImportError:
         CYAN = '\033[36m'
         WHITE = '\033[37m'
         RESET = '\033[0m'
-    
+            # Bright variants
+        BRIGHT_BLACK = '\033[90m'
+        BRIGHT_RED = '\033[91m'
+        BRIGHT_GREEN = '\033[92m'
+        BRIGHT_YELLOW = '\033[93m'
+        BRIGHT_BLUE = '\033[94m'
+        BRIGHT_MAGENTA = '\033[95m'
+        BRIGHT_CYAN = '\033[96m'
+        BRIGHT_WHITE = '\033[97m'
+        DIM = '\033[90m'  # FIXED: Added DIM attribute
+
+
     class Style:
         BRIGHT = '\033[1m'
-        DIM = '\033[2m'
-        NORMAL = '\033[22m'
+        DIM = '\033[2m'  # This was missing
+        ITALIC = '\033[3m'
+        UNDERLINE = '\033[4m'
+        BLINK = '\033[5m'
+        REVERSE = '\033[7m'
+        HIDDEN = '\033[8m'
         RESET_ALL = '\033[0m'
-    
+        
     class Back:
         BLACK = '\033[40m'
         RED = '\033[41m'
@@ -160,27 +176,54 @@ except ImportError:
         MAGENTA = '\033[45m'
         CYAN = '\033[46m'
         WHITE = '\033[47m'
-# ============================================================
-# HARDENING DATA STRUCTURES
-# ============================================================
-class Fore:
-    BLACK = '\033[30m'
-    RED = '\033[31m'
-    GREEN = '\033[32m'
-    YELLOW = '\033[33m'
-    BLUE = '\033[34m'
-    MAGENTA = '\033[35m'
-    CYAN = '\033[36m'
-    WHITE = '\033[37m'
-    RESET = '\033[0m'
 
-class Style:
-    BRIGHT = '\033[1m'
-    DIM = '\033[2m'
-    NORMAL = '\033[22m'
-    RESET_ALL = '\033[0m'
+    # ============================================================
+    # HARDENING DATA STRUCTURES
+    # ============================================================
+    class Fore:
+        BLACK = '\033[30m'
+        RED = '\033[31m'
+        GREEN = '\033[32m'
+        YELLOW = '\033[33m'
+        BLUE = '\033[34m'
+        MAGENTA = '\033[35m'
+        CYAN = '\033[36m'
+        WHITE = '\033[37m'
+        RESET = '\033[0m'
 
-# Import hardening modules
+    class Colors:
+        RED = '\033[91m'
+        GREEN = '\033[92m'
+        YELLOW = '\033[93m'
+        BLUE = '\033[94m'
+        MAGENTA = '\033[95m'
+        CYAN = '\033[96m'
+        WHITE = '\033[97m'
+        RESET = '\033[0m'
+        BOLD = '\033[1m'
+        DIM = '\033[2m'
+        BG_RED = '\033[41m'
+        BG_GREEN = '\033[42m'
+        BG_YELLOW = '\033[43m'
+        BG_BLUE = '\033[44m'
+        BG_MAGENTA = '\033[45m'
+        BG_CYAN = '\033[46m'
+
+
+    class Style:
+        BRIGHT = '\033[1m'
+        DIM = '\033[2m'
+        NORMAL = '\033[22m'
+        RESET_ALL = '\033[0m'
+        BRIGHT = '\033[1m'
+        DIM = '\033[2m'  # This was missing
+        ITALIC = '\033[3m'
+        UNDERLINE = '\033[4m'
+        BLINK = '\033[5m'
+        REVERSE = '\033[7m'
+        HIDDEN = '\033[8m'
+        RESET_ALL = '\033[0m'
+    # Import hardening modules
 try:
     from hardening_dashboard import (
         HardeningDashboard
@@ -221,6 +264,18 @@ except Exception as e:
     else:
         print(f"⚠ Integrity Monitor error: {e}")
 # =================ends here============
+# Try to import psutil for real system metrics
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+    print("[WARNING] psutil not installed. Using simulated metrics.")
+    print("Install with: pip install psutil")
+
+# Import our footer engine
+from dst_footer import DSTerminalFooter, FooterBootAnimation, FooterColors
+
 # Import Financial Forensics Module
 try:
     # Add the current directory to path if needed
@@ -456,6 +511,9 @@ import cryptography
 from prompt_toolkit.completion import WordCompleter
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+from dst_footer import DynamicFooter, FooterColors
+from telemetry_engine import TelemetryEngine
+
 from reportlab.platypus import (
     SimpleDocTemplate,
     Paragraph,
@@ -1258,7 +1316,7 @@ class SecurityTerminal:
         self.terminal_width = self._get_terminal_width()
         self.system = platform.system()
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-
+        
         # ===== INTEGRATE HARDENING DASHBOARD =====
         self.hardening_dashboard = HardeningDashboard(terminal_width=self.terminal_width)
         self.hardening_enabled = True
@@ -2027,7 +2085,7 @@ class SecurityTerminal:
             # Calculate widths
                 panel_width = 24
                 banner_width = 80
-                spacing = 20
+                spacing = 45
             
             # Clear and reposition cursor at top
                 sys.stdout.write('\033[H')
@@ -4684,196 +4742,8 @@ class SecurityTerminal:
             os.makedirs(threat_maps_dir, exist_ok=True)
             
             return workspace
-
-        # Get local machine's public IP and geolocation
-        # def get_local_machine_location():
-        #     """Get the public IP and geolocation of the local machine (REAL LOCATION)"""
-            
-        #     # ========== METHOD 1: Try Free IP Geolocation APIs ==========
-        #     try:
-        #         # Use ipapi.co directly (no API key needed)
-        #         response = requests.get('https://ipapi.co/json/', timeout=5)
-        #         if response.status_code == 200:
-        #             geo_data = response.json()
-        #             lat = geo_data.get('latitude')
-        #             lon = geo_data.get('longitude')
-        #             public_ip = geo_data.get('ip')
-                    
-        #             if lat and lon and public_ip:
-        #                 console.print(f"[green]✓ Location detected via ipapi.co: {geo_data.get('country_name')}[/green]")
-        #                 return {
-        #                     'ip': public_ip,
-        #                     'lat': float(lat),
-        #                     'lon': float(lon),
-        #                     'country': geo_data.get('country_name', 'Unknown'),
-        #                     'city': geo_data.get('city', 'Unknown'),
-        #                     'region': geo_data.get('region', 'Unknown'),
-        #                     'isp': geo_data.get('org', geo_data.get('isp', 'Unknown')),
-        #                     'org': geo_data.get('org', 'Unknown'),
-        #                     'timezone': geo_data.get('timezone', 'Unknown'),
-        #                     'postal': geo_data.get('postal', ''),
-        #                     'loc': f"{lat},{lon}"
-        #                 }
-        #     except Exception as e:
-        #         console.print(f"[yellow]⚠ ipapi.co failed: {e}[/yellow]")
-            
-        #     # Try freegeoip.app as backup
-        #     try:
-        #         response = requests.get('https://freegeoip.app/json/', timeout=5)
-        #         if response.status_code == 200:
-        #             geo_data = response.json()
-        #             lat = geo_data.get('latitude')
-        #             lon = geo_data.get('longitude')
-        #             public_ip = geo_data.get('ip')
-                    
-        #             if lat and lon and public_ip:
-        #                 console.print(f"[green]✓ Location detected via freegeoip.app: {geo_data.get('country_name')}[/green]")
-        #                 return {
-        #                     'ip': public_ip,
-        #                     'lat': float(lat),
-        #                     'lon': float(lon),
-        #                     'country': geo_data.get('country_name', 'Unknown'),
-        #                     'city': geo_data.get('city', 'Unknown'),
-        #                     'region': geo_data.get('region_name', 'Unknown'),
-        #                     'isp': geo_data.get('isp', 'Unknown'),
-        #                     'org': geo_data.get('org', 'Unknown'),
-        #                     'timezone': geo_data.get('timezone', 'Unknown'),
-        #                     'postal': geo_data.get('zip_code', ''),
-        #                     'loc': f"{lat},{lon}"
-        #                 }
-        #     except Exception as e:
-        #         console.print(f"[yellow]⚠ freegeoip.app failed: {e}[/yellow]")
-            
-        #     # Try ipwho.is as another backup
-        #     try:
-        #         response = requests.get('https://ipwho.is/json/', timeout=5)
-        #         if response.status_code == 200:
-        #             geo_data = response.json()
-        #             lat = geo_data.get('latitude')
-        #             lon = geo_data.get('longitude')
-        #             public_ip = geo_data.get('ip')
-                    
-        #             if lat and lon and public_ip and not geo_data.get('success') == False:
-        #                 console.print(f"[green]✓ Location detected via ipwho.is: {geo_data.get('country')}[/green]")
-        #                 return {
-        #                     'ip': public_ip,
-        #                     'lat': float(lat),
-        #                     'lon': float(lon),
-        #                     'country': geo_data.get('country', 'Unknown'),
-        #                     'city': geo_data.get('city', 'Unknown'),
-        #                     'region': geo_data.get('region', 'Unknown'),
-        #                     'isp': geo_data.get('isp', 'Unknown'),
-        #                     'org': geo_data.get('org', 'Unknown'),
-        #                     'timezone': geo_data.get('timezone', 'Unknown'),
-        #                     'postal': geo_data.get('postal', ''),
-        #                     'loc': f"{lat},{lon}"
-        #                 }
-        #     except Exception as e:
-        #         console.print(f"[yellow]⚠ ipwho.is failed: {e}[/yellow]")
-            
-        #     # ========== METHOD 2: Fallback to Timezone Detection (NO external libraries) ==========
-        #     try:
-        #         import time
-        #         import datetime
-                
-        #         # Get local timezone offset in hours
-        #         if hasattr(time, 'timezone'):
-        #             local_offset = -time.timezone // 3600
-        #         else:
-        #             # Alternative method for Windows
-        #             local_offset = datetime.datetime.now().astimezone().utcoffset().total_seconds() // 3600
-        #             local_offset = int(local_offset)
-                
-        #         # Map UTC offset to country (based on common timezones)
-        #         tz_country_map = {
-        #             2: 'Malawi',        # UTC+2 (Malawi, South Africa, Zimbabwe, Egypt)
-        #             1: 'South Africa',  # UTC+1 (South Africa, Nigeria, Algeria)
-        #             0: 'United Kingdom',# UTC+0 (UK, Ireland, Portugal)
-        #             -5: 'United States',# UTC-5 (US East Coast - New York)
-        #             -6: 'United States',# UTC-6 (US Central - Chicago)
-        #             -7: 'United States',# UTC-7 (US Mountain - Denver)
-        #             -8: 'United States',# UTC-8 (US West Coast - Los Angeles)
-        #             8: 'China',         # UTC+8 (China, Singapore, Malaysia)
-        #             9: 'Japan',         # UTC+9 (Japan, Korea)
-        #             10: 'Australia',    # UTC+10 (Australia East - Sydney)
-        #             -3: 'Brazil',       # UTC-3 (Brazil, Argentina)
-        #             5: 'India',         # UTC+5 (India, Pakistan)
-        #             3: 'Kenya',         # UTC+3 (Kenya, Ethiopia, Saudi Arabia)
-        #             4: 'United Arab Emirates', # UTC+4 (Dubai, Moscow)
-        #             11: 'Australia',    # UTC+11 (Australia East - Vladivostok)
-        #             12: 'New Zealand',  # UTC+12 (New Zealand, Fiji)
-        #             -4: 'Canada',       # UTC-4 (Canada East - Halifax)
-        #             -2: 'Brazil',       # UTC-2 (Brazil - Fernando de Noronha)
-        #             6: 'Bangladesh',    # UTC+6 (Bangladesh, Bhutan)
-        #             7: 'Thailand',      # UTC+7 (Thailand, Vietnam, Indonesia)
-        #         }
-                
-        #         # Precise coordinates for countries
-        #         country_coords = {
-        #             'Malawi': [-13.2543, 34.3015],
-        #             'South Africa': [-30.5595, 22.9375],
-        #             'United States': [37.0902, -95.7129],
-        #             'United Kingdom': [51.5074, -0.1278],
-        #             'Canada': [56.1304, -106.3468],
-        #             'Germany': [51.1657, 10.4515],
-        #             'France': [46.2276, 2.2137],
-        #             'Australia': [-25.2744, 133.7751],
-        #             'India': [20.5937, 78.9629],
-        #             'Japan': [36.2048, 138.2529],
-        #             'China': [35.8617, 104.1954],
-        #             'Brazil': [-14.2350, -51.9253],
-        #             'Kenya': [-1.2864, 36.8172],
-        #             'United Arab Emirates': [23.4241, 53.8478],
-        #             'New Zealand': [-40.9006, 174.8860],
-        #             'Russia': [61.5240, 105.3188],
-        #             'Thailand': [13.7367, 100.5231],
-        #             'Bangladesh': [23.6850, 90.3563],
-        #             'Egypt': [26.8206, 30.8025],
-        #             'Nigeria': [9.0820, 8.6753],
-        #         }
-                
-        #         country = tz_country_map.get(local_offset, 'Malawi')
-        #         coords = country_coords.get(country, [-13.2543, 34.3015])
-                
-        #         # Get local IP
-        #         try:
-        #             hostname = socket.gethostname()
-        #             local_ip = socket.gethostbyname(hostname)
-        #         except:
-        #             local_ip = '127.0.0.1'
-                
-        #         console.print(f"[yellow]⚠ Using timezone detection: {country} (UTC{local_offset:+d})[/yellow]")
-                
-        #         return {
-        #             'ip': local_ip,
-        #             'lat': coords[0],
-        #             'lon': coords[1],
-        #             'country': country,
-        #             'city': f'Timezone Detection (UTC{local_offset:+d})',
-        #             'region': 'Detected',
-        #             'isp': 'Local Network',
-        #             'org': 'DSTerminal Host',
-        #             'timezone': f"UTC{local_offset:+d}",
-        #             'loc': f"{coords[0]},{coords[1]}"
-        #         }
-        #     except Exception as e:
-        #         console.print(f"[yellow]⚠ Timezone detection failed: {e}[/yellow]")
-            
-        #     # ========== METHOD 3: Final Fallback - Default to Malawi ==========
-        #     console.print("[yellow]⚠ All detection methods failed, defaulting to Malawi (UTC+2)[/yellow]")
-        #     return {
-        #         'ip': '192.168.1.181',
-        #         'lat': -13.2543,
-        #         'lon': 34.3015,
-        #         'country': 'Malawi',
-        #         'city': 'Lilongwe',
-        #         'region': 'Central Region',
-        #         'isp': 'Local Network',
-        #         'org': 'DSTerminal Host',
-        #         'timezone': 'UTC+2',
-        #         'postal': '',
-        #         'loc': '-13.2543,34.3015'
-        #     }
+        
+       
         def get_local_machine_location():
             """Get precise location with exact place within city"""
             
@@ -7244,6 +7114,8 @@ class SecurityTerminal:
         from reportlab.lib.units import inch
         from reportlab.platypus import Table as PDFTable
         from reportlab.lib.pagesizes import letter, landscape
+        from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle
+
         from reportlab.platypus import TableStyle
         from rich.table import Table as RichTable
         from rich.layout import Layout

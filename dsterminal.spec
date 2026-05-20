@@ -43,7 +43,7 @@ files = [
     'icon-removebg-preview.ico', 'financial_forensics.py',
     'crypto_engine.py', 'integrity_monitor.py', 'recon.py', 'recon_full.py',
     'vt_scan.py', 'edu_typing_engine.py',
-    'deletion_protection.py'
+    'deletion_protection.py', 'hardening_dashboard.py', 'dst_footer.py', 'telemetry_engine.py'
 ]
 
 for file in files:

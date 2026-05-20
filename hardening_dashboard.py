@@ -1,5 +1,6 @@
+#!/usr/bin/env python3
 """
-DSTerminal Interactive Hardening Dashboard - ENTERPRISE CINEMATIC EDITION
+DSTERMINAL HARDENING DASHBOARD - ENTERPRISE CINEMATIC EDITION
 Real-time telemetry, live command execution, 4-panel tactical layout
 """
 
@@ -19,30 +20,7 @@ from typing import Dict, List, Optional, Tuple, Any
 from dataclasses import dataclass, field
 from collections import deque
 
-# Try to import Rich for enhanced UI
-try:
-    from rich.console import Console
-    from rich.layout import Layout
-    from rich.panel import Panel
-    from rich.live import Live
-    from rich.table import Table
-    from rich.progress import Progress, SpinnerColumn, TextColumn
-    from rich.text import Text
-    from rich import box
-    RICH_AVAILABLE = True
-except ImportError:
-    RICH_AVAILABLE = False
-    print("[!] Rich library not installed. Install with: pip install rich")
-
-# Try to import psutil for system telemetry
-try:
-    import psutil
-    PSUTIL_AVAILABLE = True
-except ImportError:
-    PSUTIL_AVAILABLE = False
-    print("[!] psutil not installed. Install with: pip install psutil")
-
-# Terminal colors (fallback when Rich not available)
+# Terminal colors
 class Fore:
     BLACK = '\033[30m'
     RED = '\033[31m'
@@ -53,11 +31,50 @@ class Fore:
     CYAN = '\033[36m'
     WHITE = '\033[37m'
     RESET = '\033[0m'
+    
+    # Bright variants
+    BRIGHT_BLACK = '\033[90m'
+    BRIGHT_RED = '\033[91m'
+    BRIGHT_GREEN = '\033[92m'
+    BRIGHT_YELLOW = '\033[93m'
+    BRIGHT_BLUE = '\033[94m'
+    BRIGHT_MAGENTA = '\033[95m'
+    BRIGHT_CYAN = '\033[96m'
+    BRIGHT_WHITE = '\033[97m'
+    DIM = '\033[90m'  # FIXED: Added DIM attribute
+
 
 class Style:
     BRIGHT = '\033[1m'
-    DIM = '\033[2m'
+    DIM = '\033[2m'  # This was missing
+    ITALIC = '\033[3m'
+    UNDERLINE = '\033[4m'
+    BLINK = '\033[5m'
+    REVERSE = '\033[7m'
+    HIDDEN = '\033[8m'
     RESET_ALL = '\033[0m'
+# Try to import Rich for enhanced UI
+try:
+    from rich.console import Console
+    from rich.layout import Layout
+    from rich.panel import Panel
+    from rich.live import Live
+    from rich.table import Table
+    from rich.progress import Progress, SpinnerColumn, TextColumn
+    from rich.text import Text
+    from rich import box
+    from rich.align import Align
+    RICH_AVAILABLE = True
+except ImportError:
+    RICH_AVAILABLE = False
+
+# Try to import psutil for system telemetry
+try:
+    import psutil
+    PSUTIL_AVAILABLE = True
+except ImportError:
+    PSUTIL_AVAILABLE = False
+
 
 class HardeningCategory(Enum):
     USER_SECURITY = "User Account Security"
@@ -71,11 +88,13 @@ class HardeningCategory(Enum):
     KERNEL = "Kernel Hardening"
     AUDITING = "Audit & Logging"
 
+
 class HardeningSeverity(Enum):
     CRITICAL = "CRITICAL"
     HIGH = "HIGH"
     MEDIUM = "MEDIUM"
     LOW = "LOW"
+
 
 @dataclass
 class HardeningModule:
@@ -95,6 +114,7 @@ class HardeningModule:
     output: str = ""
     timestamp: Optional[datetime] = None
 
+
 @dataclass
 class HardeningResult:
     module: HardeningModule
@@ -104,6 +124,7 @@ class HardeningResult:
     output: str = ""
     error: Optional[str] = None
     live_output: List[str] = field(default_factory=list)
+
 
 class TelemetryCollector:
     """Real-time system telemetry collector"""
@@ -147,6 +168,7 @@ class TelemetryCollector:
                 "processes": len(psutil.pids()) if PSUTIL_AVAILABLE else 0
             }
         return {"cpu": 0, "ram": 0, "cpu_avg": 0, "ram_avg": 0, "processes": 0}
+
 
 class LiveOutputCapture:
     """Real-time command output capture with threading"""
@@ -202,6 +224,7 @@ class LiveOutputCapture:
         while not self.output_queue.empty():
             lines.append(self.output_queue.get())
         return lines
+
 
 class HardeningDashboard:
     """Enterprise-grade hardening dashboard with real-time telemetry"""
@@ -346,6 +369,16 @@ class HardeningDashboard:
             return 'sudo apt install -y auditd 2>/dev/null && sudo systemctl enable auditd && sudo systemctl start auditd'
         return 'echo "Auditd requires manual installation"'
     
+    def _get_network_hardening_command(self) -> str:
+        if self.system == "Windows":
+            return 'reg add "HKLM\\SYSTEM\\CurrentControlSet\\Services\\Tcpip\\Parameters" /v DisableIPSourceRouting /t REG_DWORD /d 2 /f'
+        return 'echo "net.ipv4.conf.all.accept_source_route=0" | sudo tee -a /etc/sysctl.conf'
+    
+    def _get_malware_scan_command(self) -> str:
+        if self.system == "Windows":
+            return 'powershell -Command "Start-MpScan -ScanType QuickScan"'
+        return 'sudo clamscan --infected --recursive /home 2>/dev/null || echo "ClamAV not configured"'
+    
     def _initialize_modules(self):
         """Initialize all hardening modules"""
         
@@ -403,14 +436,35 @@ class HardeningDashboard:
                 HardeningCategory.KERNEL, HardeningSeverity.HIGH,
                 ["Windows", "Linux"], self._get_kernel_hardening_command(),
                 None, None, True, 2.0),
+            
+            HardeningModule("network_hardening", "Network Hardening",
+                "Hardens network stack against attacks",
+                HardeningCategory.NETWORK, HardeningSeverity.HIGH,
+                ["Windows", "Linux"], self._get_network_hardening_command(),
+                None, None, True, 2.0),
+            
+            HardeningModule("malware_protection", "Malware Protection",
+                "Installs and configures antivirus protection",
+                HardeningCategory.MALWARE, HardeningSeverity.CRITICAL,
+                ["Windows", "Linux"], self._get_clamav_install_command(),
+                None, None, True, 10.0),
+            
+            HardeningModule("audit_system", "System Auditing",
+                "Configures comprehensive system auditing",
+                HardeningCategory.AUDITING, HardeningSeverity.MEDIUM,
+                ["Windows", "Linux"], self._get_auditd_command(),
+                None, None, True, 3.0),
         ]
     
     # ============================================================
-    # CINEMATIC UI RENDERING (Rich-based)
+    # CINEMATIC UI RENDERING
     # ============================================================
     
     def _create_tactical_layout(self) -> Layout:
         """Create 4-panel tactical layout"""
+        if not RICH_AVAILABLE:
+            return None
+        
         layout = Layout()
         layout.split_column(
             Layout(name="header", size=5),
@@ -431,8 +485,8 @@ class HardeningDashboard:
         """Panel 1: System Telemetry"""
         metrics = self.telemetry.get_metrics()
         
-        cpu_bar = self._create_bar(metrics["cpu"], 40)
-        ram_bar = self._create_bar(metrics["ram"], 40)
+        cpu_bar = self._create_bar(metrics["cpu"], 30)
+        ram_bar = self._create_bar(metrics["ram"], 30)
         
         content = f"""
 [bold cyan]█ SYSTEM TELEMETRY[/bold cyan]
@@ -440,7 +494,6 @@ class HardeningDashboard:
 [bright_white]CPU:[/] {metrics['cpu']:5.1f}% {cpu_bar}
 [bright_white]RAM:[/] {metrics['ram']:5.1f}% {ram_bar}
 [bright_white]Processes:[/] {metrics['processes']}
-[bright_white]Uptime:[/] {self._get_uptime()}
 [bright_white]Platform:[/] {self.system}
 [bright_white]Admin:[/] {'✓' if self.is_admin_user else '✗'}
         """
@@ -582,10 +635,6 @@ class HardeningDashboard:
                 "line": line,
                 "time": datetime.now()
             })
-            
-            # Update live display
-            if live_display:
-                live_display.update(self._create_execution_display(module, index, total, live_output_lines))
         
         try:
             if module.command:
@@ -594,7 +643,6 @@ class HardeningDashboard:
                 if success:
                     self._add_threat_event(f"✓ {module.name} applied successfully", "success")
                     
-                    # Verify if verify command exists
                     if module.verify_command:
                         verify_result = subprocess.run(module.verify_command, shell=True, capture_output=True, text=True)
                         module.verified = verify_result.returncode == 0
@@ -621,130 +669,300 @@ class HardeningDashboard:
             self._add_threat_event(f"⚠ Error in {module.name}: {str(e)}", "critical")
             return HardeningResult(module, False, start_time, datetime.now(), "", str(e))
     
-    def _create_execution_display(self, module: HardeningModule, index: int, total: int, output_lines: List[str]) -> Layout:
-        """Create execution display with live output"""
-        layout = self._create_tactical_layout()
-        
-        # Update panels with current data
-        layout["header"].update(Panel(
-            f"[bold green]DSTERMINAL HARDENING ENGINE[/bold green]\n"
-            f"[dim]Session: {self.session_id} | Module: {index}/{total}[/dim]",
-            border_style="green"
-        ))
-        
-        layout["panel1"].update(self._get_system_metrics_panel())
-        layout["panel2"].update(self._get_hardening_ops_panel())
-        layout["panel3"].update(self._get_network_defense_panel())
-        layout["panel4"].update(self._get_threat_feed_panel())
-        
-        # Center panel with live output
-        center_content = f"""
-[bold cyan]█ CURRENT OPERATION: {module.name.upper()}[/bold cyan]
-[bold yellow]Category:[/] {module.category.value}
-[bold yellow]Severity:[/] {module.severity.value}
-[bold yellow]Description:[/] {module.description}
-
-[bold cyan]█ LIVE COMMAND OUTPUT:[/bold cyan]
-{chr(10).join([f"[dim]► {line[:70]}[/dim]" for line in output_lines[-10:]]) if output_lines else "[dim]► Waiting for output...[/dim]"}
-        """
-        layout["footer"].update(Panel(center_content, border_style="cyan", height=12))
-        
-        return layout
-    
     def _execute_hardening_realtime(self):
         """Execute hardening with real-time cinematic display"""
         if not self.selected_modules:
             self._add_threat_event("No modules selected", "warning")
+            print(f"{Fore.YELLOW}[!] No modules selected. Use 'harden list' to see available modules.{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[!] Then use 'harden dashboard' and option 1 to select modules.{Style.RESET_ALL}")
             return
         
         modules_to_execute = [m for m in self.modules if m.id in self.selected_modules]
         total = len(modules_to_execute)
         
-        if RICH_AVAILABLE:
-            console = Console()
+        print(f"\n{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{' '*20}EXECUTING HARDENING MODULES{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'='*60}{Style.RESET_ALL}\n")
+        
+        for i, module in enumerate(modules_to_execute, 1):
+            print(f"{Fore.YELLOW}[{i}/{total}] Executing: {module.name}{Style.RESET_ALL}")
+            print(f"{Fore.DIM}  Command: {module.command[:80]}...{Style.RESET_ALL}")
             
-            for i, module in enumerate(modules_to_execute, 1):
-                # Create initial layout
-                layout = self._create_execution_display(module, i, total, [])
-                
-                with Live(layout, console=console, refresh_per_second=4, screen=True):
-                    result = self._execute_module_realtime(module, i, total, layout)
-                    self.results.append(result)
-                    
-                    if result.success:
-                        module.applied = True
-                        time.sleep(0.5)
-                    else:
-                        time.sleep(1)
+            # Check admin requirement
+            if module.requires_admin and not self.is_admin_user:
+                print(f"  {Fore.RED}✗ SKIPPED: Requires administrator privileges{Style.RESET_ALL}")
+                result = HardeningResult(module, False, datetime.now(), datetime.now(), "", "Admin privileges required", [])
+                self.results.append(result)
+                continue
             
-            # Final completion
-            self._display_completion_summary_realtime(console)
-        else:
-            # Fallback to non-rich mode
-            for i, module in enumerate(modules_to_execute, 1):
-                print(f"\n[{i}/{total}] Executing: {module.name}")
-                print(f"Command: {module.command[:100]}...")
+            try:
+                process = subprocess.Popen(
+                    module.command,
+                    shell=True,
+                    stdout=subprocess.PIPE,
+                    stderr=subprocess.STDOUT,
+                    text=True,
+                    bufsize=1
+                )
                 
-                success, output, live_lines = self.live_capture.execute_command(module, None)
+                output_lines = []
+                for line in iter(process.stdout.readline, ''):
+                    if line:
+                        clean_line = line.strip()
+                        output_lines.append(clean_line)
+                        if clean_line:
+                            print(f"  {Fore.DIM}{clean_line[:100]}{Style.RESET_ALL}")
                 
-                for line in live_lines:
-                    print(f"  {line}")
+                process.wait(timeout=30)
+                success = process.returncode == 0
                 
-                result = HardeningResult(module, success, datetime.now(), datetime.now(), output, None if success else "Failed", live_lines)
+                if success:
+                    print(f"  {Fore.GREEN}✓ SUCCESS{Style.RESET_ALL}")
+                    self._add_threat_event(f"✓ {module.name} applied successfully", "success")
+                else:
+                    print(f"  {Fore.RED}✗ FAILED (exit code: {process.returncode}){Style.RESET_ALL}")
+                    self._add_threat_event(f"✗ {module.name} failed", "critical")
+                
+                result = HardeningResult(
+                    module=module,
+                    success=success,
+                    start_time=datetime.now(),
+                    end_time=datetime.now(),
+                    output='\n'.join(output_lines[:500]),
+                    error=None if success else f"Exit code: {process.returncode}",
+                    live_output=output_lines
+                )
                 self.results.append(result)
                 
                 if success:
                     module.applied = True
-                    print(f"  ✓ SUCCESS")
-                else:
-                    print(f"  ✗ FAILED")
+                
+            except subprocess.TimeoutExpired:
+                process.kill()
+                print(f"  {Fore.RED}✗ TIMEOUT (30 seconds){Style.RESET_ALL}")
+                result = HardeningResult(module, False, datetime.now(), datetime.now(), "", "Command timed out", [])
+                self.results.append(result)
+            except Exception as e:
+                print(f"  {Fore.RED}✗ ERROR: {e}{Style.RESET_ALL}")
+                result = HardeningResult(module, False, datetime.now(), datetime.now(), "", str(e), [])
+                self.results.append(result)
             
-            self._display_completion_summary()
+            print()
+            time.sleep(0.5)
+        
+        # Show completion summary
+        self._display_completion_summary()
+
+    def _execute_hardening(self):
+        """Legacy execution method for fallback"""
+        self._execute_hardening_realtime()
     
+    # ==================added modules==============================
+# Add these fixed methods to your HardeningDashboard class in hardening_dashboard.py
+
+    def select_modules_by_ids(self, module_ids: List[str]):
+        """Select modules by their IDs"""
+        self.selected_modules = module_ids
+        print(f"{Fore.GREEN}[+] Selected {len(self.selected_modules)} modules{Style.RESET_ALL}")
+
+    def select_modules_by_criteria(self, severity_list: List[str] = None, categories: List[str] = None):
+        """Select modules based on severity or category"""
+        selected = []
+        for module in self.modules:
+            # Check compatibility
+            if module.platforms and self.system not in module.platforms:
+                continue
+            
+            # Check admin requirement
+            if module.requires_admin and not self.is_admin_user:
+                continue
+            
+            # Filter by severity
+            if severity_list and module.severity.value in severity_list:
+                selected.append(module.id)
+            
+            # Filter by category
+            elif categories and module.category.value in categories:
+                selected.append(module.id)
+            
+            # If no filters, don't select
+        self.selected_modules = selected
+        return len(self.selected_modules)
+
+    def execute_quick_harden(self):
+        """Execute quick hardening (Critical and High severity only)"""
+        # Select critical and high severity modules
+        self.selected_modules = []
+        for module in self.modules:
+            # Check compatibility
+            if module.platforms and self.system not in module.platforms:
+                continue
+            
+            # Check admin requirement
+            if module.requires_admin and not self.is_admin_user:
+                continue
+            
+            # Only Critical and High severity
+            if module.severity.value in ['CRITICAL', 'HIGH']:
+                self.selected_modules.append(module.id)
+        
+        print(f"{Fore.GREEN}[+] Quick hardening: {len(self.selected_modules)} critical/high modules selected{Style.RESET_ALL}")
+        
+        if self.selected_modules:
+            self._execute_hardening_realtime()
+        else:
+            print(f"{Fore.YELLOW}[!] No compatible modules found for quick hardening{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[!] Make sure you're running as Administrator{Style.RESET_ALL}")
+
+    def execute_full_harden(self):
+        """Execute full system hardening (all compatible modules)"""
+        self.selected_modules = []
+        for module in self.modules:
+            # Check compatibility
+            if module.platforms and self.system not in module.platforms:
+                continue
+            
+            # Check admin requirement
+            if module.requires_admin and not self.is_admin_user:
+                continue
+            
+            self.selected_modules.append(module.id)
+        
+        print(f"{Fore.GREEN}[+] Full hardening: {len(self.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if self.selected_modules:
+            self._execute_hardening_realtime()
+        else:
+            print(f"{Fore.YELLOW}[!] No compatible modules found{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[!] Make sure you're running as Administrator{Style.RESET_ALL}")
+
+    def execute_firewall_harden(self):
+        """Execute firewall hardening only"""
+        self.selected_modules = []
+        for module in self.modules:
+            if module.category == HardeningCategory.FIREWALL:
+                if module.platforms and self.system not in module.platforms:
+                    continue
+                if module.requires_admin and not self.is_admin_user:
+                    continue
+                self.selected_modules.append(module.id)
+        
+        print(f"{Fore.GREEN}[+] Firewall hardening: {len(self.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if self.selected_modules:
+            self._execute_hardening_realtime()
+        else:
+            print(f"{Fore.YELLOW}[!] No firewall modules found or insufficient privileges{Style.RESET_ALL}")
+
+    def execute_ssh_harden(self):
+        """Execute SSH hardening only"""
+        self.selected_modules = []
+        for module in self.modules:
+            if module.category == HardeningCategory.SSH_SECURITY:
+                if module.platforms and self.system not in module.platforms:
+                    continue
+                if module.requires_admin and not self.is_admin_user:
+                    continue
+                self.selected_modules.append(module.id)
+        
+        print(f"{Fore.GREEN}[+] SSH hardening: {len(self.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if self.selected_modules:
+            self._execute_hardening_realtime()
+        else:
+            print(f"{Fore.YELLOW}[!] No SSH modules found or insufficient privileges{Style.RESET_ALL}")
+
+    def execute_users_harden(self):
+        """Execute user security hardening only"""
+        self.selected_modules = []
+        for module in self.modules:
+            if module.category == HardeningCategory.USER_SECURITY:
+                if module.platforms and self.system not in module.platforms:
+                    continue
+                if module.requires_admin and not self.is_admin_user:
+                    continue
+                self.selected_modules.append(module.id)
+        
+        print(f"{Fore.GREEN}[+] User security hardening: {len(self.selected_modules)} modules selected{Style.RESET_ALL}")
+        
+        if self.selected_modules:
+            self._execute_hardening_realtime()
+        else:
+            print(f"{Fore.YELLOW}[!] No user security modules found or insufficient privileges{Style.RESET_ALL}")
+
+    def dry_run(self):
+        """Preview hardening without executing"""
+        print(f"\n{Fore.CYAN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}{' '*20}DRY RUN - Preview Mode (No Changes Made){Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'='*60}{Style.RESET_ALL}\n")
+        
+        categories = {}
+        for module in self.modules:
+            # Check compatibility
+            if module.platforms and self.system not in module.platforms:
+                continue
+            
+            cat = module.category.value
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(module)
+        
+        for category, mods in categories.items():
+            print(f"{Fore.YELLOW}▸ {category}{Style.RESET_ALL}")
+            print(f"{Fore.WHITE}{'─'*50}{Style.RESET_ALL}")
+            for module in mods:
+                admin_req = f"{Fore.RED} [ADMIN REQUIRED]{Style.RESET_ALL}" if module.requires_admin and not self.is_admin_user else ""
+                severity_color = Fore.RED if module.severity.value == 'CRITICAL' else Fore.YELLOW
+                compatible = self.system in module.platforms if module.platforms else True
+                
+                if compatible:
+                    print(f"  {Fore.GREEN}○{Style.RESET_ALL} {module.name}")
+                    print(f"      [{severity_color}{module.severity.value}{Style.RESET_ALL}] {module.description[:55]}...{admin_req}")
+            print()
+        
+        total_compatible = sum(1 for m in self.modules if not m.platforms or self.system in m.platforms)
+        print(f"{Fore.GREEN}[✓] Dry run complete. {total_compatible} modules available.{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[!] No changes were made to your system.{Style.RESET_ALL}")
+
+    def get_module_list(self):
+        """Get formatted module list for display"""
+        categories = {}
+        for module in self.modules:
+            cat = module.category.value
+            if cat not in categories:
+                categories[cat] = []
+            categories[cat].append(module)
+        return categories
+
+    # ===========================end of added modules==============
     def _display_completion_summary_realtime(self, console):
         """Display cinematic completion summary"""
         successful = sum(1 for r in self.results if r.success)
         failed = len(self.results) - successful
         
-        summary_layout = Layout()
-        summary_layout.split_column(
-            Layout(name="title", size=3),
-            Layout(name="stats"),
-            Layout(name="threat")
-        )
-        
-        summary_layout["title"].update(Panel(
-            "[bold green]▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄[/bold green]",
-            border_style="green"
-        ))
-        
-        stats_content = f"""
-[bold cyan]EXECUTION SUMMARY[/bold cyan]
-─────────────────────────────
-Total Modules: {len(self.results)}
-[green]Successful: {successful}[/green]
-[red]Failed: {failed}[/red]
-Success Rate: {successful/max(1,len(self.results))*100:.0f}%
-
-[bold yellow]THREAT LEVEL: {failed}/10[/bold yellow]
-[red]{'█' * failed}[/red][dim]{'░' * (10 - failed)}[/dim]
-        """
-        summary_layout["stats"].update(Panel(stats_content, border_style="cyan"))
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{' '*15}SYSTEM FORTIFICATION COMPLETE{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"\n{Fore.YELLOW}EXECUTION SUMMARY{Style.RESET_ALL}")
+        print(f"  Total Modules: {len(self.results)}")
+        print(f"  {Fore.GREEN}✓ Successful: {successful}{Style.RESET_ALL}")
+        print(f"  {Fore.RED}✗ Failed: {failed}{Style.RESET_ALL}")
+        print(f"  Success Rate: {successful/max(1,len(self.results))*100:.0f}%")
         
         if failed > 0:
-            failed_list = "\n".join([f"  ✗ {r.module.name}" for r in self.results if not r.success][:5])
-            summary_layout["threat"].update(Panel(f"[red]FAILED MODULES:\n{failed_list}[/red]", border_style="red"))
-        
-        console.print(summary_layout)
+            print(f"\n{Fore.RED}Failed Modules:{Style.RESET_ALL}")
+            for r in self.results:
+                if not r.success:
+                    print(f"  ✗ {r.module.name}")
     
     def _display_completion_summary(self):
         """Fallback completion summary for non-rich mode"""
         successful = sum(1 for r in self.results if r.success)
         failed = len(self.results) - successful
         
-        print(f"\n{'='*60}")
-        print("SYSTEM FORTIFICATION COMPLETE")
-        print(f"{'='*60}")
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}SYSTEM FORTIFICATION COMPLETE{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
         print(f"Total: {len(self.results)} | Success: {successful} | Failed: {failed}")
         print(f"Success Rate: {successful/max(1,len(self.results))*100:.0f}%")
         
@@ -754,8 +972,473 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
                 if not r.success:
                     print(f"  ✗ {r.module.name}")
     
+    def _generate_report(self):
+        """Generate hardening report in JSON and PDF formats"""
+        workspace = os.path.expanduser("~/dsterminal_workspace/reports")
+        os.makedirs(workspace, exist_ok=True)
+        
+        # Calculate statistics
+        total = len(self.results)
+        successful = sum(1 for r in self.results if r.success)
+        failed = total - successful
+        success_rate = (successful / total * 100) if total > 0 else 0
+        
+        # Prepare report data
+        report = {
+            "session_id": self.session_id,
+            "timestamp": datetime.now().isoformat(),
+            "system": self.system,
+            "hostname": platform.node(),
+            "admin": self.is_admin_user,
+            "total_modules": total,
+            "successful": successful,
+            "failed": failed,
+            "success_rate": round(success_rate, 2),
+            "results": [{
+                "module": r.module.name,
+                "category": r.module.category.value,
+                "severity": r.module.severity.value,
+                "success": r.success,
+                "error": r.error,
+                "output": r.output[:500] if r.output else "",
+                "timestamp": r.start_time.isoformat() if r.start_time else ""
+            } for r in self.results]
+        }
+        
+        # Save JSON report
+        json_path = f"{workspace}/hardening_{self.session_id}.json"
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        
+        print(f"{Fore.GREEN}✓ JSON Report saved: {json_path}{Style.RESET_ALL}")
+        
+        # Generate HTML report
+        html_path = self._generate_html_report(report, workspace)
+        if html_path:
+            print(f"{Fore.GREEN}✓ HTML Report saved: {html_path}{Style.RESET_ALL}")
+        
+        # Generate PDF report
+        pdf_path = self._generate_pdf_report(report, workspace)
+        if pdf_path:
+            print(f"{Fore.GREEN}✓ PDF Report saved: {pdf_path}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}⚠ PDF generation failed. Install reportlab: pip install reportlab{Style.RESET_ALL}")
+
+    def _generate_html_report(self, report: Dict, workspace: str) -> Optional[str]:
+        """Generate HTML report"""
+        try:
+            html_content = f"""<!DOCTYPE html>
+    <html>
+    <head>
+        <meta charset="UTF-8">
+        <title>DSTerminal Hardening Report</title>
+        <style>
+            body {{
+                font-family: 'Segoe UI', Arial, sans-serif;
+                margin: 40px;
+                background: linear-gradient(135deg, #0d1117 0%, #161b22 100%);
+                color: #c9d1d9;
+            }}
+            .container {{
+                max-width: 1200px;
+                margin: auto;
+                background: #0d1117;
+                border-radius: 15px;
+                padding: 30px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.5);
+            }}
+            .header {{
+                text-align: center;
+                border-bottom: 3px solid #00ffff;
+                padding-bottom: 20px;
+                margin-bottom: 30px;
+            }}
+            .header h1 {{
+                color: #00ffff;
+                margin: 0;
+                font-size: 2.5em;
+                text-shadow: 0 0 10px rgba(0,255,255,0.3);
+            }}
+            .header h2 {{
+                color: #ffcc00;
+                margin: 10px 0 0;
+                font-size: 1.2em;
+            }}
+            .summary {{
+                display: grid;
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                gap: 20px;
+                margin-bottom: 30px;
+            }}
+            .summary-card {{
+                background: #161b22;
+                border-radius: 10px;
+                padding: 20px;
+                text-align: center;
+                border-left: 4px solid #00ffff;
+            }}
+            .summary-card h3 {{
+                margin: 0 0 10px;
+                color: #8b949e;
+                font-size: 0.9em;
+            }}
+            .summary-card .value {{
+                font-size: 2em;
+                font-weight: bold;
+            }}
+            .summary-card .success {{
+                color: #00ff88;
+            }}
+            .summary-card .failed {{
+                color: #ff5555;
+            }}
+            .summary-card .score {{
+                color: #ffcc00;
+            }}
+            .section {{
+                background: #161b22;
+                border-radius: 10px;
+                padding: 20px;
+                margin-bottom: 20px;
+            }}
+            .section h3 {{
+                color: #00ffff;
+                margin-top: 0;
+                border-bottom: 1px solid #30363d;
+                padding-bottom: 10px;
+            }}
+            table {{
+                width: 100%;
+                border-collapse: collapse;
+            }}
+            th, td {{
+                border: 1px solid #30363d;
+                padding: 12px;
+                text-align: left;
+            }}
+            th {{
+                background: #21262d;
+                color: #00ffff;
+            }}
+            .status-success {{
+                color: #00ff88;
+                font-weight: bold;
+            }}
+            .status-failed {{
+                color: #ff5555;
+                font-weight: bold;
+            }}
+            .severity-CRITICAL {{
+                color: #ff5555;
+                background: rgba(255,85,85,0.1);
+                padding: 2px 8px;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+            .severity-HIGH {{
+                color: #ff8800;
+                background: rgba(255,136,0,0.1);
+                padding: 2px 8px;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+            .severity-MEDIUM {{
+                color: #ffcc00;
+                background: rgba(255,204,0,0.1);
+                padding: 2px 8px;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+            .severity-LOW {{
+                color: #00ff88;
+                background: rgba(0,255,136,0.1);
+                padding: 2px 8px;
+                border-radius: 5px;
+                display: inline-block;
+            }}
+            .footer {{
+                text-align: center;
+                margin-top: 30px;
+                padding-top: 20px;
+                border-top: 1px solid #30363d;
+                color: #8b949e;
+                font-size: 0.8em;
+            }}
+            .autogenerated {{
+            font-size: 0.7em;
+            color: #00ffff;
+            margin-top: 10px;
+            font-style: italic;
+        }}
+        </style>
+    </head>
+    <body>
+    <div class="container">
+        <div class="header">
+            <h1>🛡️ DSTERMINAL ENTERPRISE</h1>
+            <h2>System Hardening & Compliance Report</h2>
+            <p>Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}</p>
+            <p>Session ID: {report['session_id']}</p>
+        </div>
+        
+        <div class="summary">
+            <div class="summary-card">
+                <h3>Total Modules</h3>
+                <div class="value">{report['total_modules']}</div>
+            </div>
+            <div class="summary-card">
+                <h3>✅ Successful</h3>
+                <div class="value success">{report['successful']}</div>
+            </div>
+            <div class="summary-card">
+                <h3>❌ Failed</h3>
+                <div class="value failed">{report['failed']}</div>
+            </div>
+            <div class="summary-card">
+                <h3>📊 Success Rate</h3>
+                <div class="value score">{report['success_rate']}%</div>
+            </div>
+        </div>
+        
+        <div class="section">
+            <h3>📋 System Information</h3>
+            <table>
+                <tr><th>Property</th><th>Value</th></tr>
+                <tr><td>Operating System</td><td>{report['system']}</td></tr>
+                <tr><td>Hostname</td><td>{report['hostname']}</td></tr>
+                <tr><td>Administrator Privileges</td><td>{'Yes' if report['admin'] else 'No'}</td></tr>
+                <tr><td>Report Generated</td><td>{report['timestamp']}</td></tr>
+            </table>
+        </div>
+        
+        <div class="section">
+            <h3>🔧 Hardening Results</h3>
+            <table>
+                <thead>
+                    <tr><th>Module</th><th>Category</th><th>Severity</th><th>Status</th> </tr>
+                </thead>
+                <tbody>
+    """
+            for result in report['results']:
+                status_class = "status-success" if result['success'] else "status-failed"
+                status_text = "✅ PASSED" if result['success'] else "❌ FAILED"
+                severity_class = f"severity-{result['severity']}"
+                html_content += f"""
+                    <tr>
+                        <td>{result['module']}</td>
+                        <td>{result['category']}</td>
+                        <td><span class="{severity_class}">{result['severity']}</span></td>
+                        <td class="{status_class}">{status_text}</td>
+                    </tr>
+    """
+            html_content += f"""
+                </tbody>
+            </table>
+        </div>
+        
+        <div class="footer">
+            <p>DSTerminal Enterprise Security Suite | Powered by Stark Expo Tech Exchange</p>
+            <p>© 2024 - All Rights Reserved</p>
+            <p class="autogenerated">📄 DSTerminal autogenerated report</p>
+
+        </div>
+    </div>
+    </body>
+    </html>"""
+            
+            html_path = f"{workspace}/hardening_{self.session_id}.html"
+            with open(html_path, 'w', encoding='utf-8') as f:
+                f.write(html_content)
+            return html_path
+            
+        except Exception as e:
+            print(f"{Fore.RED}⚠ HTML generation failed: {e}{Style.RESET_ALL}")
+            return None
+    def _generate_json_report(self, report: Dict, workspace: str) -> str:
+        """Generate JSON report"""
+        # Add autogenerated footer to JSON
+        report["footer"] = {
+            "message": "DSTerminal autogenerated report",
+            "generated_by": "DSTerminal Enterprise Suite",
+            "disclaimer": "This report is automatically generated by DSTerminal hardening system"
+        }
+        
+        json_path = f"{workspace}/hardening_{self.session_id}.json"
+        with open(json_path, 'w', encoding='utf-8') as f:
+            json.dump(report, f, indent=2, ensure_ascii=False)
+        
+        return json_path
+    def _generate_pdf_report(self, report: Dict, workspace: str) -> Optional[str]:
+        """Generate PDF report using reportlab"""
+        try:
+            from reportlab.lib.pagesizes import letter, landscape
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, KeepTogether
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib import colors
+            from reportlab.lib.units import inch
+            from reportlab.pdfbase import pdfmetrics
+            from reportlab.pdfbase.ttfonts import TTFont
+            from reportlab.pdfgen import canvas
+            
+            pdf_path = f"{workspace}/hardening_{self.session_id}.pdf"
+            
+            # Create PDF document
+            doc = SimpleDocTemplate(pdf_path, pagesize=letter, 
+                                    rightMargin=72, leftMargin=72,
+                                    topMargin=72, bottomMargin=72)
+            
+            styles = getSampleStyleSheet()
+            footer_style = ParagraphStyle(
+                'FooterStyle',
+                parent=styles['Normal'],
+                fontSize=8,
+                textColor=colors.HexColor('#00ffff'),
+                alignment=1,  # Center
+                fontName='Helvetica-Oblique'
+            )
+            # Custom styles
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Title'],
+                fontSize=24,
+                textColor=colors.HexColor('#00ffff'),
+                alignment=1,  # Center
+                spaceAfter=30
+            )
+            
+            heading_style = ParagraphStyle(
+                'CustomHeading',
+                parent=styles['Heading2'],
+                fontSize=16,
+                textColor=colors.HexColor('#ffcc00'),
+                spaceAfter=12,
+                spaceBefore=12
+            )
+            
+            story = []
+            
+            # Title
+            story.append(Paragraph("DSTERMINAL ENTERPRISE", title_style))
+            story.append(Paragraph("System Hardening & Compliance Report", styles['Heading1']))
+            story.append(Spacer(1, 0.2*inch))
+            story.append(Paragraph(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles['Normal']))
+            story.append(Paragraph(f"Session ID: {report['session_id']}", styles['Normal']))
+            story.append(Spacer(1, 0.5*inch))
+            
+            # Summary section
+            story.append(Paragraph("Executive Summary", heading_style))
+            
+            summary_data = [
+                ["Total Modules", str(report['total_modules'])],
+                ["Successful", f"{report['successful']}"],
+                ["Failed", f"{report['failed']}"],
+                ["Success Rate", f"{report['success_rate']}%"],
+                ["System", report['system']],
+                ["Hostname", report['hostname']],
+                ["Admin Privileges", "Yes" if report['admin'] else "No"]
+            ]
+            
+            summary_table = Table(summary_data, colWidths=[2*inch, 3*inch])
+            summary_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#161b22')),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#c9d1d9')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 10),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 8),
+                ('TOPPADDING', (0, 0), (-1, -1), 8),
+                ('GRID', (0, 0), (-1, -1), 1, colors.HexColor('#30363d')),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#0d1117')),
+            ]))
+            story.append(summary_table)
+            story.append(Spacer(1, 0.3*inch))
+            
+            # Results table
+            story.append(Paragraph("Hardening Results", heading_style))
+            
+            # Prepare results data
+            results_data = [["Module", "Category", "Severity", "Status"]]
+            for result in report['results']:
+                status = "PASSED" if result['success'] else "FAILED"
+                severity = result['severity']
+                
+                # Color coding for severity
+                if severity == "CRITICAL":
+                    severity = f"■ {severity}"
+                elif severity == "HIGH":
+                    severity = f"▲ {severity}"
+                elif severity == "MEDIUM":
+                    severity = f"● {severity}"
+                else:
+                    severity = f"○ {severity}"
+                
+                results_data.append([
+                    result['module'][:40],
+                    result['category'][:25],
+                    severity,
+                    status
+                ])
+            
+            results_table = Table(results_data, colWidths=[2.2*inch, 1.8*inch, 1*inch, 1*inch])
+            results_table.setStyle(TableStyle([
+                ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#21262d')),
+                ('TEXTCOLOR', (0, 0), (-1, -1), colors.HexColor('#c9d1d9')),
+                ('ALIGN', (0, 0), (-1, -1), 'LEFT'),
+                ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ('BOTTOMPADDING', (0, 0), (-1, -1), 6),
+                ('TOPPADDING', (0, 0), (-1, -1), 6),
+                ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#30363d')),
+                ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#0d1117')),
+            ]))
+            
+            # Color the status cells
+            for i, result in enumerate(report['results'], start=1):
+                if result['success']:
+                    results_table.setStyle(TableStyle([
+                        ('TEXTCOLOR', (3, i), (3, i), colors.HexColor('#00ff88')),
+                    ]))
+                else:
+                    results_table.setStyle(TableStyle([
+                        ('TEXTCOLOR', (3, i), (3, i), colors.HexColor('#ff5555')),
+                    ]))
+            
+            story.append(results_table)
+            story.append(Spacer(1, 0.5*inch))
+            
+            # Footer
+            story.append(Paragraph("DSTerminal Enterprise Security Suite", styles['Normal']))
+            story.append(Paragraph("Powered by Stark Expo Tech Exchange", styles['Normal']))
+            story.append(Spacer(1, 0.1*inch))
+
+            # Build PDF
+            doc.build(story)
+            return pdf_path
+            
+        except ImportError:
+            return None
+        except Exception as e:
+            print(f"{Fore.RED}⚠ PDF generation error: {e}{Style.RESET_ALL}")
+            return None
+    
+    def _rollback_hardening(self):
+        """Rollback hardening changes"""
+        applied = [r for r in self.results if r.success and r.module.rollback_command]
+        if not applied:
+            print(f"{Fore.YELLOW}No modules to rollback{Style.RESET_ALL}")
+            return
+        
+        for r in applied:
+            print(f"{Fore.CYAN}Rolling back {r.module.name}...{Style.RESET_ALL}")
+            try:
+                subprocess.run(r.module.rollback_command, shell=True, check=True, timeout=15)
+                print(f"{Fore.GREEN}✓ Rolled back{Style.RESET_ALL}")
+                self._add_threat_event(f"Rolled back {r.module.name}", "warning")
+            except Exception as e:
+                print(f"{Fore.RED}✗ Failed: {e}{Style.RESET_ALL}")
+    
     # ============================================================
-    # PUBLIC METHODS
+    # CINEMATIC MODE METHODS
     # ============================================================
     
     def list_modules_cinematic(self):
@@ -776,29 +1459,43 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
             
             console.print(table)
         else:
+            print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}AVAILABLE HARDENING MODULES{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}\n")
             for i, m in enumerate(self.modules, 1):
-                print(f"{i:2d}. {m.name[:40]:40s} [{m.severity.value}]")
+                compat = "✓" if not m.platforms or self.system in m.platforms else "✗"
+                print(f"{i:2d}. {m.name[:40]:40s} [{m.severity.value}] [{compat}]")
     
     def show_status_cinematic(self):
         """Show status in cinematic layout"""
         if RICH_AVAILABLE:
             console = Console()
             layout = self._create_tactical_layout()
-            layout["header"].update(Panel("[bold green]DSTERMINAL HARDENING STATUS[/bold green]", border_style="green"))
-            layout["panel1"].update(self._get_system_metrics_panel())
-            layout["panel2"].update(self._get_hardening_ops_panel())
-            layout["panel3"].update(self._get_network_defense_panel())
-            layout["panel4"].update(self._get_threat_feed_panel())
-            console.print(layout)
+            if layout:
+                layout["header"].update(Panel("[bold green]DSTERMINAL HARDENING STATUS[/bold green]", border_style="green"))
+                layout["panel1"].update(self._get_system_metrics_panel())
+                layout["panel2"].update(self._get_hardening_ops_panel())
+                layout["panel3"].update(self._get_network_defense_panel())
+                layout["panel4"].update(self._get_threat_feed_panel())
+                console.print(layout)
+            else:
+                self._show_status_fallback()
         else:
-            print(f"System: {self.system} | Admin: {self.is_admin_user}")
-            print(f"Modules: {len(self.modules)} | Selected: {len(self.selected_modules)}")
-            print(f"Executed: {len(self.results)} | Success: {sum(1 for r in self.results if r.success)}")
+            self._show_status_fallback()
+    
+    def _show_status_fallback(self):
+        """Fallback status display"""
+        print(f"\n{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}HARDENING STATUS{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}{'='*60}{Style.RESET_ALL}")
+        print(f"System: {self.system} | Admin: {self.is_admin_user}")
+        print(f"Modules: {len(self.modules)} | Selected: {len(self.selected_modules)}")
+        print(f"Executed: {len(self.results)} | Success: {sum(1 for r in self.results if r.success)}")
     
     def run_cinematic(self):
-        """Main cinematic dashboard"""
+        """Main cinematic dashboard with visible menu"""
         if not RICH_AVAILABLE:
-            print("[!] Rich library not available. Using fallback mode.")
+            print(f"{Fore.YELLOW}[!] Rich library not available. Using fallback mode.{Style.RESET_ALL}")
             self.run()
             return
         
@@ -807,49 +1504,92 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
         while True:
             console.clear()
             
-            # Create main layout
-            layout = self._create_tactical_layout()
-            
             # Header
-            layout["header"].update(Panel(
-                "[bold green]DSTERMINAL HARDENING DASHBOARD v3.0[/bold green]\n"
+            header = Panel(
+                "[bold cyan]DSTERMINAL HARDENING DASHBOARD v3.0[/bold cyan]\n"
                 f"[dim]Enterprise Security Suite | Session: {self.session_id}[/dim]",
-                border_style="green"
-            ))
-            
-            # Update all panels
-            layout["panel1"].update(self._get_system_metrics_panel())
-            layout["panel2"].update(self._get_hardening_ops_panel())
-            layout["panel3"].update(self._get_network_defense_panel())
-            layout["panel4"].update(self._get_threat_feed_panel())
-            
-            # Footer menu
-            menu = Panel(
-                "[bold cyan]MENU[/bold cyan]\n"
-                "[green][1][/green] Select Modules  "
-                "[green][2][/green] View Selected  "
-                "[green][3][/green] Execute Hardening  "
-                "[green][4][/green] View Results  "
-                "[green][5][/green] Generate Report  "
-                "[green][6][/green] Rollback  "
-                "[green][7][/green] List Modules  "
-                "[green][8][/green] Status  "
-                "[red][9][/red] Exit",
                 border_style="cyan"
             )
-            layout["footer"].update(menu)
+            console.print(header)
             
-            console.print(layout)
+            # Create a table for metrics (more reliable than Layout)
+            metrics_table = Table(title="[bold green]SYSTEM STATUS[/bold green]", box=box.HEAVY_EDGE)
+            metrics_table.add_column("Metric", style="cyan", width=15)
+            metrics_table.add_column("Value", style="white", width=20)
             
-            choice = console.input("\n[bold cyan]Select option: [/bold cyan]").strip()
+            metrics = self.telemetry.get_metrics()
+            metrics_table.add_row("CPU", f"{metrics['cpu']:.1f}%")
+            metrics_table.add_row("RAM", f"{metrics['ram']:.1f}%")
+            metrics_table.add_row("Processes", str(metrics['processes']))
+            metrics_table.add_row("Platform", self.system)
+            metrics_table.add_row("Admin", "✓" if self.is_admin_user else "✗")
+            metrics_table.add_row("Selected Modules", str(len(self.selected_modules)))
+            
+            console.print(metrics_table)
+            
+            # Hardening progress table
+            progress_table = Table(title="[bold yellow]HARDENING PROGRESS[/bold yellow]", box=box.HEAVY_EDGE)
+            progress_table.add_column("Pillar", style="cyan", width=30)
+            progress_table.add_column("Progress", style="green", width=40)
+            progress_table.add_column("Status", style="white", width=15)
+            
+            # Show first 5 pillars
+            for pillar in self.modules[:8]:
+                status = "✅" if pillar.applied else "⏳"
+                progress_table.add_row(pillar.name[:28], "[green]Pending[/green]", status)
+            
+            console.print(progress_table)
+            
+            # ============================================================
+            # VISIBLE MENU - The options you need to enter
+            # ============================================================
+            menu_panel = Panel(
+                """
+    [bold yellow]╔══════════════════════════════════════════════════════════════════╗
+    ║                         M E N U   O P T I O N S                         ║
+    ╠══════════════════════════════════════════════════════════════════════════╣
+    ║                                                                          ║
+    ║   [bold green][1][/bold green]  Select Modules      - Choose hardening modules        ║
+    ║   [bold green][2][/bold green]  View Selected       - Show current selection         ║
+    ║   [bold green][3][/bold green]  Execute Hardening   - Run hardening now              ║
+    ║   [bold green][4][/bold green]  View Results        - Show execution results         ║
+    ║   [bold green][5][/bold green]  Generate Report     - Create audit report            ║
+    ║   [bold yellow][6][/bold yellow]  Rollback Changes    - Revert hardening              ║
+    ║   [bold cyan][7][/bold cyan]  List All Modules     - Display all modules            ║
+    ║   [bold cyan][8][/bold cyan]  Show Status          - Current system status          ║
+    ║   [bold red][9][/bold red]  Exit Dashboard        - Return to terminal             ║
+    ║                                                                          ║
+    ╚══════════════════════════════════════════════════════════════════════════╝
+                """,
+                title="[bold cyan]MAIN MENU[/bold cyan]",
+                border_style="cyan",
+                padding=(1, 2)
+            )
+            
+            console.print(menu_panel)
+            
+            # Footer
+            footer = Panel(
+                "[dim]Type the number (1-9) and press Enter to select an option[/dim]",
+                border_style="dim"
+            )
+            console.print(footer)
+            
+            # Get user input
+            choice = console.input("\n[bold cyan]┌─[ SELECT OPTION ]─┐\n│\n└─>> [/bold cyan]").strip()
             
             if choice == '1':
                 self._select_modules_interactive()
             elif choice == '2':
                 self._view_selected_modules()
-            elif choice == '3':
-                self._execute_hardening_realtime()
                 console.input("\n[dim]Press Enter to continue...[/dim]")
+            elif choice == '3':
+                if not self.selected_modules:
+                    console.print("[red]No modules selected! Please select modules first (option 1)[/red]")
+                    console.input("\n[dim]Press Enter to continue...[/dim]")
+                else:
+                    self._execute_hardening_realtime()
+                    console.input("\n[dim]Press Enter to continue...[/dim]")
             elif choice == '4':
                 self._view_results()
                 console.input("\n[dim]Press Enter to continue...[/dim]")
@@ -869,11 +1609,62 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
                 console.print("\n[bold green]Exiting dashboard...[/bold green]")
                 break
             else:
-                console.print("[red]Invalid option[/red]")
-                time.sleep(1)
+                console.print("[red]Invalid option! Please enter a number between 1 and 9[/red]")
+                time.sleep(1.5)
+                  
+    def run(self):
+        """Legacy run method for fallback"""
+        try:
+            while True:
+                self._clear_screen()
+                self._display_header()
+                
+                menu = f"""
+{Fore.CYAN}[1]{Fore.RESET} Select Modules
+{Fore.CYAN}[2]{Fore.RESET} View Selected
+{Fore.CYAN}[3]{Fore.RESET} Execute Hardening
+{Fore.CYAN}[4]{Fore.RESET} View Results
+{Fore.CYAN}[5]{Fore.RESET} Generate Report
+{Fore.CYAN}[6]{Fore.RESET} Rollback
+{Fore.CYAN}[7]{Fore.RESET} List Modules
+{Fore.CYAN}[8]{Fore.RESET} Status
+{Fore.CYAN}[9]{Fore.RESET} Exit
+"""
+                print(menu)
+                choice = input(f"\n{Fore.CYAN}Select: {Fore.RESET}").strip()
+                
+                if choice == '1':
+                    self._select_modules_interactive()
+                elif choice == '2':
+                    self._view_selected_modules()
+                    input("\nPress Enter...")
+                elif choice == '3':
+                    self._execute_hardening_realtime()
+                    input("\nPress Enter...")
+                elif choice == '4':
+                    self._view_results()
+                    input("\nPress Enter...")
+                elif choice == '5':
+                    self._generate_report()
+                    input("\nPress Enter...")
+                elif choice == '6':
+                    self._rollback_hardening()
+                    input("\nPress Enter...")
+                elif choice == '7':
+                    self.list_modules_cinematic()
+                    input("\nPress Enter...")
+                elif choice == '8':
+                    self.show_status_cinematic()
+                    input("\nPress Enter...")
+                elif choice == '9':
+                    break
+        except KeyboardInterrupt:
+            print(f"\n{Fore.YELLOW}Interrupted{Fore.RESET}")
+        finally:
+            self.telemetry.stop()
     
     # ============================================================
-    # LEGACY METHODS (for compatibility)
+    # LEGACY METHODS FOR COMPATIBILITY
     # ============================================================
     
     def _select_modules_interactive(self):
@@ -952,52 +1743,6 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
                 print(f"  {status} {i:2d}. {r.module.name} [{duration:.1f}s]")
                 if r.error:
                     print(f"      {Fore.RED}Error: {r.error}{Fore.RESET}")
-                if r.live_output:
-                    for line in r.live_output[-3:]:
-                        print(f"      {Fore.DARK_GRAY}{line[:70]}{Fore.RESET}")
-    
-    def _generate_report(self):
-        report_dir = os.path.expanduser("~/DSTerminal_Workspace/reports")
-        os.makedirs(report_dir, exist_ok=True)
-        
-        report = {
-            "session_id": self.session_id,
-            "timestamp": datetime.now().isoformat(),
-            "system": self.system,
-            "admin": self.is_admin_user,
-            "total": len(self.results),
-            "successful": sum(1 for r in self.results if r.success),
-            "failed": sum(1 for r in self.results if not r.success),
-            "results": [{
-                "module": r.module.name,
-                "success": r.success,
-                "error": r.error,
-                "output": r.output[:500]
-            } for r in self.results]
-        }
-        
-        report_path = f"{report_dir}/hardening_{self.session_id}.json"
-        with open(report_path, 'w') as f:
-            json.dump(report, f, indent=2)
-        
-        print(f"{Fore.GREEN}✓ Report saved: {report_path}{Fore.RESET}")
-    
-    def _rollback_hardening(self):
-        applied = [r for r in self.results if r.success and r.module.rollback_command]
-        if not applied:
-            print(f"{Fore.YELLOW}No modules to rollback{Fore.RESET}")
-            return
-        
-        confirm = input(f"{Fore.RED}Type 'ROLLBACK' to confirm: {Fore.RESET}").strip()
-        if confirm == "ROLLBACK":
-            for r in applied:
-                print(f"{Fore.CYAN}Rolling back {r.module.name}...{Fore.RESET}")
-                try:
-                    subprocess.run(r.module.rollback_command, shell=True, check=True, timeout=15)
-                    print(f"{Fore.GREEN}✓ Rolled back{Fore.RESET}")
-                    self._add_threat_event(f"Rolled back {r.module.name}", "warning")
-                except Exception as e:
-                    print(f"{Fore.RED}✗ Failed: {e}{Fore.RESET}")
     
     def _display_header(self):
         header = f"""
@@ -1015,56 +1760,9 @@ Success Rate: {successful/max(1,len(self.results))*100:.0f}%
     def _clear_screen(self):
         os.system('cls' if self.system == 'Windows' else 'clear')
     
-    def run(self):
-        """Legacy run method for fallback"""
-        try:
-            while True:
-                self._clear_screen()
-                self._display_header()
-                
-                menu = f"""
-{Fore.CYAN}[1]{Fore.RESET} Select Modules
-{Fore.CYAN}[2]{Fore.RESET} View Selected
-{Fore.CYAN}[3]{Fore.RESET} Execute Hardening
-{Fore.CYAN}[4]{Fore.RESET} View Results
-{Fore.CYAN}[5]{Fore.RESET} Generate Report
-{Fore.CYAN}[6]{Fore.RESET} Rollback
-{Fore.CYAN}[7]{Fore.RESET} List Modules
-{Fore.CYAN}[8]{Fore.RESET} Status
-{Fore.CYAN}[9]{Fore.RESET} Exit
-"""
-                print(menu)
-                choice = input(f"\n{Fore.CYAN}Select: {Fore.RESET}").strip()
-                
-                if choice == '1':
-                    self._select_modules_interactive()
-                elif choice == '2':
-                    self._view_selected_modules()
-                    input("\nPress Enter...")
-                elif choice == '3':
-                    self._execute_hardening_realtime()
-                    input("\nPress Enter...")
-                elif choice == '4':
-                    self._view_results()
-                    input("\nPress Enter...")
-                elif choice == '5':
-                    self._generate_report()
-                    input("\nPress Enter...")
-                elif choice == '6':
-                    self._rollback_hardening()
-                    input("\nPress Enter...")
-                elif choice == '7':
-                    self.list_modules_cinematic()
-                    input("\nPress Enter...")
-                elif choice == '8':
-                    self.show_status_cinematic()
-                    input("\nPress Enter...")
-                elif choice == '9':
-                    break
-        except KeyboardInterrupt:
-            print(f"\n{Fore.YELLOW}Interrupted{Fore.RESET}")
-        finally:
-            self.telemetry.stop()
+    def stop(self):
+        """Stop all background threads"""
+        self.telemetry.stop()
 
 
 # ============================================================
@@ -1079,4 +1777,3 @@ if __name__ == "__main__":
     else:
         print(f"{Fore.YELLOW}Rich library not available. Install with: pip install rich{Fore.RESET}")
         dashboard.run()
-        
