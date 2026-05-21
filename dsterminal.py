@@ -232,6 +232,21 @@ try:
 except ImportError as e:
     print(f"[!] Hardening module not available: {e}")
     HARDENING_AVAILABLE = False
+# ============================================================
+# SOC-GRADE NMAP SCAN DASHBOARD IMPORTS
+# ============================================================
+
+# Import SOC Nmap Dashboardfrom soc_nmap_dashboard import SOCNmapIntegration, SOCNmapDashboard
+# Define the variable first
+SOC_NMAP_AVAILABLE = False
+
+try:
+    from soc_nmap_dashboard import SOCNmapDashboard, SOCNmapIntegration
+    SOC_NMAP_AVAILABLE = True
+    print(f"{Fore.GREEN}[✓] SOC Nmap Dashboard loaded successfully{Style.RESET_ALL}")
+except ImportError as e:
+    print(f"{Fore.YELLOW}[!] SOC Nmap Dashboard not available: {e}{Style.RESET_ALL}")
+    print(f"{Fore.CYAN}[*] Make sure soc_nmap_dashboard.py exists in the same directory{Style.RESET_ALL}")
 
 # ===========import integrity_monitor======
 # =================================
@@ -1316,7 +1331,19 @@ class SecurityTerminal:
         self.terminal_width = self._get_terminal_width()
         self.system = platform.system()
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-        
+
+        self.network_nodes = {}  # {ip: {"ports": [], "status": "up"}}
+        self.network_edges = []  # optional future expansion
+        # Initialize SOC Nmap Dashboard
+        # Initialize SOC Nmap Dashboard
+        self.soc_nmap = None
+        if SOC_NMAP_AVAILABLE:
+            try:
+                from soc_nmap_dashboard import SOCNmapIntegration
+                self.soc_nmap = SOCNmapIntegration()
+                print(f"{Fore.GREEN}[✓] SOC Nmap Integration ready{Style.RESET_ALL}")
+            except:
+                pass
         # ===== INTEGRATE HARDENING DASHBOARD =====
         self.hardening_dashboard = HardeningDashboard(terminal_width=self.terminal_width)
         self.hardening_enabled = True
@@ -3147,585 +3174,213 @@ class SecurityTerminal:
             print(f"  {Fore.RED}✗ WSL check failed: {e}{Style.RESET_ALL}")
     
         print(f"\n{Fore.CYAN}{'='*50}{Style.RESET_ALL}\n")
+
 # ---------========-----------------metasplo ends here from above-----------------------------
 
-# Initialize colorama
-    ALLOWED_NMAP_FLAGS = {"-p", "-sT", "-sS", "-sV", "-T4", "-Pn", "-A", "-O", "-sC", "-F", "--top-ports"}
+# ============================================================
+# SOC-GRADE NMAP SCAN DASHBOARD METHODS
+# ============================================================
 
-    def check_nmap_installed(self):
-        return shutil.which("nmap") is not None
+# ============================================================
+# SOC-GRADE NMAP SCAN DASHBOARD INTEGRATION
+# ============================================================
 
-    def create_layout(self):
-        """Create the three-column layout"""
-        layout = Layout()
-        layout.split_row(
-            Layout(name="terminal", ratio=1),
-            Layout(name="progress", ratio=1),
-            Layout(name="results", ratio=1)
-        )
-        return layout
-
-    def render_terminal_panel(self):
-        """Render the terminal/command panel"""
-        table = RichTable(show_header=True, header_style="bold green", box=box.HEAVY, padding=(0, 1))
-        table.add_column("Command History", style="cyan")
-    
-    # Show last 10 commands/outputs
-        recent_lines = self.output_lines[-10:] if self.output_lines else ["Ready for commands..."]
-        for line in recent_lines:
-            # Clean the line of any existing Rich markup to prevent conflicts
-            clean_line = line.replace('[', '\\[').replace(']', '\\]')
-            if len(clean_line) > 60:
-                clean_line = clean_line[:60] + "..."
-            table.add_row(clean_line)
-    
-        return Panel(
-            table,
-            title="[bold red]⚡ SOC Terminal ⚡[/bold red]",
-            border_style="bright_red",
-            subtitle="nmap scan <target> [flags]"
-        )
-
-    def render_progress_panel(self):
-        """Render the scan progress panel with enhanced styling"""
-    # Status table with better colors
-        status_table = RichTable(show_header=False, box=box.ROUNDED, border_style="bright_blue", padding=(0, 2))
-        status_table.add_column("Status", style="bold bright_yellow")
-        status_table.add_column("Value", style="bold white")
-    
-    # Scan status with improved color scheme
-        status_color = {
-            "Completed": "bright_green",
-            "Scanning": "bright_yellow",
-            "Starting": "bright_cyan",
-            "Failed": "bright_red",
-            "Ready": "bright_blue"
-        }.get(self.scan_status, "white")
-    
-    # Add blinking effect for active scanning
-        status_display = f"[{status_color}]{self.scan_status}[/{status_color}]"
-        if self.scan_status == "Scanning":
-            status_display = f"[blink][{status_color}]{self.scan_status}[/{status_color}][/blink]"
-    
-        status_table.add_row("Status:", status_display)
-        status_table.add_row("Target:", f"[bold bright_magenta]{self.current_scan if self.current_scan else 'N/A'}[/bold bright_magenta]")
-        status_table.add_row("Progress:", f"[bold bright_green]{self.scan_progress}%[/bold bright_green]")
-    
-    # Progress bar with rotating spinner while waiting
-        progress_width = 40
-    
-    # Create rotating spinner frames
-        spinner_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-        scan_start_frames = ["🕐", "🕑", "🕒", "🕓", "🕔", "🕕", "🕖", "🕗", "🕘", "🕙", "🕚", "🕛"]
-    
-        if self.scan_status == "Starting" and self.scan_progress == 0:
-        # Show rotating clock while waiting for scan to start
-            frame = scan_start_frames[int(time.time() * 4) % len(scan_start_frames)]
-            progress_display = f"\n\n[bold bright_cyan]   {frame} Initializing scan... {frame}[/bold bright_cyan]\n\n"
-            progress_display += f"[dim]Preparing nmap scan on {self.current_scan}...[/dim]"
+# ============================================================
+# SOC METHODS
+# ============================================================
+    def soc_nmap_scan(self, target=None):
+        """Launch SOC-grade nmap scan with real-time dashboard"""
         
-        elif self.scan_status == "Scanning" and self.scan_progress == 0:
-        # Show spinner while scan is starting but no progress yet
-            frame = spinner_frames[int(time.time() * 10) % len(spinner_frames)]
-            progress_display = f"\n\n[bold bright_yellow]   {frame} Waiting for response... {frame}[/bold bright_yellow]\n\n"
-        
-        else:
-        # Normal progress bar when scan is active
-            filled = int((self.scan_progress / 100) * progress_width)
-        
-        # Create gradient progress bar
-            progress_bar = ""
-            for i in range(progress_width):
-                if i < filled:
-                # Gradient from cyan to green as progress increases
-                    if i < progress_width * 0.3:
-                        progress_bar += "█"  # Cyan at start
-                    elif i < progress_width * 0.6:
-                        progress_bar += "█"  # Yellow in middle
-                    else:
-                        progress_bar += "█"  # Green at end
-                else:
-                    progress_bar += "░"  # Dim remaining
-        
-        # Add percentage with color based on progress
-            if self.scan_progress < 30:
-                percent_color = "bright_cyan"
-            elif self.scan_progress < 70:
-                percent_color = "bright_yellow"
-            else:
-                percent_color = "bright_green"
-        
-            progress_display = f"[bold {percent_color}]{progress_bar}[/bold {percent_color}] [bold white]{self.scan_progress}%[/bold white]"
-        
-        # Add ETA simulation (optional)
-            if self.scan_status == "Scanning" and self.scan_progress > 0:
-                eta_seconds = int((100 - self.scan_progress) * 0.5)  # Rough estimate
-                progress_display += f"\n[dim white]ETA: {eta_seconds}s[/dim white]"
-    
-        progress_panel = Panel(
-            Align.center(progress_display),
-            title="[bold bright_magenta]⚡ PROGRESS[/bold bright_magenta]",
-            border_style="bright_magenta"
-        )
-    
-    # Combine status and progress
-        progress_layout = Layout()
-        progress_layout.split_column(
-            Layout(Panel(status_table, title="[bold bright_blue]📊 SCAN STATUS[/bold bright_blue]", border_style="bright_blue")),
-            Layout(progress_panel)
-        )
-    
-    # Discovered ports section with enhanced styling
-        if self.discovered_ports:
-            ports_text = ""
-            for i, p in enumerate(self.discovered_ports[-8:]):  # Show more ports
-            # Color code based on port state
-                if p['state'] == 'open':
-                    port_color = "bright_green"
-                    icon = "🔓"
-                elif p['state'] == 'filtered':
-                    port_color = "bright_yellow"
-                    icon = "🔒"
-                else:
-                    port_color = "bright_red"
-                    icon = "❌"
-            
-                ports_text += f"{icon} [bold {port_color}]Port {p['port']}/{p.get('protocol', 'tcp')}: {p['service']}[/bold {port_color}]\n"
-        
-            ports_panel = Panel(
-                Align.left(ports_text),
-                title="[bold bright_cyan]🔓 DISCOVERED PORTS[/bold bright_cyan]",
-                border_style="bright_cyan"
-            )
-            progress_layout.split_column(
-                Layout(progress_layout),
-                Layout(ports_panel)
-            )
-    
-        return progress_layout
-
-    def render_results_panel(self):
-        """Render the scan results panel with enhanced styling"""
-        results_table = RichTable(show_header=True, box=box.DOUBLE_EDGE, padding=(0, 2))
-        results_table.add_column("[bold bright_cyan]Port/Protocol[/bold bright_cyan]", style="bright_cyan")
-        results_table.add_column("[bold bright_green]State[/bold bright_green]", style="bright_green")
-        results_table.add_column("[bold bright_yellow]Service[/bold bright_yellow]", style="bright_yellow")
-        results_table.add_column("[bold bright_magenta]Version/Info[/bold bright_magenta]", style="bright_white")
-    
-    # Add discovered services with enhanced formatting
-        if self.services_found:
-            for i, service in enumerate(self.services_found):
-                version = service.get('version', '')
-                if len(version) > 35:
-                    version = version[:35] + "..."
-            
-            # Alternate row colors for better readability
-                if i % 2 == 0:
-                    row_style = "on grey15"
-                else:
-                    row_style = ""
-            
-                results_table.add_row(
-                    f"[bold]{service.get('port', 'N/A')}/{service.get('protocol', 'tcp')}[/bold]",
-                    f"[bold bright_green]{service.get('state', 'N/A')}[/bold bright_green]",
-                    f"[bold bright_yellow]{service.get('service', 'N/A')}[/bold bright_yellow]",
-                    version,
-                    style=row_style
-                )
-        else:
-        # Animated waiting message
-            waiting_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-            frame = waiting_frames[int(time.time() * 5) % len(waiting_frames)]
-            results_table.add_row(
-                f"[dim]{frame} Waiting for results...[/dim]",
-                "",
-                "",
-                ""
-            )
-    
-    # Add summary if scan completed
-        if self.scan_status == "Completed" and self.discovered_ports:
-            open_ports = len([p for p in self.discovered_ports if p['state'] == 'open'])
-            filtered_ports = len([p for p in self.discovered_ports if p['state'] == 'filtered'])
-            closed_ports = len([p for p in self.discovered_ports if p['state'] == 'closed'])
-        
-        # Create summary with colored counters
-            summary_text = (
-                f"[bold bright_green]Open: {open_ports}[/bold bright_green] | "
-                f"[bold bright_yellow]Filtered: {filtered_ports}[/bold bright_yellow] | "
-                f"[bold bright_red]Closed: {closed_ports}[/bold bright_red]"
-            )
-        
-            summary_panel = Panel(
-                Align.center(summary_text),
-                border_style="bright_green",
-                title="[bold white]SCAN SUMMARY[/bold white]"
-            )
-        
-        # Create a layout with both table and summary
-            results_layout = Layout()
-            results_layout.split_column(
-                Layout(Panel(results_table, title="[bold bright_green]🎯 OPEN PORTS & SERVICES[/bold bright_green]", border_style="bright_green")),
-                Layout(summary_panel)
-            )
-            return results_layout
-    
-        return Panel(
-            results_table,
-            title="[bold bright_green]🎯 OPEN PORTS & SERVICES[/bold bright_green]",
-            border_style="bright_green"
-        )
-
-    def parse_nmap_output(self, line):
-        """Parse nmap output in real-time with better progress detection"""
-    
-    # Parse port discovery - more robust pattern
-        port_match = re.search(r'(\d+)/(tcp|udp)\s+(\w+)\s+(\w+)\s*(.*)', line)
-        if port_match:
-            port_info = {
-                'port': port_match.group(1),
-                'protocol': port_match.group(2),
-                'state': port_match.group(3),
-                'service': port_match.group(4),
-                'version': port_match.group(5).strip()
-            }
-        
-            if not any(p['port'] == port_info['port'] for p in self.discovered_ports):
-                self.discovered_ports.append(port_info)
-                if port_info['state'] == 'open':
-                    self.services_found.append(port_info)
-                # Update progress when ports are found
-                    self.scan_progress = min(self.scan_progress + 2, 95)
-    
-    # Parse progress indicators - MORE COMPREHENSIVE
-        line_lower = line.lower()
-    
-        if "scanning" in line_lower:
-            self.scan_status = "Scanning"
-        # Try to extract percentage from nmap output
-            percent_match = re.search(r'(\d+)%', line)
-            if percent_match:
-                self.scan_progress = int(percent_match.group(1))
-            else:
-                # Increment progress slowly if no percentage
-                if self.scan_progress < 90:
-                    self.scan_progress = min(self.scan_progress + 1, 90)
-                
-        elif "nmap done" in line_lower:
-            self.scan_status = "Completed"
-            self.scan_progress = 100
-        
-        elif "initiating" in line_lower:
-            if "syn stealth" in line_lower:
-                self.scan_progress = 5
-            elif "ping" in line_lower:
-                self.scan_progress = 3
-            
-        elif "stats:" in line_lower:
-            # Nmap statistics line - extract timing info
-            time_match = re.search(r'(\d+:\d+:\d+)', line)
-            percent_match = re.search(r'(\d+)%', line)
-            if percent_match:
-                self.scan_progress = int(percent_match.group(1))
-            
-        elif "host is up" in line_lower:
-            self.scan_progress = 10
-        
-        elif "port" in line_lower and "state" in line_lower:
-        # Header line - scan is progressing
-            if self.scan_progress < 20:
-                self.scan_progress = 20
-            
-        elif "service detection" in line_lower:
-            self.scan_progress = 70
-        
-        elif "traceroute" in line_lower:
-            self.scan_progress = 85
-        
-        elif "timing" in line_lower:
-        # Nmap timing information
-            timing_match = re.search(r'about ([\d.]+)%', line)
-            if timing_match:
-                self.scan_progress = int(float(timing_match.group(1)))
-    
-    # Ensure progress doesn't exceed 99 until complete
-        if self.scan_status != "Completed" and self.scan_progress >= 99:
-            self.scan_progress = 95
-
-    def handle_nmap(self, args):
-        """Main handler for nmap commands"""
-        if not self.check_nmap_installed():
-            print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
+        if not target:
+            print(f"{Fore.YELLOW}[!] Usage: soc-scan <target>{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}    Example: soc-scan 192.168.1.1{Style.RESET_ALL}")
             return
-
-    # Allow both "nmap scan <target>" and "nmap <target>" syntax
-        if len(args) >= 1:
-            if args[0] == "scan":
-                if len(args) < 2:
-                    print(f"{Fore.YELLOW}Usage: nmap scan <target> [flags]{Style.RESET_ALL}")
-                    return
-                target = args[1]
-                flags = args[2:] if len(args) > 2 else []
-            else:
-            # Direct nmap command: nmap <target> [flags]
-                target = args[0]
-                flags = args[1:] if len(args) > 1 else []
-        else:
-            print(f"{Fore.YELLOW}Usage: nmap scan <target> [flags] or nmap <target>{Style.RESET_ALL}")
+        
+        if not SOC_NMAP_AVAILABLE:
+            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
             return
-    
-    # Add -F flag for faster scan if no port range specified
-        has_port_flag = any(f.startswith('-p') for f in flags)
-        if not has_port_flag and '-F' not in flags:
-            print(f"{Fore.YELLOW}[*] No port range specified, using fast scan (-F){Style.RESET_ALL}")
-            flags.append('-F')
-    
-    # Start scan in background thread
-        scan_thread = threading.Thread(
-            target=self.run_nmap_scan,
-            args=(target, flags)
-        )
-        scan_thread.daemon = True
-        scan_thread.start()
-    
-    # Start the live display
-        self.start_live_display()
+        
+        print(f"{Fore.GREEN}[+] Starting SOC-grade scan on {target}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] Features: GeoMap | AI Scoring | Network Topology | Timeline{Style.RESET_ALL}")
+        
+        # Import here to avoid circular imports
+        from soc_nmap_dashboard import SOCNmapDashboard
+        
+        dashboard = SOCNmapDashboard()
+        flags = ["-F", "-T4", "-sV"]
+        
+        def run_scan():
+            dashboard.run_nmap_scan(target, flags)
+        
+        thread = threading.Thread(target=run_scan, daemon=True)
+        thread.start()
+        
+        print(f"{Fore.GREEN}[+] Scan started! Dashboard will open automatically when complete.{Style.RESET_ALL}")
 
-    def run_nmap_scan(self, target, flags):
-        """Run nmap scan with real-time progress updates"""
-        # Record start time
-        scan_start_time = datetime.now()
-        cmd = ["nmap"]
-    
-    # Validate flags
-        for f in flags:
-            if f.startswith("-"):
-            # Check if flag is allowed or is a port specification
-                flag_base = f.split('=')[0]  # Handle -p 80,443 format
-                if flag_base not in self.ALLOWED_NMAP_FLAGS and not flag_base.startswith('-p'):
-                    self.output_lines.append(f"[!] Flag not allowed: {f}")
-                    return
-                cmd.append(f)
-    
-        cmd.append(target)
-    
-    # Add timing template for faster scanning (if not specified)
-        has_timing = any(f.startswith('-T') for f in flags)
-        if not has_timing:
-            cmd.append('-T4')  # Aggressive timing template
-    
-    # Create scans directory
-        scans_dir = os.path.join(self.workspace_root, "scans")
-        os.makedirs(scans_dir, exist_ok=True)
-    
-        reports_dir = os.path.join(self.workspace_root, "reports")
-        os.makedirs(reports_dir, exist_ok=True)
-    
-        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        safe_target = target.replace('.', '_').replace('/', '_').replace(':', '_')
-        output_file = os.path.join(scans_dir, f"nmap_{safe_target}_{timestamp}.txt")
-    
-        cmd.extend(["-oN", output_file])
-    
-    # Reset scan state
-        self.current_scan = target
-        self.scan_status = "Starting"
-        self.discovered_ports = []
-        self.services_found = []
-        self.scan_progress = 0
-        self.output_lines = []
-    
-        self.output_lines.append(f"[+] Running nmap scan on {target}...")
-        self.output_lines.append(f"[+] Command: {' '.join(cmd)}")
-        self.output_lines.append(f"[+] Output → scans/{os.path.basename(output_file)}")
-        self.output_lines.append(f"[+] This may take 30-60 seconds...")
-    
+    def soc_quick_scan(self, target=None):
+        """Quick SOC scan with optimized flags"""
+        
+        if not target:
+            print(f"{Fore.YELLOW}[!] Usage: soc-quick <target>{Style.RESET_ALL}")
+            return
+        
+        if not SOC_NMAP_AVAILABLE:
+            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
+            return
+        
+        print(f"{Fore.GREEN}[+] Starting QUICK SOC scan on {target}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] Flags: -F -T4 -sV --top-ports 100{Style.RESET_ALL}")
+        
+        from soc_nmap_dashboard import SOCNmapDashboard
+        
+        dashboard = SOCNmapDashboard()
+        flags = ["-F", "-T4", "-sV", "--top-ports", "100"]
+        
+        def run_scan():
+            dashboard.run_nmap_scan(target, flags)
+        
+        thread = threading.Thread(target=run_scan, daemon=True)
+        thread.start()
+        
+        print(f"{Fore.GREEN}[+] Quick scan started! Dashboard will open automatically.{Style.RESET_ALL}")
+
+    def soc_full_scan(self, target=None):
+        """Full SOC scan with comprehensive enumeration"""
+        
+        if not target:
+            print(f"{Fore.YELLOW}[!] Usage: soc-full <target>{Style.RESET_ALL}")
+            return
+        
+        if not SOC_NMAP_AVAILABLE:
+            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
+            return
+        
+        print(f"{Fore.GREEN}[+] Starting FULL SOC scan on {target}{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] Flags: -sS -sV -sC -O -T4 -p-{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[!] Warning: Full scan may take several minutes{Style.RESET_ALL}")
+        
+        confirm = input(f"{Fore.RED}Continue with full scan? (y/n): {Style.RESET_ALL}")
+        if confirm.lower() != 'y':
+            print(f"{Fore.CYAN}Scan cancelled.{Style.RESET_ALL}")
+            return
+        
+        from soc_nmap_dashboard import SOCNmapDashboard
+        
+        dashboard = SOCNmapDashboard()
+        flags = ["-sS", "-sV", "-sC", "-O", "-T4", "-p-"]
+        
+        def run_scan():
+            dashboard.run_nmap_scan(target, flags)
+        
+        thread = threading.Thread(target=run_scan, daemon=True)
+        thread.start()
+        
+        print(f"{Fore.GREEN}[+] Full scan started! This may take a while...{Style.RESET_ALL}")
+
+    def soc_dashboard(self):
+        """Open SOC dashboard (view last scan results)"""
+        
+        if not SOC_NMAP_AVAILABLE:
+            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
+            return
+        
         try:
-            process = subprocess.Popen(
-                cmd,
-                stdout=subprocess.PIPE,
-                stderr=subprocess.STDOUT,
-                text=True,
-                bufsize=1,
-                universal_newlines=True
-            )
-        
-            line_count = 0
-            for line in process.stdout:
-                line = line.rstrip()
-                if line:
-                    self.output_lines.append(line)
-                    self.parse_nmap_output(line)
-                    line_count += 1
-                
-                # Keep output lines manageable
-                    if len(self.output_lines) > 100:
-                        self.output_lines = self.output_lines[-100:]
-        
-            process.wait()
-        
-            if process.returncode == 0:
-                self.scan_status = "Completed"
-                self.scan_progress = 100
-                self.output_lines.append("[+] Scan completed successfully!")
-
-                scan_end_time = datetime.now()
-                self.scan_duration = str(scan_end_time - scan_start_time).split('.')[0]
-    
-            # Save results to file
-                self.save_scan_results(output_file)
+            from soc_nmap_dashboard import SOCNmapDashboard
+            dashboard = SOCNmapDashboard()
+            
+            if dashboard.network_nodes:
+                print(f"{Fore.GREEN}[+] Opening SOC Dashboard...{Style.RESET_ALL}")
+                dashboard.generate_full_dashboard()
             else:
-                self.scan_status = "Failed"
-                self.output_lines.append(f"[!] Nmap failed with code {process.returncode}")
-        
+                print(f"{Fore.YELLOW}[!] No scan results available. Run a scan first.{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}    Example: soc-scan 192.168.1.1{Style.RESET_ALL}")
         except Exception as e:
-            self.scan_status = "Failed"
-            self.output_lines.append(f"[!] Scan error: {str(e)}")
-    
-          
-    def save_scan_results(self, output_file):
-        """Save formatted scan results to workspace/scans directory"""
-        try:
-        # Ensure the scans directory exists in workspace
-            scans_dir = os.path.join(self.workspace_root, "scans")
-            os.makedirs(scans_dir, exist_ok=True)
-        
-        # Create formatted filename in the scans directory
-            timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-            safe_target = self.current_scan.replace('.', '_').replace('/', '_').replace(':', '_')
-            formatted_file = os.path.join(scans_dir, f"nmap_{safe_target}_{timestamp}_results.txt")
-        
-            with open(formatted_file, 'w', encoding='utf-8') as f:
-                f.write("=" * 70 + "\n")
-                f.write(f"NMAP SCAN RESULTS - DSTERMINAL\n")
-                f.write(f"Generated: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}\n")
-                f.write("=" * 70 + "\n\n")
-                f.write(f"Target: {self.current_scan}\n")
-                f.write(f"Status: {self.scan_status}\n")
-                f.write(f"Scan Duration: {self.scan_duration if hasattr(self, 'scan_duration') else 'N/A'}\n\n")
-            
-            # Write statistics
-                open_ports = len([p for p in self.discovered_ports if p.get('state') == 'open'])
-                filtered_ports = len([p for p in self.discovered_ports if p.get('state') == 'filtered'])
-                closed_ports = len([p for p in self.discovered_ports if p.get('state') == 'closed'])
-            
-                f.write("-" * 70 + "\n")
-                f.write("SCAN STATISTICS\n")
-                f.write("-" * 70 + "\n")
-                f.write(f"Open Ports:     {open_ports}\n")
-                f.write(f"Filtered Ports: {filtered_ports}\n")
-                f.write(f"Closed Ports:   {closed_ports}\n")
-                f.write(f"Total Findings: {len(self.discovered_ports)}\n\n")
-            
-            # Write discovered ports
-                f.write("-" * 70 + "\n")
-                f.write("DISCOVERED PORTS\n")
-                f.write("-" * 70 + "\n")
-            
-                if self.discovered_ports:
-                    for port in self.discovered_ports:
-                        if port.get('state') == 'open':
-                            f.write(f"  [+] {port['port']}/{port.get('protocol', 'tcp')} - {port.get('service', 'unknown')}\n")
-                            if port.get('version'):
-                                f.write(f"      Version: {port['version']}\n")
-                        elif port.get('state') == 'filtered':
-                            f.write(f"  [?] {port['port']}/{port.get('protocol', 'tcp')} - FILTERED\n")
-                        else:
-                            f.write(f"  [-] {port['port']}/{port.get('protocol', 'tcp')} - {port.get('state', 'closed')}\n")
-                else:
-                    f.write("  No ports discovered\n")
-            
-            # Write services found
-                if self.services_found:
-                    f.write("\n" + "-" * 70 + "\n")
-                    f.write("OPEN SERVICES\n")
-                    f.write("-" * 70 + "\n")
-                    for service in self.services_found:
-                        f.write(f"  Port: {service['port']}/{service.get('protocol', 'tcp')}\n")
-                        f.write(f"  Service: {service.get('service', 'unknown')}\n")
-                        if service.get('version'):
-                            f.write(f"  Version: {service['version']}\n")
-                        f.write("\n")
-            
-            # Write all output lines
-                f.write("\n" + "-" * 70 + "\n")
-                f.write("COMPLETE SCAN OUTPUT\n")
-                f.write("-" * 70 + "\n")
-                for line in self.output_lines:
-                    f.write(line + "\n")
-        
-        # Also save a copy of the raw nmap output
-            if output_file and os.path.exists(output_file):
-                import shutil
-                raw_copy = os.path.join(scans_dir, f"nmap_{safe_target}_{timestamp}_raw.txt")
-                shutil.copy2(output_file, raw_copy)
-                self.output_lines.append(f"[+] Raw output saved to: {raw_copy}")
-        
-            self.output_lines.append(f"[+] Results saved to: {formatted_file}")
-            print(f"{Fore.GREEN}[+] Scan results saved to: {formatted_file}{Style.RESET_ALL}")
-        
-            return formatted_file
-        
-        except Exception as e:
-            self.output_lines.append(f"[!] Could not save results: {str(e)}")
-            print(f"{Fore.RED}[!] Failed to save results: {str(e)}{Style.RESET_ALL}")
-            return None
-    
-    
-    def start_live_display(self):
-        """Start the live three-column display with persistent results after completion"""
-        self.nmap_mode = True
-        self.console.clear()
-    
-        try:
-        # Increased refresh rate for smoother progress
-            with Live(console=self.console, refresh_per_second=10, screen=True) as live:
-                while self.nmap_mode:
-                # Create a new layout for each update
-                    layout = Layout()
-                    layout.split_row(
-                        Layout(self.render_terminal_panel()),
-                        Layout(self.render_progress_panel()),
-                        Layout(self.render_results_panel())
-                    )
-                
-                    live.update(layout)
-                    time.sleep(0.05)  # Faster updates
-                
-                # Exit loop when scan is completed
-                    if self.scan_status == "Completed":
-                    # Show completed status for a few seconds
-                        for _ in range(30):  # Wait 3 seconds (30 * 0.1s)
-                            live.update(layout)
-                            time.sleep(0.5)
-                        break
-                    
-                    if self.scan_status == "Failed":
-                        break
-                    
-        except KeyboardInterrupt:
-            print(f"\n{Fore.YELLOW}[!] Display interrupted{Style.RESET_ALL}")
-        except Exception as e:
-            print(f"{Fore.RED}[!] Display error: {str(e)}{Style.RESET_ALL}")
-        finally:
-        # Show final results and prompt to return
-            self.show_final_results()
+            print(f"{Fore.RED}[!] Error opening dashboard: {e}{Style.RESET_ALL}")
 
-    def show_final_results(self):
-        """Display final scan results and wait for user to return to terminal"""
-        self.console.clear()
-    
-    # Create final results display
-        final_layout = Layout()
-        final_layout.split_column(
-            Layout(Panel("[bold green]✓ SCAN COMPLETE[/bold green]", border_style="green"), size=3),
-            Layout(self.render_results_panel()),
-            Layout(Panel("[bold yellow]Press Enter to return to terminal[/bold yellow]", border_style="yellow"), size=3)
-        )
-    
-        self.console.print(final_layout)
-        input()  # Wait for user to press Enter
-        self.nmap_mode = False
+    def soc_status(self):
+        """Check SOC dashboard status"""
+        
+        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}🛡️ SOC NMAP DASHBOARD STATUS{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
+        
+        if SOC_NMAP_AVAILABLE:
+            print(f"{Fore.YELLOW}Status:{Style.RESET_ALL} {Fore.GREEN}✓ Available{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}Features:{Style.RESET_ALL}")
+            print(f"  ✓ Geographic Threat Map with Blinking Markers")
+            print(f"  ✓ AI Vulnerability Scoring (CVSS-like)")
+            print(f"  ✓ Network Topology Visualization")
+            print(f"  ✓ Historical Scan Timeline")
+            print(f"  ✓ Organization Headquarters Location")
+        else:
+            print(f"{Fore.YELLOW}Status:{Style.RESET_ALL} {Fore.RED}✗ Not Available{Style.RESET_ALL}")
+            print(f"{Fore.RED}[!] soc_nmap_dashboard.py not found or import failed{Style.RESET_ALL}")
+        
+        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
+
+    def soc_help(self):
+        """Display SOC Nmap Dashboard help"""
+        help_text = f"""
+    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+    {Fore.GREEN}🛡️ SOC NMAP DASHBOARD COMMANDS{Style.RESET_ALL}
+    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+
+    {Fore.YELLOW}soc-scan <target>{Style.RESET_ALL}
+        Launch SOC-grade scan with real-time dashboard
+        Example: soc-scan 192.168.1.1
+
+    {Fore.YELLOW}soc-quick <target>{Style.RESET_ALL}
+        Quick SOC scan with optimized flags
+        Example: soc-quick scanme.nmap.org
+
+    {Fore.YELLOW}soc-full <target>{Style.RESET_ALL}
+        Full comprehensive SOC scan (may take several minutes)
+        Example: soc-full 10.0.0.1
+
+    {Fore.YELLOW}soc-dashboard{Style.RESET_ALL}
+        Open SOC dashboard (view last scan results)
+
+    {Fore.YELLOW}soc-status{Style.RESET_ALL}
+        Check SOC dashboard status
+
+    {Fore.YELLOW}soc-help{Style.RESET_ALL}
+        Display this help message
+
+    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+    {Fore.GREEN}Dashboard Features:{Style.RESET_ALL}
+    • Geographic Threat Map with Blinking Markers
+    • World Map with GeoIP visualization
+    • AI Vulnerability Scoring (CVSS-like)
+    • Animated Network Topology
+    • Organization Headquarters Location
+    • Historical Scan Timeline
+    • Real-time Service Discovery
+    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+    """
+        print(help_text)
+
+    def soc_test(self):
+        """Test SOC functionality"""
+        print(f"{Fore.CYAN}[DEBUG] Testing SOC functionality{Style.RESET_ALL}")
+        
+        import shutil
+        import os
+        
+        if shutil.which("nmap"):
+            print(f"{Fore.GREEN}[✓] Nmap found at: {shutil.which('nmap')}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}[✗] Nmap not found{Style.RESET_ALL}")
+        
+        if os.path.exists("soc_nmap_dashboard.py"):
+            print(f"{Fore.GREEN}[✓] soc_nmap_dashboard.py found{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}[✗] soc_nmap_dashboard.py not found{Style.RESET_ALL}")
+        
+        try:
+            from soc_nmap_dashboard import SOCNmapDashboard
+            print(f"{Fore.GREEN}[✓] SOCNmapDashboard imported successfully{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[✗] Import failed: {e}{Style.RESET_ALL}")
 # =====================end nmap here----
 
     def handle_ls(self):
@@ -5039,648 +4694,6 @@ class SecurityTerminal:
             
             return rich_table
         
-        # Generate Enhanced Threat Map with Local Machine
-        # def generate_enhanced_threat_map(connections, local_machine):
-        #     """Generate interactive threat map showing real location and simulated connection lines"""
-            
-        #     # If no local machine location, use default
-        #     if not local_machine or local_machine.get('lat', 0) == 0:
-        #         # Default to Malawi if location unknown
-        #         local_machine = {
-        #             'ip': 'Unknown',
-        #             'lat': -13.2543,
-        #             'lon': 34.3015,
-        #             'country': 'Malawi',
-        #             'city': 'Lilongwe',
-        #             'isp': 'Local Network',
-        #             'org': 'DSTerminal Host'
-        #         }
-        #         console.print(f"[yellow]⚠ Using default location: Malawi (Timezone detection failed)[/yellow]")
-            
-        #     # Create base map centered on local machine
-        #     map_center = [local_machine['lat'], local_machine['lon']]
-        #     zoom_start = 4  # Zoom out a bit to see connections
-            
-        #     threat_map = folium.Map(
-        #         location=map_center,
-        #         zoom_start=zoom_start,
-        #         tiles='CartoDB dark_matter',
-        #         control_scale=True
-        #     )
-            
-        #     # Threat level colors
-        #     threat_colors = {
-        #         0: 'green',
-        #         1: 'lightgreen',
-        #         2: 'yellow',
-        #         3: 'orange',
-        #         4: 'red',
-        #         5: 'darkred'
-        #     }
-            
-        #     # Store connection data
-        #     heat_data = []
-        #     remote_connections = []
-            
-        #     # Add local machine marker with pulsing effect
-        #     local_popup = f"""
-        #     <div style="font-family: monospace; min-width: 250px; background: #1a1a1a; color: #00ff00;">
-        #         <b><span style="color: #00ff00;">🖥️ DSTERMINAL HOST MACHINE</span></b><br>
-        #         <hr style="border-color: #00ff00;">
-        #         <b>📍 IP Address:</b> {local_machine['ip']}<br>
-        #         <b>🌍 Location:</b> {local_machine['country']}<br>
-        #         <b>🏙️ City:</b> {local_machine['city']}<br>
-        #         <b>🏢 ISP:</b> {local_machine['isp']}<br>
-        #         <b>🟢 Status:</b> ACTIVE MONITORING<br>
-        #         <b>📍 Coordinates:</b> {local_machine['lat']:.4f}, {local_machine['lon']:.4f}
-        #     </div>
-        #     """
-            
-        #     # Add main local marker with custom icon
-        #     folium.Marker(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         popup=folium.Popup(local_popup, max_width=350),
-        #         icon=folium.Icon(color='red', icon='flag', prefix='fa'),
-        #         tooltip=f"📍 DSTerminal Host - {local_machine['country']}"
-        #     ).add_to(threat_map)
-            
-        #     # Add pulsing beacon for local machine
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=50000,  # 50km radius
-        #         color='red',
-        #         fill=True,
-        #         fill_opacity=0.3,
-        #         weight=3,
-        #         popup="DSTerminal Host Beacon"
-        #     ).add_to(threat_map)
-            
-        #     # Add radar sweep effect (multiple circles)
-        #     for radius in [100000, 200000, 300000]:
-        #         folium.Circle(
-        #             location=[local_machine['lat'], local_machine['lon']],
-        #             radius=radius,
-        #             color='cyan',
-        #             fill=False,
-        #             weight=1,
-        #             opacity=0.3,
-        #             dash_array='10, 10'
-        #         ).add_to(threat_map)
-            
-        #     # Process remote connections
-        #     for conn in connections:
-        #         if conn.status == "ESTABLISHED" and conn.raddr:
-        #             geo = get_geo_ip(conn.raddr.ip)
-        #             if geo and geo.get('lat') and geo.get('lon'):
-        #                 level, icon, score = calculate_threat_score(conn, geo)
-                        
-        #                 remote_connections.append({
-        #                     'conn': conn,
-        #                     'geo': geo,
-        #                     'score': score,
-        #                     'level': level,
-        #                     'icon': icon
-        #                 })
-                        
-        #                 # Prepare popup text
-        #                 popup_text = f"""
-        #                 <div style="font-family: monospace; min-width: 200px;">
-        #                     <b><span style="color: #ff6600;">🌍 REMOTE SERVER</span></b><br>
-        #                     <hr>
-        #                     <b>📍 IP:</b> {conn.raddr.ip}<br>
-        #                     <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-        #                     <b>🏙️ City:</b> {geo.get('city', 'N/A')}<br>
-        #                     <b>🏢 ISP:</b> {geo.get('isp', 'N/A')}<br>
-        #                     <b>⚠ Threat Score:</b> <span style="color: {'red' if score >= 3 else 'yellow'}">{score}/5</span><br>
-        #                     <b>🔌 Local Port:</b> {conn.laddr.port}<br>
-        #                     <b>📊 Status:</b> {conn.status}<br>
-        #                     <b>🆔 PID:</b> {conn.pid if conn.pid else 'N/A'}
-        #                 </div>
-        #                 """
-                        
-        #                 # Add marker with color based on threat level
-        #                 color = threat_colors.get(score, 'white')
-        #                 marker_size = 10 + (score * 4)
-                        
-        #                 folium.CircleMarker(
-        #                     location=[geo['lat'], geo['lon']],
-        #                     radius=marker_size,
-        #                     popup=folium.Popup(popup_text, max_width=350),
-        #                     color=color,
-        #                     fill=True,
-        #                     fill_color=color,
-        #                     fill_opacity=0.8,
-        #                     weight=2
-        #                 ).add_to(threat_map)
-                        
-        #                 # Add threat ring for high-risk
-        #                 if score >= 3:
-        #                     folium.Circle(
-        #                         location=[geo['lat'], geo['lon']],
-        #                         radius=100000,
-        #                         color='red',
-        #                         fill=True,
-        #                         fill_opacity=0.2,
-        #                         weight=2
-        #                     ).add_to(threat_map)
-                        
-        #                 # Add to heat data
-        #                 heat_data.append([geo['lat'], geo['lon'], score])
-                        
-        #                 # ============================================
-        #                 # SIMULATED PHYSICAL CONNECTION LINES
-        #                 # ============================================
-        #                 # This creates network cable-like lines from local machine to remote servers
-                        
-        #                 # Calculate distance (rough estimate for line style)
-        #                 from math import radians, sin, cos, sqrt, atan2
-                        
-        #                 def calculate_distance(lat1, lon1, lat2, lon2):
-        #                     R = 6371  # Earth's radius in km
-        #                     lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-        #                     dlat = lat2 - lat1
-        #                     dlon = lon2 - lon1
-        #                     a = sin(dlat/2)**2 + cos(lat1) * cos(lat2) * sin(dlon/2)**2
-        #                     c = 2 * atan2(sqrt(a), sqrt(1-a))
-        #                     return R * c
-                        
-        #                 distance = calculate_distance(
-        #                     local_machine['lat'], local_machine['lon'],
-        #                     geo['lat'], geo['lon']
-        #                 )
-                        
-        #                 # Line color based on threat and distance
-        #                 if score >= 3:
-        #                     line_color = '#ff0000'  # Bright red for high threat
-        #                     line_weight = 3
-        #                     opacity = 0.8
-        #                 elif score >= 2:
-        #                     line_color = '#ffaa00'  # Orange/yellow for medium
-        #                     line_weight = 2
-        #                     opacity = 0.6
-        #                 else:
-        #                     line_color = '#00ff00'  # Green for safe
-        #                     line_weight = 1.5
-        #                     opacity = 0.4
-                        
-        #                 # Add main connection line
-        #                 line_points = [
-        #                     [local_machine['lat'], local_machine['lon']],
-        #                     [geo['lat'], geo['lon']]
-        #                 ]
-                        
-        #                 # Add solid line (simulated fiber optic cable)
-        #                 folium.PolyLine(
-        #                     line_points,
-        #                     color=line_color,
-        #                     weight=line_weight,
-        #                     opacity=opacity,
-        #                     tooltip=f"Connection to {geo.get('country', 'Unknown')} | Distance: {distance:.0f}km | Threat: {score}/5"
-        #                 ).add_to(threat_map)
-                        
-        #                 # Add dashed line overlay for "data packet" effect
-        #                 folium.PolyLine(
-        #                     line_points,
-        #                     color='white',
-        #                     weight=1,
-        #                     opacity=0.3,
-        #                     dash_array='5, 10'
-        #                 ).add_to(threat_map)
-                        
-        #                 # Add animated dots along the line (simulated data packets)
-        #                 # Create multiple points along the line for visual effect
-        #                 num_segments = 5
-        #                 for i in range(1, num_segments):
-        #                     ratio = i / num_segments
-        #                     mid_lat = local_machine['lat'] + (geo['lat'] - local_machine['lat']) * ratio
-        #                     mid_lon = local_machine['lon'] + (geo['lon'] - local_machine['lon']) * ratio
-                            
-        #                     folium.CircleMarker(
-        #                         location=[mid_lat, mid_lon],
-        #                         radius=3,
-        #                         color=line_color,
-        #                         fill=True,
-        #                         fill_opacity=0.8,
-        #                         weight=1
-        #                     ).add_to(threat_map)
-                        
-        #                 # Add distance label at midpoint
-        #                 from folium.map import DivIcon
-        #                 mid_lat = (local_machine['lat'] + geo['lat']) / 2
-        #                 mid_lon = (local_machine['lon'] + geo['lon']) / 2
-                        
-        #                 folium.map.Marker(
-        #                     [mid_lat, mid_lon],
-        #                     icon=DivIcon(
-        #                         icon_size=(50, 20),
-        #                         icon_anchor=(25, 10),
-        #                         html=f'<div style="font-size: 8px; color: {line_color}; background: rgba(0,0,0,0.7); padding: 2px 5px; border-radius: 10px;">{distance:.0f}km</div>'
-        #                     )
-        #                 ).add_to(threat_map)
-            
-        #     # Add heatmap overlay for threat intensity
-        #     if heat_data:
-        #         HeatMap(heat_data, min_opacity=0.3, max_zoom=10, radius=25, blur=15).add_to(threat_map)
-            
-        #     # Add connection statistics panel
-        #     total_distance = 0
-        #     for conn in remote_connections:
-        #         from math import radians, sin, cos, sqrt, atan2
-        #         def calc_dist(lat1, lon1, lat2, lon2):
-        #             R = 6371
-        #             lat1, lon1, lat2, lon2 = map(radians, [lat1, lon1, lat2, lon2])
-        #             return 2 * R * atan2(sqrt(sin((lat2-lat1)/2)**2 + cos(lat1)*cos(lat2)*sin((lon2-lon1)/2)**2), 
-        #                                 sqrt(1 - (sin((lat2-lat1)/2)**2 + cos(lat1)*cos(lat2)*sin((lon2-lon1)/2)**2)))
-        #         total_distance += calc_dist(local_machine['lat'], local_machine['lon'], 
-        #                                 conn['geo']['lat'], conn['geo']['lon'])
-            
-        #     stats_html = f'''
-        #     <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 15px; border-radius: 8px; border: 2px solid cyan; font-family: monospace; font-size: 12px; min-width: 250px;">
-        #         <b><span style="color: cyan;">📡 DSTERMINAL NETWORK MAP</span></b><br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #00ff00;">🖥️ Host Location:</span> <b>{local_machine['country']}</b><br>
-        #         <span style="color: #00ff00;">📍 Coordinates:</span> {local_machine['lat']:.2f}, {local_machine['lon']:.2f}<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #ffff00;">🌍 Remote Connections:</span> {len(remote_connections)}<br>
-        #         <span style="color: #ff4444;">⚠ High Risk (3-5):</span> {sum(1 for c in remote_connections if c['score'] >= 3)}<br>
-        #         <span style="color: #ffff00;">⚠ Medium Risk (2):</span> {sum(1 for c in remote_connections if c['score'] == 2)}<br>
-        #         <span style="color: #00ff00;">✅ Low Risk (0-1):</span> {sum(1 for c in remote_connections if c['score'] <= 1)}<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: cyan;">🌐 Active Countries:</span> {len(set(c['geo'].get('country', '') for c in remote_connections))}<br>
-        #         <span style="color: cyan;">📏 Total Distance:</span> {total_distance:.0f} km<br>
-        #         <span style="color: cyan;">🔗 Connection Lines:</span> Active<br>
-        #         <span style="color: cyan;">📡 Data Packets:</span> Simulated
-        #     </div>
-        #     '''
-            
-        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
-            
-        #     # Add legend
-        #     legend_html = '''
-        #     <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 12px; border-radius: 5px; border: 2px solid cyan; font-family: monospace; font-size: 11px; min-width: 180px;">
-        #         <b><span style="color: cyan;">THREAT & CONNECTION LEGEND</span></b><br>
-        #         <span style="color: #00ff00;">●</span> Low Risk (0-1)<br>
-        #         <span style="color: #ffff00;">●</span> Medium Risk (2)<br>
-        #         <span style="color: #ff6600;">●</span> High Risk (3-4)<br>
-        #         <span style="color: #ff0000;">●</span> Critical (5)<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #ff0000;">🔴</span> DSTerminal Host<br>
-        #         <span style="color: #00ff00;">━━━</span> Safe Connection<br>
-        #         <span style="color: #ffaa00;">━━━</span> Monitor Connection<br>
-        #         <span style="color: #ff0000;">━━━</span> Threat Connection<br>
-        #         <span style="color: white;">┅┅┅</span> Data Packet Flow<br>
-        #         <span style="color: #ff4444;">🔥</span> Threat Heatmap
-        #     </div>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(legend_html))
-            
-        #     # Add compass/scale
-        #     folium.plugins.MeasureControl(position='topleft').add_to(threat_map)
-            
-        #     # Save map to workspace
-        #     workspace = get_workspace_dir()
-        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
-        #     os.makedirs(map_dir, exist_ok=True)
-        #     map_file = os.path.join(map_dir, f'threat_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
-        #     threat_map.save(map_file)
-            
-        #     console.print(f"[green]✓ Threat map saved to: {map_file}[/green]")
-        #     console.print(f"[cyan]📍 Host location: {local_machine['country']} ({local_machine['lat']:.2f}, {local_machine['lon']:.2f})[/cyan]")
-            
-        #     return map_file
-
-
-        # def generate_enhanced_threat_map(connections, local_machine):
-        #     """Generate interactive threat map with blinking connection lines"""
-            
-        #     # If no local machine location, use default
-        #     if not local_machine or local_machine.get('lat', 0) == 0:
-        #         local_machine = {
-        #             'ip': 'Unknown',
-        #             'lat': -13.2543,
-        #             'lon': 34.3015,
-        #             'country': 'Malawi',
-        #             'city': 'Lilongwe',
-        #             'isp': 'Local Network',
-        #             'org': 'DSTerminal Host'
-        #         }
-            
-        #     # Create base map centered on local machine
-        #     map_center = [local_machine['lat'], local_machine['lon']]
-        #     zoom_start = 6  # Zoomed in to see Malawi clearly
-            
-        #     threat_map = folium.Map(
-        #         location=map_center,
-        #         zoom_start=zoom_start,
-        #         tiles='CartoDB dark_matter',
-        #         control_scale=True
-        #     )
-            
-        #     # Threat level colors
-        #     threat_colors = {
-        #         0: 'green',
-        #         1: 'lightgreen',
-        #         2: 'yellow',
-        #         3: 'orange',
-        #         4: 'red',
-        #         5: 'darkred'
-        #     }
-            
-        #     # Random colors for blinking lines
-        #     blink_colors = ['#ff0000', '#00ff00', '#0000ff', '#ffff00', '#ff00ff', '#00ffff', '#ff6600', '#ff0066']
-            
-        #     # Store connection data
-        #     heat_data = []
-        #     remote_connections = []
-            
-        #     # Add local machine marker
-        #     local_popup = f"""
-        #     <div style="font-family: monospace; min-width: 250px; background: #1a1a1a; color: #00ff00;">
-        #         <b><span style="color: #00ff00;">🖥️ DSTERMINAL HOST MACHINE</span></b><br>
-        #         <hr style="border-color: #00ff00;">
-        #         <b>📍 IP Address:</b> {local_machine['ip']}<br>
-        #         <b>🌍 Location:</b> {local_machine['country']}<br>
-        #         <b>🏙️ City:</b> {local_machine['city']}<br>
-        #         <b>🏢 ISP:</b> {local_machine['isp']}<br>
-        #         <b>🟢 Status:</b> ACTIVE MONITORING
-        #     </div>
-        #     """
-            
-        #     folium.Marker(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         popup=folium.Popup(local_popup, max_width=350),
-        #         icon=folium.Icon(color='red', icon='flag', prefix='fa'),
-        #         tooltip=f"📍 DSTerminal Host - {local_machine['country']}"
-        #     ).add_to(threat_map)
-            
-        #     # Add pulsing beacon for local machine
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=50000,
-        #         color='red',
-        #         fill=True,
-        #         fill_opacity=0.3,
-        #         weight=3
-        #     ).add_to(threat_map)
-            
-        #     # Add radar sweep rings
-        #     for radius in [100000, 200000, 300000]:
-        #         folium.Circle(
-        #             location=[local_machine['lat'], local_machine['lon']],
-        #             radius=radius,
-        #             color='cyan',
-        #             fill=False,
-        #             weight=1,
-        #             opacity=0.3,
-        #             dash_array='10, 10'
-        #         ).add_to(threat_map)
-            
-        #     # Generate unique IDs for each connection line (for JavaScript animation)
-        #     import random
-        #     import json
-            
-        #     connection_scripts = []
-            
-        #     # Process remote connections
-        #     for idx, conn in enumerate(connections):
-        #         if conn.status == "ESTABLISHED" and conn.raddr:
-        #             geo = get_geo_ip(conn.raddr.ip)
-        #             if geo and geo.get('lat') and geo.get('lon'):
-        #                 level, icon, score = calculate_threat_score(conn, geo)
-                        
-        #                 remote_connections.append({
-        #                     'conn': conn,
-        #                     'geo': geo,
-        #                     'score': score,
-        #                     'level': level,
-        #                     'icon': icon
-        #                 })
-                        
-        #                 # Prepare popup text
-        #                 popup_text = f"""
-        #                 <div style="font-family: monospace; min-width: 200px;">
-        #                     <b><span style="color: #ff6600;">🌍 REMOTE SERVER</span></b><br>
-        #                     <hr>
-        #                     <b>📍 IP:</b> {conn.raddr.ip}<br>
-        #                     <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-        #                     <b>🏙️ City:</b> {geo.get('city', 'N/A')}<br>
-        #                     <b>🏢 ISP:</b> {geo.get('isp', 'N/A')}<br>
-        #                     <b>⚠ Threat Score:</b> {score}/5
-        #                 </div>
-        #                 """
-                        
-        #                 color = threat_colors.get(score, 'white')
-        #                 marker_size = 10 + (score * 4)
-                        
-        #                 folium.CircleMarker(
-        #                     location=[geo['lat'], geo['lon']],
-        #                     radius=marker_size,
-        #                     popup=folium.Popup(popup_text, max_width=350),
-        #                     color=color,
-        #                     fill=True,
-        #                     fill_color=color,
-        #                     fill_opacity=0.8,
-        #                     weight=2
-        #                 ).add_to(threat_map)
-                        
-        #                 if score >= 3:
-        #                     folium.Circle(
-        #                         location=[geo['lat'], geo['lon']],
-        #                         radius=100000,
-        #                         color='red',
-        #                         fill=True,
-        #                         fill_opacity=0.2,
-        #                         weight=2
-        #                     ).add_to(threat_map)
-                        
-        #                 heat_data.append([geo['lat'], geo['lon'], score])
-                        
-        #                 # ============================================
-        #                 # BLINKING CONNECTION LINE WITH RANDOM COLORS
-        #                 # ============================================
-        #                 line_id = f"line_{idx}_{random.randint(1000, 9999)}"
-                        
-        #                 # Random blink interval (between 0.5 and 3 seconds)
-        #                 blink_delay = random.uniform(0.5, 3.0)
-        #                 blink_duration = random.uniform(0.2, 1.0)
-                        
-        #                 # Random colors for this line (will cycle)
-        #                 colors_for_line = random.sample(blink_colors, k=random.randint(2, 4))
-                        
-        #                 # Create the line
-        #                 line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
-                        
-        #                 folium.PolyLine(
-        #                     line_points,
-        #                     color=colors_for_line[0],
-        #                     weight=3,
-        #                     opacity=0.9,
-        #                     tooltip=f"Connection to {geo.get('country', 'Unknown')} | Threat: {score}/5"
-        #                 ).add_to(threat_map)
-                        
-        #                 # Add JavaScript for blinking animation
-        #                 js_script = f'''
-        #                 <script>
-        #                 (function() {{
-        #                     var line_{idx} = null;
-        #                     var currentColor_{idx} = 0;
-        #                     var colors_{idx} = {json.dumps(colors_for_line)};
-                            
-        #                     function findLine_{idx}() {{
-        #                         var elements = document.querySelectorAll('path');
-        #                         for (var i = 0; i < elements.length; i++) {{
-        #                             if (elements[i].getAttribute('stroke') && 
-        #                                 elements[i].getAttribute('stroke') === '{colors_for_line[0]}') {{
-        #                                 return elements[i];
-        #                             }}
-        #                         }}
-        #                         return null;
-        #                     }}
-                            
-        #                     function animateLine_{idx}() {{
-        #                         var line = findLine_{idx}();
-        #                         if (line) {{
-        #                             currentColor_{idx} = (currentColor_{idx} + 1) % colors_{idx}.length;
-        #                             line.setAttribute('stroke', colors_{idx}[currentColor_{idx}]);
-        #                             line.setAttribute('stroke-width', '3');
-                                    
-        #                             // Add glow effect
-        #                             line.setAttribute('filter', 'url(#glow)');
-        #                         }}
-        #                     }}
-                            
-        #                     // Start animation with random interval
-        #                     setInterval(animateLine_{idx}, {blink_delay * 1000});
-        #                 }})();
-        #                 </script>
-        #                 '''
-        #                 connection_scripts.append(js_script)
-                        
-        #                 # Add animated dots along the line
-        #                 num_segments = 8
-        #                 for i in range(1, num_segments):
-        #                     ratio = i / num_segments
-        #                     mid_lat = local_machine['lat'] + (geo['lat'] - local_machine['lat']) * ratio
-        #                     mid_lon = local_machine['lon'] + (geo['lon'] - local_machine['lon']) * ratio
-                            
-        #                     folium.CircleMarker(
-        #                         location=[mid_lat, mid_lon],
-        #                         radius=4,
-        #                         color=color,
-        #                         fill=True,
-        #                         fill_opacity=0.9,
-        #                         weight=1
-        #                     ).add_to(threat_map)
-            
-        #     # Add SVG glow filter definition
-        #     glow_filter = '''
-        #     <svg style="position: absolute; width: 0; height: 0;">
-        #         <defs>
-        #             <filter id="glow" x="-50%" y="-50%" width="200%" height="200%">
-        #                 <feGaussianBlur stdDeviation="3" result="blur" />
-        #                 <feMerge>
-        #                     <feMergeNode in="blur" />
-        #                     <feMergeNode in="SourceGraphic" />
-        #                 </feMerge>
-        #             </filter>
-        #         </defs>
-        #     </svg>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(glow_filter))
-            
-        #     # Add heatmap overlay
-        #     if heat_data:
-        #         HeatMap(heat_data, min_opacity=0.3, max_zoom=10, radius=25, blur=15).add_to(threat_map)
-            
-        #     # Add connection statistics panel
-        #     stats_html = f'''
-        #     <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 15px; border-radius: 8px; border: 2px solid cyan; font-family: monospace; font-size: 12px; min-width: 250px; backdrop-filter: blur(5px);">
-        #         <b><span style="color: cyan;">📡 DSTERMINAL NETWORK MAP</span></b><br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #00ff00;">🖥️ Host Location:</span> <b>{local_machine['country']}</b><br>
-        #         <span style="color: #00ff00;">📍 Coordinates:</span> {local_machine['lat']:.2f}, {local_machine['lon']:.2f}<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #ffff00;">🌍 Remote Connections:</span> {len(remote_connections)}<br>
-        #         <span style="color: #ff4444;">⚠ High Risk (3-5):</span> {sum(1 for c in remote_connections if c['score'] >= 3)}<br>
-        #         <span style="color: #ffff00;">⚠ Medium Risk (2):</span> {sum(1 for c in remote_connections if c['score'] == 2)}<br>
-        #         <span style="color: #00ff00;">✅ Low Risk (0-1):</span> {sum(1 for c in remote_connections if c['score'] <= 1)}<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: cyan;">🌐 Active Countries:</span> {len(set(c['geo'].get('country', '') for c in remote_connections))}<br>
-        #         <span style="color: cyan;">✨ Blinking Lines:</span> Active<br>
-        #         <span style="color: cyan;">⚡ Random Colors:</span> Enabled<br>
-        #         <span style="color: cyan;">🎲 Random Delays:</span> {len(remote_connections)} patterns
-        #     </div>
-        #     '''
-            
-        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
-            
-        #     # Add legend
-        #     legend_html = '''
-        #     <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 12px; border-radius: 5px; border: 2px solid cyan; font-family: monospace; font-size: 11px; min-width: 200px; backdrop-filter: blur(5px);">
-        #         <b><span style="color: cyan;">✨ CONNECTION LEGEND</span></b><br>
-        #         <span style="color: #00ff00;">●</span> Low Risk (0-1)<br>
-        #         <span style="color: #ffff00;">●</span> Medium Risk (2)<br>
-        #         <span style="color: #ff6600;">●</span> High Risk (3-4)<br>
-        #         <span style="color: #ff0000;">●</span> Critical (5)<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #ff0000;">🔴</span> DSTerminal Host<br>
-        #         <span style="color: #00ff00;">━━━</span> Safe Connection<br>
-        #         <span style="color: #ffaa00;">━━━</span> Monitor Connection<br>
-        #         <span style="color: #ff0000;">━━━</span> Threat Connection<br>
-        #         <span style="color: #ff00ff;">✨</span> Blinking Lines<br>
-        #         <span style="color: #00ffff;">🎨</span> Random Colors<br>
-        #         <span style="color: #ffffff;">⚡</span> Random Delays
-        #     </div>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(legend_html))
-            
-        #     # Add JavaScript for random blinking with rainbow effect
-        #     rainbow_script = '''
-        #     <script>
-        #     // Rainbow color generator for additional effect
-        #     function getRandomColor() {
-        #         var letters = '0123456789ABCDEF';
-        #         var color = '#';
-        #         for (var i = 0; i < 6; i++) {
-        #             color += letters[Math.floor(Math.random() * 16)];
-        #         }
-        #         return color;
-        #     }
-            
-        #     // Apply glow effect to all lines
-        #     setInterval(function() {
-        #         var lines = document.querySelectorAll('path');
-        #         lines.forEach(function(line) {
-        #             if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
-        #                 // Random opacity for twinkle effect
-        #                 var randomOpacity = 0.5 + Math.random() * 0.5;
-        #                 line.setAttribute('opacity', randomOpacity);
-        #             }
-        #         });
-        #     }, 500);
-        #     </script>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(rainbow_script))
-            
-        #     # Add all connection scripts
-        #     for script in connection_scripts:
-        #         threat_map.get_root().html.add_child(folium.Element(script))
-            
-        #     # Add measure control
-        #     folium.plugins.MeasureControl(position='topleft').add_to(threat_map)
-            
-        #     # Save map to workspace
-        #     workspace = get_workspace_dir()
-        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
-        #     os.makedirs(map_dir, exist_ok=True)
-        #     map_file = os.path.join(map_dir, f'threat_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
-        #     threat_map.save(map_file)
-            
-        #     console.print(f"[green]✓ Threat map saved to: {map_file}[/green]")
-        #     console.print(f"[cyan]📍 Host location: {local_machine['country']} ({local_machine['lat']:.2f}, {local_machine['lon']:.2f})[/cyan]")
-        #     console.print(f"[cyan]✨ Blinking connection lines enabled with random colors![/cyan]")
-            
-        #     return map_file
         def get_active_browser_connections():
             """Get active connections from browsers and web applications"""
             browser_processes = ['chrome', 'firefox', 'msedge', 'brave', 'opera', 'safari']
@@ -5755,621 +4768,7 @@ class SecurityTerminal:
             except:
                 return ip
 
-        # def generate_enhanced_threat_map(connections, local_machine, browser_connections):
-        #     """Generate interactive threat map with browser connections and blinking lines"""
-            
-        #     if not local_machine or local_machine.get('lat', 0) == 0:
-        #         local_machine = {
-        #             'ip': 'Unknown',
-        #             'lat': -13.2543,
-        #             'lon': 34.3015,
-        #             'country': 'Malawi',
-        #             'city': 'Lilongwe',
-        #             'isp': 'Local Network',
-        #             'org': 'DSTerminal Host'
-        #         }
-            
-        #     # Create base map centered on local machine
-        #     map_center = [local_machine['lat'], local_machine['lon']]
-        #     zoom_start = 3
-            
-        #     threat_map = folium.Map(
-        #         location=map_center,
-        #         zoom_start=zoom_start,
-        #         tiles='CartoDB dark_matter',
-        #         control_scale=True
-        #     )
-            
-        #     # Threat level colors
-        #     threat_colors = {
-        #         0: 'green',
-        #         1: 'lightgreen',
-        #         2: 'yellow',
-        #         3: 'orange',
-        #         4: 'red',
-        #         5: 'darkred'
-        #     }
-            
-        #     # Browser connection colors
-        #     browser_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7', '#DDA0DD', '#F0E68C']
-            
-        #     # Add local machine marker
-        #     local_popup = f"""
-        #     <div style="font-family: monospace; min-width: 300px; background: #1a1a1a; color: #00ff00;">
-        #         <b><span style="color: #00ff00;">🖥️ DSTERMINAL HOST MACHINE</span></b><br>
-        #         <hr style="border-color: #00ff00;">
-        #         <b>📍 IP:</b> {local_machine['ip']}<br>
-        #         <b>🌍 Location:</b> {local_machine['country']}<br>
-        #         <b>🏙️ City:</b> {local_machine['city']}<br>
-        #         <b>🏢 ISP:</b> {local_machine['isp']}<br>
-        #         <b>🌐 Active Browser Connections:</b> {len(browser_connections)}<br>
-        #         <b>🟢 Status:</b> REAL-TIME MONITORING
-        #     </div>
-        #     """
-            
-        #     folium.Marker(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         popup=folium.Popup(local_popup, max_width=400),
-        #         icon=folium.Icon(color='red', icon='flag', prefix='fa'),
-        #         tooltip=f"📍 DSTerminal Host - {local_machine['country']}"
-        #     ).add_to(threat_map)
-            
-        #     # Add radar sweep rings
-        #     for radius in [200000, 400000, 600000]:
-        #         folium.Circle(
-        #             location=[local_machine['lat'], local_machine['lon']],
-        #             radius=radius,
-        #             color='cyan',
-        #             fill=False,
-        #             weight=1,
-        #             opacity=0.2,
-        #             dash_array='10, 10'
-        #         ).add_to(threat_map)
-            
-        #     # Store connection data
-        #     all_connections = []
-        #     connection_scripts = []
-        #     import random
-        #     import json
-            
-        #     # Process browser connections (REAL-TIME WEB ACTIVITY)
-        #     for idx, browser_conn in enumerate(browser_connections):
-        #         conn = browser_conn['conn']
-        #         geo = browser_conn['geo']
-        #         process_name = browser_conn['process_name']
-        #         domain = browser_conn.get('url_domain', conn.raddr.ip)
-                
-        #         # Calculate threat score based on domain reputation
-        #         suspicious_domains = ['malware', 'phishing', 'cryptominer', 'torrent']
-        #         score = 1  # Default low risk
-        #         if any(sus in domain.lower() for sus in suspicious_domains):
-        #             score = 4
-                
-        #         color = browser_colors[idx % len(browser_colors)]
-        #         marker_size = 12
-                
-        #         # Prepare popup with browser info
-        #         popup_text = f"""
-        #         <div style="font-family: monospace; min-width: 250px;">
-        #             <b><span style="color: #FF6B6B;">🌐 BROWSER CONNECTION</span></b><br>
-        #             <hr>
-        #             <b>🌍 Service:</b> {domain}<br>
-        #             <b>📍 IP:</b> {conn.raddr.ip}<br>
-        #             <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-        #             <b>🏙️ City:</b> {geo.get('city', 'N/A')}<br>
-        #             <b>🌐 Browser:</b> {process_name.upper()}<br>
-        #             <b>🔌 Local Port:</b> {conn.laddr.port}<br>
-        #             <b>📊 Status:</b> ACTIVE<br>
-        #             <b>⚠ Risk:</b> {'LOW' if score < 3 else 'MEDIUM'}
-        #         </div>
-        #         """
-                
-        #         folium.CircleMarker(
-        #             location=[geo['lat'], geo['lon']],
-        #             radius=marker_size,
-        #             popup=folium.Popup(popup_text, max_width=400),
-        #             color=color,
-        #             fill=True,
-        #             fill_color=color,
-        #             fill_opacity=0.8,
-        #             weight=3
-        #         ).add_to(threat_map)
-                
-        #         # Add connection line from local machine
-        #         line_id = f"browser_line_{idx}_{random.randint(1000, 9999)}"
-        #         blink_delay = random.uniform(0.3, 1.5)  # Faster blink for browser traffic
-        #         colors_for_line = random.sample(browser_colors, k=min(3, len(browser_colors)))
-                
-        #         line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
-                
-        #         folium.PolyLine(
-        #             line_points,
-        #             color=colors_for_line[0],
-        #             weight=4,
-        #             opacity=0.9,
-        #             tooltip=f"🌐 BROWSER: {domain} → {geo.get('country', 'Unknown')}"
-        #         ).add_to(threat_map)
-                
-        #         all_connections.append({
-        #             'type': 'browser',
-        #             'domain': domain,
-        #             'country': geo.get('country', 'Unknown'),
-        #             'score': score
-        #         })
-            
-        #     # Process system connections (background services)
-        #     for idx, conn in enumerate(connections):
-        #         if conn.status == "ESTABLISHED" and conn.raddr:
-        #             geo = get_geo_ip(conn.raddr.ip)
-        #             if geo and geo.get('lat') and geo.get('lon'):
-        #                 level, icon, score = calculate_threat_score(conn, geo)
-                        
-        #                 # Skip if already processed as browser connection
-        #                 is_duplicate = False
-        #                 for bc in all_connections:
-        #                     if bc.get('type') == 'browser' and bc.get('country') == geo.get('country'):
-        #                         is_duplicate = True
-        #                         break
-                        
-        #                 if not is_duplicate:
-        #                     # Prepare popup for system connection
-        #                     popup_text = f"""
-        #                     <div style="font-family: monospace; min-width: 200px;">
-        #                         <b><span style="color: #ffaa00;">⚙️ SYSTEM SERVICE</span></b><br>
-        #                         <hr>
-        #                         <b>📍 IP:</b> {conn.raddr.ip}<br>
-        #                         <b>🌎 Country:</b> {geo.get('country', 'N/A')}<br>
-        #                         <b>🏢 ISP:</b> {geo.get('isp', 'N/A')}<br>
-        #                         <b>⚠ Threat Score:</b> {score}/5<br>
-        #                         <b>🔌 PID:</b> {conn.pid if conn.pid else 'N/A'}
-        #                     </div>
-        #                     """
-                            
-        #                     color = threat_colors.get(score, 'white')
-        #                     marker_size = 8 + (score * 3)
-                            
-        #                     folium.CircleMarker(
-        #                         location=[geo['lat'], geo['lon']],
-        #                         radius=marker_size,
-        #                         popup=folium.Popup(popup_text, max_width=350),
-        #                         color=color,
-        #                         fill=True,
-        #                         fill_color=color,
-        #                         fill_opacity=0.7,
-        #                         weight=2
-        #                     ).add_to(threat_map)
-                            
-        #                     # Add connection line with slower blink for system traffic
-        #                     line_id = f"system_line_{idx}_{random.randint(1000, 9999)}"
-        #                     blink_delay = random.uniform(1, 3)
-        #                     colors_for_line = ['#ffff00', '#ffaa00', '#ff6600']
-                            
-        #                     line_points = [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]]
-                            
-        #                     folium.PolyLine(
-        #                         line_points,
-        #                         color='#ffff00' if score == 2 else '#ff6600' if score == 3 else '#ff0000' if score >= 4 else '#00ff00',
-        #                         weight=2,
-        #                         opacity=0.7,
-        #                         tooltip=f"⚙️ SYSTEM: {geo.get('country', 'Unknown')} | Threat: {score}/5"
-        #                     ).add_to(threat_map)
-                            
-        #                     all_connections.append({
-        #                         'type': 'system',
-        #                         'country': geo.get('country', 'Unknown'),
-        #                         'score': score
-        #                     })
-            
-        #     # Add JavaScript for blinking animation
-        #     blink_script = '''
-        #     <script>
-        #     // Make all connection lines blink with random colors
-        #     setInterval(function() {
-        #         var lines = document.querySelectorAll('path');
-        #         lines.forEach(function(line) {
-        #             if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
-        #                 // Random color for browser connections
-        #                 var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        #                 var currentOpacity = parseFloat(line.getAttribute('opacity') || 1);
-        #                 var newOpacity = 0.4 + Math.random() * 0.6;
-                        
-        #                 // Random blink effect
-        #                 if (Math.random() > 0.7) {
-        #                     line.setAttribute('stroke', randomColor);
-        #                 }
-        #                 line.setAttribute('opacity', newOpacity);
-                        
-        #                 // Add glow effect
-        #                 line.setAttribute('stroke-width', Math.random() * 2 + 2);
-        #             }
-        #         });
-        #     }, 800);
-        #     </script>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(blink_script))
-            
-        #     # Add connection statistics panel
-        #     browser_count = sum(1 for c in all_connections if c['type'] == 'browser')
-        #     system_count = sum(1 for c in all_connections if c['type'] == 'system')
-        #     unique_countries = len(set(c['country'] for c in all_connections if c['country'] != 'N/A'))
-            
-        #     stats_html = f'''
-        #     <div style="position: fixed; top: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 15px; border-radius: 8px; border: 2px solid cyan; font-family: monospace; font-size: 12px; min-width: 280px; backdrop-filter: blur(5px);">
-        #         <b><span style="color: cyan;">📡 REAL-TIME NETWORK MAP</span></b><br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #00ff00;">🖥️ Host:</span> <b>{local_machine['country']}</b><br>
-        #         <span style="color: #FF6B6B;">🌐 Browser Connections:</span> <b>{browser_count}</b><br>
-        #         <span style="color: #ffaa00;">⚙️ System Services:</span> <b>{system_count}</b><br>
-        #         <span style="color: #ffff00;">🌍 Active Countries:</span> <b>{unique_countries}</b><br>
-        #         <span style="color: cyan;">📡 Total Connections:</span> <b>{len(all_connections)}</b><br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: cyan;">✨ Live Traffic:</span> ACTIVE<br>
-        #         <span style="color: cyan;">🎨 Blinking Lines:</span> ENABLED<br>
-        #         <span style="color: cyan;">🌐 Browser Tracking:</span> ACTIVE
-        #     </div>
-        #     '''
-            
-        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
-            
-        #     # Add legend
-        #     legend_html = '''
-        #     <div style="position: fixed; bottom: 10px; right: 10px; z-index: 1000; background-color: rgba(0,0,0,0.95); padding: 12px; border-radius: 5px; border: 2px solid cyan; font-family: monospace; font-size: 11px; min-width: 220px;">
-        #         <b><span style="color: cyan;">📡 CONNECTION TYPES</span></b><br>
-        #         <span style="color: #FF6B6B;">●</span> Browser/Web Traffic<br>
-        #         <span style="color: #00ff00;">●</span> Low Risk System<br>
-        #         <span style="color: #ffff00;">●</span> Medium Risk System<br>
-        #         <span style="color: #ff0000;">●</span> High Risk System<br>
-        #         <hr style="margin: 5px 0;">
-        #         <span style="color: #ff0000;">🔴</span> DSTerminal Host<br>
-        #         <span style="color: cyan;">━━━</span> Active Connection<br>
-        #         <span style="color: #ff00ff;">✨</span> Blinking Lines<br>
-        #         <span style="color: #00ffff;">🌐</span> Real-time Updates
-        #     </div>
-        #     '''
-        #     threat_map.get_root().html.add_child(folium.Element(legend_html))
-            
-        #     # Save map
-        #     workspace = get_workspace_dir()
-        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
-        #     os.makedirs(map_dir, exist_ok=True)
-        #     map_file = os.path.join(map_dir, f'realtime_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
-        #     threat_map.save(map_file)
-            
-        #     return map_file
-        # def generate_enhanced_threat_map(connections, local_machine, browser_connections):
-        #     """Generate interactive threat map with side panel and pulsing red circle"""
-            
-        #     if not local_machine or local_machine.get('lat', 0) == 0:
-        #         local_machine = {
-        #             'ip': 'Unknown',
-        #             'lat': -13.2543,
-        #             'lon': 34.3015,
-        #             'country': 'Malawi',
-        #             'city': 'Lilongwe',
-        #             'isp': 'Local Network',
-        #             'org': 'DSTerminal Host'
-        #         }
-            
-        #     # Create base map centered on local machine
-        #     map_center = [local_machine['lat'], local_machine['lon']]
-        #     zoom_start = 6
-            
-        #     threat_map = folium.Map(
-        #         location=map_center,
-        #         zoom_start=zoom_start,
-        #         tiles='CartoDB dark_matter',
-        #         control_scale=True
-        #     )
-            
-        #     # ============================================
-        #     # PROMINENT RED PULSING CIRCLE FOR LOCAL MACHINE
-        #     # ============================================
-            
-        #     # Outer pulsing red circle (large) - BRIGHTER
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=120000,
-        #         color='#ff3333',
-        #         fill=True,
-        #         fill_opacity=0.35,
-        #         weight=4,
-        #         popup=f"📍 DSTerminal Host - {local_machine['country']}"
-        #     ).add_to(threat_map)
-            
-        #     # Middle red circle - BRIGHTER
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=60000,
-        #         color='#ff6666',
-        #         fill=True,
-        #         fill_opacity=0.5,
-        #         weight=3,
-        #         popup="Active Monitoring Zone"
-        #     ).add_to(threat_map)
-            
-        #     # Inner solid red circle (core)
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=25000,
-        #         color='#ff0000',
-        #         fill=True,
-        #         fill_opacity=0.7,
-        #         weight=3,
-        #         popup="DSTerminal Core"
-        #     ).add_to(threat_map)
-            
-        #     # Center marker with flag
-        #     folium.Marker(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         popup=folium.Popup(f"""
-        #         <div style="font-family: monospace; text-align: center;">
-        #             <b><span style="color: #ff0000;">🔴 DSTERMINAL HOST</span></b><br>
-        #             📍 {local_machine['country']}<br>
-        #             🏙️ {local_machine['city']}<br>
-        #             <span style="color: #00ff00;">● ACTIVE MONITORING ●</span>
-        #         </div>
-        #         """, max_width=250),
-        #         icon=folium.Icon(color='red', icon='flag', prefix='fa', icon_color='white')
-        #     ).add_to(threat_map)
-            
-        #     # Radar sweep rings (outer detection) - BRIGHTER CYAN
-        #     sweep_rings = [
-        #         (200000, 0.25, '#00ffff'),
-        #         (300000, 0.2, '#00ffff'),
-        #         (400000, 0.15, '#00ffff')
-        #     ]
-        #     for radius, opacity, color in sweep_rings:
-        #         folium.Circle(
-        #             location=[local_machine['lat'], local_machine['lon']],
-        #             radius=radius,
-        #             color=color,
-        #             fill=False,
-        #             weight=2,
-        #             opacity=opacity,
-        #             dash_array='8, 8'
-        #         ).add_to(threat_map)
-            
-        #     # Additional bright ring for visibility
-        #     folium.Circle(
-        #         location=[local_machine['lat'], local_machine['lon']],
-        #         radius=500000,
-        #         color='#00ffff',
-        #         fill=False,
-        #         weight=1.5,
-        #         opacity=0.1,
-        #         dash_array='15, 15'
-        #     ).add_to(threat_map)
-            
-        #     # Threat level colors
-        #     threat_colors = {
-        #         0: '#00ff00',     # Green - Low
-        #         1: '#00ff00',
-        #         2: '#ffff00',     # Yellow - Medium
-        #         3: '#ff6600',     # Orange - High
-        #         4: '#ff0000',     # Red - Critical
-        #         5: '#8b0000'      # Dark Red - Extreme
-        #     }
-            
-        #     # Browser connection colors
-        #     browser_colors = ['#FF6B6B', '#4ECDC4', '#45B7D1', '#96CEB4', '#FFEAA7']
-            
-        #     # Statistics counters
-        #     high_risk = 0
-        #     medium_risk = 0
-        #     low_risk = 0
-        #     active_countries = set()
-            
-        #     # Process browser connections
-        #     for idx, browser_conn in enumerate(browser_connections):
-        #         conn = browser_conn['conn']
-        #         geo = browser_conn['geo']
-        #         process_name = browser_conn['process_name']
-                
-        #         color = browser_colors[idx % len(browser_colors)]
-                
-        #         popup_text = f"""
-        #         <div style="font-family: monospace;">
-        #             <b><span style="color: #FF6B6B;">🌐 BROWSER</span></b><br>
-        #             📍 {geo.get('country', 'Unknown')}<br>
-        #             🌐 {process_name.upper()}<br>
-        #             🔌 {conn.raddr.ip}:{conn.raddr.port}
-        #         </div>
-        #         """
-                
-        #         folium.CircleMarker(
-        #             location=[geo['lat'], geo['lon']],
-        #             radius=8,
-        #             popup=folium.Popup(popup_text, max_width=250),
-        #             color=color,
-        #             fill=True,
-        #             fill_color=color,
-        #             fill_opacity=0.7,
-        #             weight=2
-        #         ).add_to(threat_map)
-                
-        #         # Connection line from local machine
-        #         folium.PolyLine(
-        #             [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
-        #             color=color,
-        #             weight=2,
-        #             opacity=0.5,
-        #             tooltip=f"Browser → {geo.get('country', 'Unknown')}"
-        #         ).add_to(threat_map)
-                
-        #         if geo.get('country') and geo.get('country') != 'N/A':
-        #             active_countries.add(geo.get('country'))
-        #         low_risk += 1
-            
-        #     # Process system connections
-        #     for conn in connections:
-        #         if conn.status == "ESTABLISHED" and conn.raddr:
-        #             geo = get_geo_ip(conn.raddr.ip)
-        #             if geo and geo.get('lat') and geo.get('lon'):
-        #                 level, icon, score = calculate_threat_score(conn, geo)
-        #                 color = threat_colors.get(score, '#ffffff')
-                        
-        #                 if score >= 3:
-        #                     high_risk += 1
-        #                     size = 10
-        #                 elif score == 2:
-        #                     medium_risk += 1
-        #                     size = 8
-        #                 else:
-        #                     low_risk += 1
-        #                     size = 6
-                        
-        #                 popup_text = f"""
-        #                 <div style="font-family: monospace;">
-        #                     <b><span style="color: {color};">⚙️ SYSTEM</span></b><br>
-        #                     📍 {geo.get('country', 'Unknown')}<br>
-        #                     📡 {conn.raddr.ip}<br>
-        #                     ⚠ Threat Score: {score}/5
-        #                 </div>
-        #                 """
-                        
-        #                 folium.CircleMarker(
-        #                     location=[geo['lat'], geo['lon']],
-        #                     radius=size,
-        #                     popup=folium.Popup(popup_text, max_width=250),
-        #                     color=color,
-        #                     fill=True,
-        #                     fill_color=color,
-        #                     fill_opacity=0.6,
-        #                     weight=1
-        #                 ).add_to(threat_map)
-                        
-        #                 # Connection line
-        #                 folium.PolyLine(
-        #                     [[local_machine['lat'], local_machine['lon']], [geo['lat'], geo['lon']]],
-        #                     color=color,
-        #                     weight=1.5,
-        #                     opacity=0.4,
-        #                     tooltip=f"System → {geo.get('country', 'Unknown')} (Score: {score})"
-        #                 ).add_to(threat_map)
-                        
-        #                 if geo.get('country') and geo.get('country') != 'N/A':
-        #                     active_countries.add(geo.get('country'))
-            
-        #     total_connections = len(browser_connections) + high_risk + medium_risk + low_risk
-            
-        #     # ============================================
-        #     # LEFT SIDE STATISTICS PANEL
-        #     # ============================================
-            
-        #     stats_html = f'''
-        #     <div style="position: fixed; top: 20px; left: 20px; z-index: 1000; background-color: rgba(0,0,0,0.9); padding: 20px; border-radius: 10px; border: 2px solid #00ff00; font-family: 'Courier New', monospace; min-width: 280px; backdrop-filter: blur(8px); box-shadow: 0 0 20px rgba(0,255,0,0.2);">
-                
-        #         <div style="text-align: center; margin-bottom: 15px;">
-        #             <span style="color: #00ff00; font-size: 16px; font-weight: bold;">┌─────────────────────────────┐</span><br>
-        #             <span style="color: #00ff00; font-size: 14px; font-weight: bold;">│    DSTERMINAL NETWORK MAP    │</span><br>
-        #             <span style="color: #00ff00; font-size: 16px; font-weight: bold;">└─────────────────────────────┘</span>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <div style="color: #ff0000; font-size: 14px;">⬤</div>
-        #             <div><span style="color: #ffffff;">Host Location:</span> <span style="color: #00ff00; font-weight: bold;">{local_machine['country']}</span></div>
-        #             <div><span style="color: #ffffff;">Coordinates:</span> <span style="color: #ffff00;">{local_machine['lat']:.2f}, {local_machine['lon']:.2f}</span></div>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <span style="color: #00ff00;">─────────────────────────────</span>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <div><span style="color: #ff4444;">⚠</span> <span style="color: #ffffff;">High Risk (3-5):</span> <span style="color: #ff4444; font-weight: bold;">{high_risk}</span></div>
-        #             <div><span style="color: #ffaa00;">⚠</span> <span style="color: #ffffff;">Medium Risk (2):</span> <span style="color: #ffaa00; font-weight: bold;">{medium_risk}</span></div>
-        #             <div><span style="color: #00ff00;">✓</span> <span style="color: #ffffff;">Low Risk (0-1):</span> <span style="color: #00ff00; font-weight: bold;">{low_risk}</span></div>
-        #             <div><span style="color: #00ffff;">🌐</span> <span style="color: #ffffff;">Browser Connections:</span> <span style="color: #00ffff; font-weight: bold;">{len(browser_connections)}</span></div>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <span style="color: #00ff00;">─────────────────────────────</span>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <div><span style="color: #00ff00;">🌍</span> <span style="color: #ffffff;">Active Countries:</span> <span style="color: #00ff00; font-weight: bold;">{len(active_countries)}</span></div>
-        #             <div><span style="color: #00ff00;">🔗</span> <span style="color: #ffffff;">Total Connections:</span> <span style="color: #00ff00; font-weight: bold;">{total_connections}</span></div>
-        #             <div><span style="color: #00ff00;">✨</span> <span style="color: #ffffff;">Status:</span> <span style="color: #00ff00; font-weight: bold;">ACTIVE</span></div>
-        #         </div>
-                
-        #         <div style="margin-bottom: 15px;">
-        #             <span style="color: #00ff00;">─────────────────────────────</span>
-        #         </div>
-                
-        #         <div>
-        #             <div style="color: #ffff00; margin-bottom: 8px;">⬤ LEGEND</div>
-        #             <div><span style="color: #ff0000;">⬤</span> <span style="color: #ffffff;">High Risk</span></div>
-        #             <div><span style="color: #ffaa00;">⬤</span> <span style="color: #ffffff;">Medium Risk</span></div>
-        #             <div><span style="color: #00ff00;">⬤</span> <span style="color: #ffffff;">Low Risk</span></div>
-        #             <div><span style="color: #FF6B6B;">⬤</span> <span style="color: #ffffff;">Browser Traffic</span></div>
-        #             <div><span style="color: #ff0000;">🔴</span> <span style="color: #ffffff;">DSTerminal Host</span></div>
-        #         </div>
-                
-        #         <div style="margin-top: 15px;">
-        #             <span style="color: #00ff00;">─────────────────────────────</span>
-        #         </div>
-                
-        #         <div style="margin-top: 10px; text-align: center;">
-        #             <span style="color: #ff6600; font-size: 10px;">● LIVE MONITORING ●</span>
-        #         </div>
-        #     </div>
-        #     '''
-            
-        #     threat_map.get_root().html.add_child(folium.Element(stats_html))
-            
-        #     # ============================================
-        #     # JAVASCRIPT FOR PULSING EFFECTS
-        #     # ============================================
-            
-        #     pulse_script = '''
-        #     <script>
-        #     // Pulse animation for red circles
-        #     var circles = document.querySelectorAll('circle');
-        #     var pulseDirection = 1;
-        #     var pulseStep = 0;
-            
-        #     setInterval(function() {
-        #         circles.forEach(function(circle) {
-        #             var fillColor = circle.getAttribute('fill');
-        #             if (fillColor && (fillColor.indexOf('red') !== -1 || fillColor.indexOf('#ff') !== -1)) {
-        #                 var currentOpacity = parseFloat(circle.getAttribute('fill-opacity') || 0.3);
-        #                 var newOpacity = currentOpacity + (pulseDirection * 0.02);
-        #                 if (newOpacity >= 0.7) pulseDirection = -1;
-        #                 if (newOpacity <= 0.15) pulseDirection = 1;
-        #                 circle.setAttribute('fill-opacity', newOpacity);
-        #             }
-        #         });
-                
-        #         // Blinking effect for connection lines
-        #         var lines = document.querySelectorAll('path');
-        #         lines.forEach(function(line) {
-        #             if (line.getAttribute('stroke') && line.getAttribute('stroke') !== 'none') {
-        #                 var randomColor = '#' + Math.floor(Math.random()*16777215).toString(16);
-        #                 if (Math.random() > 0.85) {
-        #                     line.setAttribute('stroke', randomColor);
-        #                 }
-        #                 var currentOp = parseFloat(line.getAttribute('opacity') || 0.5);
-        #                 line.setAttribute('opacity', 0.3 + Math.random() * 0.5);
-        #             }
-        #         });
-        #     }, 300);
-        #     </script>
-        #     '''
-            
-        #     threat_map.get_root().html.add_child(folium.Element(pulse_script))
-            
-        #     # Save map
-        #     workspace = get_workspace_dir()
-        #     map_dir = os.path.join(workspace, 'network_reports', 'threat_maps')
-        #     os.makedirs(map_dir, exist_ok=True)
-        #     map_file = os.path.join(map_dir, f'realtime_map_{datetime.now().strftime("%Y%m%d_%H%M%S")}.html')
-        #     threat_map.save(map_file)
-            
-        #     console.print(f"[green]✓ Threat map saved to: {map_file}[/green]")
-        #     console.print(f"[red]🔴 Host location: {local_machine['country']} ({local_machine['lat']:.2f}, {local_machine['lon']:.2f})[/red]")
-        #     console.print(f"[cyan]🌐 Active Connections: {total_connections} | Countries: {len(active_countries)}[/cyan]")
-            
-        #     return map_file
+    
         def generate_enhanced_threat_map(connections, local_machine, browser_connections):
             """Generate interactive threat map with distance circles and connection lines"""
             
@@ -9321,164 +7720,6 @@ class SecurityTerminal:
     
 # --------------------------for updates above code--------------------
 
-# ---------------------------wipe tracks and terminal clearing
-    # def clear_terminal(self):
-    #     """Advanced terminal clearing with spinning boxes and centered animations"""
-    
-    #     console = Console()
-    #     terminal_width = shutil.get_terminal_size((80, 20)).columns
-    #     panel_width = min(70, terminal_width - 10)
-    
-    # # Multiple spinner types for variety
-    #     spinners = {
-    #         'dots': ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"],
-    #         'arrows': ["←", "↖", "↑", "↗", "→", "↘", "↓", "↙"],
-    #         'pipes': ["┤", "┘", "┴", "└", "├", "┌", "┬", "┐"],
-    #         'circles': ["◴", "◷", "◶", "◵"]
-    #     }
-    
-    # # Glitch text fragments
-    #     glitch_texts = [
-    #         "CLEARING...", "WIPING...", "PURGING...", 
-    #         "RESETTING...", "REFRESHING...", "RELOADING..."
-    #     ]
-    
-    # # Create a box with spinning animation
-    #     with Live(console=console, refresh_per_second=12, screen=True) as live:
-    #         for phase in range(4):  # 4 phases of clearing
-    #             for step in range(25):  # 25 steps per phase
-    #             # Select spinner based on phase
-    #                 spinner_type = list(spinners.keys())[phase % len(spinners)]
-    #                 spinner = spinners[spinner_type][step % len(spinners[spinner_type])]
-                
-    #             # Phase-based colors
-    #                 if phase == 0:
-    #                     color = "bright_red"
-    #                     phase_text = "PHASE 1: MEMORY CLEAR"
-    #                 elif phase == 1:
-    #                     color = "bright_yellow"
-    #                     phase_text = "PHASE 2: BUFFER FLUSH"
-    #                 elif phase == 2:
-    #                     color = "bright_green"
-    #                     phase_text = "PHASE 3: CACHE WIPE"
-    #                 else:
-    #                     color = "bright_cyan"
-    #                     phase_text = "PHASE 4: DISPLAY RESET"
-                
-    #             # Progress calculation
-    #                 total_progress = (phase * 25 + step) / 100
-    #                 progress_bar_width = panel_width - 30
-    #                 progress_filled = int(total_progress * progress_bar_width)
-    #                 progress_bar = "█" * progress_filled + "░" * (progress_bar_width - progress_filled)
-                
-    #             # Random glitch effect
-    #                 if random.random() > 0.7:
-    #                     glitch = random.choice(glitch_texts)
-    #                 else:
-    #                     glitch = ""
-                
-    #             # Create stats content
-    #                 stats_content = (
-    #                     f"[cyan]CPU: [green]{random.randint(20, 95)}%[/green]\n"
-    #                     f"[cyan]MEM: [yellow]{random.randint(100, 500)}MB[/yellow]\n"
-    #                     f"[cyan]PID: [white]{os.getpid()}[/white]"
-    #                 )
-                
-    #             # Create main content
-    #                 main_content = Panel(
-    #                     Align.center(
-    #                         f"[bold {color}]{spinner} {phase_text} {spinner}[/bold {color}]\n\n"
-    #                         f"[white]{progress_bar}[/white] [{int(total_progress*100)}%]\n\n"
-    #                         f"[dim]{glitch}[/dim]",
-    #                         vertical="middle"
-    #                     ),
-    #                     title=f"[bold {color}]╔ TERMINAL WIPE SEQUENCE ╗[/bold {color}]",
-    #                     border_style=color,
-    #                     padding=(1, 2),
-    #                     width=panel_width
-    #                 )
-                
-    #             # Create stats box
-    #                 stats_box = Panel(
-    #                     Align.center(stats_content, vertical="middle"),
-    #                     title="[bold white]SYS STATS[/bold white]",
-    #                     border_style="bright_black",
-    #                     width=panel_width - 4,
-    #                     padding=(1, 1)
-    #                 )
-                
-    #             # Create layout to combine panels
-    #                 layout = Layout()
-    #                 layout.split_column(
-    #                     Layout(main_content),
-    #                     Layout(stats_box)
-    #                 )
-                
-    #             # Center everything
-    #                 final_display = Align.center(layout)
-                
-    #                 live.update(final_display)
-    #                 time.sleep(0.08)
-    
-    # # Execute actual terminal clear
-    #     os.system("clear" if platform.system() != "Windows" else "cls")
-    
-    # # Create a dramatic banner reveal
-    #     banner = """
-    #     ╔═══════════════════════════════════════════════════════════════════╗
-    #     ║                                                                    ║
-    #     ║    ██████╗ ███████╗███████╗███████╗███╗   ██╗███████╗██╗  ██╗    ║
-    #     ║    ██╔══██╗██╔════╝██╔════╝██╔════╝████╗  ██║██╔════╝╚██╗██╔╝    ║
-    #     ║    ██║  ██║█████╗  █████╗  █████╗  ██╔██╗ ██║█████╗   ╚███╔╝     ║
-    #     ║    ██║  ██║██╔══╝  ██╔══╝  ██╔══╝  ██║╚██╗██║██╔══╝   ██╔██╗     ║
-    #     ║    ██████╔╝██║     ██║     ███████╗██║ ╚████║███████╗██╔╝ ██╗    ║
-    #     ║    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝    ║
-    #     ║                                                                    ║
-    #     ╚═══════════════════════════════════════════════════════════════════╝
-    #     """
-    
-    # # Animate banner with scan line effect
-    #     banner_lines = banner.split('\n')
-    #     centered_banner = []
-    
-    # # Center each line
-    #     for line in banner_lines:
-    #         if line.strip():
-    #             centered_banner.append(line.center(terminal_width))
-    #         else:
-    #             centered_banner.append('')
-    
-    # # Display with scan line animation
-    #     for i, line in enumerate(centered_banner):
-    #         if i == 0 or i == len(centered_banner)-1:
-    #             console.print(f"[bright_cyan]{line}[/bright_cyan]")
-    #         elif i == 1 or i == 7:
-    #             console.print(f"[bright_blue]{line}[/bright_blue]")
-    #         elif 2 <= i <= 6:
-    #         # Gradient effect on logo
-    #             colors = ["cyan", "bright_cyan", "blue", "bright_blue", "green"]
-    #             color = colors[(i-2) % len(colors)]
-    #             console.print(f"[bold {color}]{line}[/bold {color}]")
-    #         else:
-    #             console.print(f"[dim]{line}[/dim]")
-    #         time.sleep(0.08)
-    
-    # # Add a status message with blink effect
-    #     status_panel = Panel(
-    #         Align.center(
-    #             "[blink][bright_green]✦ SYSTEM INITIALIZED ✦[/bright_green][/blink]\n\n"
-    #             f"[cyan]Session ID:[/cyan] [white]{datetime.now().strftime('%Y%m%d%H%M%S')}[/white]\n"
-    #             f"[cyan]Ready for:[/cyan] [yellow]SSL/TLS Security Audit[/yellow]",
-    #             vertical="middle"
-    #         ),
-    #         title="[bold white]SYSTEM STATUS[/bold white]",
-    #         border_style="bright_green",
-    #         padding=(1, 2),
-    #         width=panel_width
-    #     )
-    
-    #     console.print(Align.center(status_panel))
-    #     print()
     def clear_terminal(self):
         """Advanced terminal clearing with three-column centered layout and spinning animations"""
         
@@ -9763,288 +8004,6 @@ class SecurityTerminal:
             console.print("[yellow]Unsupported OS for shutdown command.[/yellow]")
 
 # shutting down ends here
- 
-# =======testing code from above ends here for shutdown command
-    # def vt_scan_menu(self):
-    #     """Enhanced VirusTotal scanning interface"""
-    #     print("\n[VirusTotal Scanner]")
-    #     print("1. Hash lookup")
-    #     print("2. File scan")
-    #     print("3. Bulk scan folder")
-    #     print("4. Check previous scan")
-    #     choice = input("Select option: ")
-        
-    #     if choice == "1":
-    #         file_hash = input("Enter file hash (MD5/SHA1/SHA256): ").strip()
-    #         self.vt_hash_lookup(file_hash)
-    #     elif choice == "2":
-    #         file_path = input("File path to scan: ").strip()
-    #         self.vt_file_scan(file_path)
-    #     elif choice == "3":
-    #         folder_path = input("Folder path to scan: ").strip()
-    #         max_files = input("Max files to scan (default 10): ").strip() or 10
-    #         self.vt_bulk_scan(folder_path, int(max_files))
-    #     elif choice == "4":
-    #         scan_id = input("Enter previous scan ID: ").strip()
-    #         self.check_scan_result(scan_id)
-    #     else:
-    #         print("[!] Invalid choice")
-
-    # def vt_hash_lookup(self, file_hash):
-    #     """Enhanced hash lookup with detailed results"""
-    #     if not self._validate_vt_api():
-    #         return
-
-    #     try:
-    #         url = f"https://www.virustotal.com/api/v3/files/{file_hash}"
-    #         headers = {"x-apikey": CONFIG['VT_API_KEY']}
-            
-    #         print(f"\n[+] Checking hash: {file_hash}...")
-    #         response = requests.get(url, headers=headers)
-            
-    #         if response.status_code == 200:
-    #             result = response.json()
-    #             attrs = result['data']['attributes']
-                
-    #             # Detailed report
-    #             print(f"\n╔{'═'*60}╗")
-    #             print(f"║ {'VirusTotal Report':^58} ║")
-    #             print(f"╠{'═'*60}╣")
-    #             print(f"║ {'Detection:':<15} {attrs['last_analysis_stats']['malicious']}/{sum(attrs['last_analysis_stats'].values())} ║")
-    #             print(f"║ {'First Seen:':<15} {attrs['first_submission_date']} ║")
-    #             print(f"║ {'File Type:':<15} {attrs.get('type_tag', 'Unknown')} ║")
-                
-    #             # Top detections
-    #             malicious = [k for k,v in attrs['last_analysis_results'].items() if v['category'] == 'malicious']
-    #             if malicious:
-    #                 print(f"╠{'═'*60}╣")
-    #                 print(f"║ {'Top Detections:':<58} ║")
-    #                 for engine in malicious[:3]:
-    #                     print(f"║ - {engine:<55} ║")
-    #             print(f"╚{'═'*60}╝")
-                
-    #             # Auto-quarantine recommendation
-    #             if attrs['last_analysis_stats']['malicious'] > 0:
-    #                 print("\n[!] MALICIOUS FILE DETECTED!")
-    #                 if input("Quarantine file? (y/N): ").lower() == 'y':
-    #                     self.quarantine_file(None, file_hash=file_hash)
-    #         else:
-    #             print("[!] Hash not found in VirusTotal")
-    #     except Exception as e:
-    #         print(f"[!] Error: {e}")
-  
-
-    # def vt_file_scan(self, file_path):
-    #     """Upload file to VirusTotal with debug output"""
-    #     print(f"\n[DEBUG] Starting scan for: {file_path}")  # Debug line
-    
-    #     if not os.path.exists(file_path):
-    #         print("[!] Error: File not found")
-    #         print(f"[DEBUG] Resolved path: {os.path.abspath(file_path)}")  # Debug line
-    #         return
-
-    #         print("[DEBUG] File exists check passed")  # Debug line
-    
-    #     if not self._validate_vt_api():
-    #         print("[!] Error: VirusTotal API validation failed")
-    #         print(f"[DEBUG] API Key: {'Set' if CONFIG.get('VT_API_KEY') else 'Not Set'}")  # Debug line
-    #         return
-
-    #     print("[DEBUG] API validation passed")  # Debug line
-    
-    #     MAX_SIZE = 32 * 1024 * 1024  # 32MB
-    #     file_size = os.path.getsize(file_path)
-    #     print(f"[DEBUG] File size: {file_size} bytes")  # Debug line
-
-    #     if file_size > MAX_SIZE:
-    #         print(f"[!] Error: File too large ({file_size/1024/1024:.2f}MB > 32MB)")
-    #         return
-
-    #     print("[DEBUG] Size check passed")  # Debug line
-    
-    #     try:
-    #         print(f"\n[+] Analyzing {os.path.basename(file_path)}...")
-    #         print(f"  ↳ Size: {file_size/1024:.2f}KB")
-    #         print("  ↳ Uploading...", end='', flush=True)
-        
-    #         with open(file_path, 'rb') as f:
-    #             files = {'file': (os.path.basename(file_path), f)}
-    #             headers = {"x-apikey": CONFIG['VT_API_KEY']}
-    #             print(f"\n[DEBUG] Sending request to VirusTotal...")  # Debug line
-    #             response = requests.post(
-    #                 "https://www.virustotal.com/api/v3/files",
-    #                 headers=headers,
-    #                 files=files,
-    #                 timeout=30
-    #             )
-    #         print(" Done!")
-
-    #         print(f"[DEBUG] Response status: {response.status_code}")  # Debug line
-    #         if response.status_code == 200:
-    #             result = response.json()
-    #             scan_id = result['data']['id']
-    #             print(f"\n[+] Scan ID: {scan_id}")
-    #             print(f"[+] Report URL: https://www.virustotal.com/gui/file/{scan_id}")
-    #             self._cache_scan_id(file_path, scan_id)
-    #         else:
-    #             print(f"[!] Error: Upload failed (HTTP {response.status_code})")
-    #             print(f"[DEBUG] Response text: {response.text}")  # Debug line
-
-    #     except Exception as e:
-    #         print(f"\n[!] Critical Error: {str(e)}")
-    #         print("[DEBUG] Exception occurred during upload")  # Debug line
-
-    #     if response.status_code == 200:
-    #         result = response.json()
-    #         scan_id = result['data']['id']
-    #         print(f"\n[+] Scan ID: {scan_id}")
-        
-    #     # Start polling in background
-    #     Thread(target=self._poll_results, args=(scan_id, file_path), daemon=True).start()
- 
-    # def _cache_scan_id(self, file_path, scan_id):
-    #     """Store scan IDs for future reference"""
-    #     cache_file = os.path.expanduser("~/.dstenex_scans.log")
-    #     with open(cache_file, "a") as f:
-    #         f.write(f"{file_path}|{scan_id}|{datetime.now()}\n")
-
-    # def vt_bulk_scan(self, folder_path, max_files=10):
-    #     """Scan multiple files in a folder"""
-    #     if not os.path.isdir(folder_path):
-    #         print("[!] Invalid folder path")
-    #         return
-            
-    #     print(f"\n[+] Scanning up to {max_files} files in {folder_path}...")
-    #     scanned = 0
-        
-    #     for root, _, files in os.walk(folder_path):
-    #         for file in files:
-    #             if scanned >= max_files:
-    #                 break
-                    
-    #             file_path = os.path.join(root, file)
-    #             print(f"\n[File {scanned+1}/{max_files}] {file}")
-                
-    #             # First try local scan
-    #             local_result = self.local_scan(file_path, silent=True)
-    #             if local_result and local_result['infected']:
-    #                 print("[!] LOCAL SCAN DETECTED THREAT!")
-    #                 self.quarantine_file(file_path)
-    #                 scanned += 1
-    #                 continue
-                
-    #             # Fall back to VT if file < 32MB
-    #             if os.path.getsize(file_path) <= 32 * 1024 * 1024:
-    #                 self.vt_file_scan(file_path)
-    #             else:
-    #                 print("[!] File too large for VT, skipped")
-                
-    #             scanned += 1
-    #             time.sleep(15)  # Respect VT API rate limits
-        
-    #     print("\n[+] Bulk scan completed")
-
-    # def _poll_results(self, scan_id, original_path=None):
-    #     """Background result polling"""
-    #     url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
-    #     headers = {"x-apikey": CONFIG['VT_API_KEY']}
-        
-    #     print("\n[+] Waiting for results... (Ctrl+C to check later)")
-    #     try:
-    #         for _ in range(10):  # Max 10 checks
-    #             time.sleep(30)
-    #             response = requests.get(url, headers=headers)
-    #             if response.status_code == 200:
-    #                 result = response.json()
-    #                 status = result['data']['attributes']['status']
-                    
-    #                 if status == 'completed':
-    #                     stats = result['data']['attributes']['stats']
-    #                     print(f"\n[+] Final Results: {stats['malicious']} malicious / {stats['harmless']} clean")
-                        
-    #                     if stats['malicious'] > 0 and original_path:
-    #                         self.quarantine_file(original_path)
-    #                     return
-    #                 else:
-    #                     print(f"\r  ↳ Status: {status}...", end='', flush=True)
-    #     except Exception:
-    #         print("\n[!] Polling interrupted. Check later with 'check_result'")
-
-    # def check_scan_result(self, scan_id):
-    #     """Check existing scan results"""
-    #     url = f"https://www.virustotal.com/api/v3/analyses/{scan_id}"
-    #     headers = {"x-apikey": CONFIG['VT_API_KEY']}
-        
-    #     try:
-    #         response = requests.get(url, headers=headers)
-    #         if response.status_code == 200:
-    #             result = response.json()
-    #             stats = result['data']['attributes']['stats']
-    #             print(f"\n[+] Results: {stats['malicious']} malicious / {stats['harmless']} clean")
-                
-    #             if stats['malicious'] > 0:
-    #                 print("[!] MALICIOUS CONTENT DETECTED")
-    #         else:
-    #             print("[!] Results not available yet")
-    #     except Exception as e:
-    #         print(f"[!] Error checking results: {e}")
-
-    # def local_scan(self, file_path, silent=False):
-    #     """Integrate ClamAV for local scanning"""
-    #     try:
-    #         import pyclamd
-    #         cd = pyclamd.ClamdAgnostic()
-    #         scan_result = cd.scan_file(file_path)
-            
-    #         if scan_result and scan_result.get(file_path) == 'OK':
-    #             if not silent:
-    #                 print("[+] Local scan: Clean")
-    #             return {'infected': False}
-    #         else:
-    #             if not silent:
-    #                 print("[!] Local scan: Infected!")
-    #                 print(f"Detection: {scan_result.get(file_path, 'Unknown threat')}")
-    #             return {'infected': True, 'threat': scan_result.get(file_path)}
-                
-    #     except ImportError:
-    #         if not silent:
-    #             print("[!] ClamAV not installed (pip install pyclamd)")
-    #     except Exception as e:
-    #         if not silent:
-    #             print(f"[!] Local scan failed: {e}")
-    #     return None
-
-    # def quarantine_file(self, file_path, file_hash=None):
-    #     """Move dangerous files to quarantine"""
-    #     quarantine_dir = os.path.join(os.path.expanduser("~"), "quarantine")
-    #     os.makedirs(quarantine_dir, exist_ok=True)
-        
-    #     try:
-    #         if file_path:
-    #             filename = os.path.basename(file_path)
-    #             new_path = os.path.join(quarantine_dir, f"quarantined_{filename}")
-    #             shutil.move(file_path, new_path)
-    #             print(f"[+] File moved to quarantine: {new_path}")
-    #         elif file_hash:
-    #             with open(os.path.join(quarantine_dir, "quarantined_hashes.txt"), "a") as f:
-    #                 f.write(f"{file_hash}\n")
-    #             print("[+] Malicious hash recorded")
-    #     except Exception as e:
-    #         print(f"[!] Quarantine failed: {e}")
-
-    # def _validate_vt_api(self):
-    #     """Check if API key is configured"""
-    #     if not CONFIG.get('VT_API_KEY') or CONFIG['VT_API_KEY'] == 'YOUR_VIRUSTOTAL_API_KEY':
-    #         print("[!] Configure VirusTotal API key first:")
-    #         print("1. Get key from: https://www.virustotal.com/gui/join-us")
-    #         print("2. Edit CONFIG['VT_API_KEY'] in your code")
-    #         return False
-    #     return True
-
-
-    #     # go up to change
-
-
 # ================================================
 # ================================================
     def monitor_registry(self):
@@ -10636,9 +8595,66 @@ class SecurityTerminal:
         elif parts[0] == "harden-ssh":
             self.harden_ssh_only()
             return
+        # ==================== SOC COMMANDS (Same format as hardening) ====================
+        elif parts[0] == "soc-scan":
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_nmap_scan(target)
+            return
+        elif parts[0] == "soc-quick":
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_quick_scan(target)
+            return
+        elif parts[0] == "soc-full":
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_full_scan(target)
+            return
+        elif parts[0] == "soc-dashboard":
+            self.soc_dashboard()
+            return
+        elif parts[0] == "soc-status":
+            self.soc_status()
+            return
+        elif parts[0] == "soc-help":
+            self.soc_help()
+            return
+        elif parts[0] == "soc-test":
+            self.soc_test()
+            return
+        elif parts[0] == "soc-interactive":
+            self.soc_interactive()
+            return
+
         # ==================== END HARDENING COMMANDS ====================
 
 # Direct command shortcuts
+# Add to command handler:
+ # SOC Nmap Dashboard Commands
+ # In your command processing loop
+        elif cmd in ["soc-scan", "socscan"]:
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_nmap_scan(target)
+
+        elif cmd in ["soc-quick", "socquick"]:
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_quick_scan(target)
+
+        elif cmd in ["soc-full", "socfull"]:
+            target = parts[1] if len(parts) > 1 else None
+            self.soc_full_scan(target)
+
+        elif cmd in ["soc-dashboard", "socdashboard"]:
+            self.soc_dashboard()
+
+        elif cmd in ["soc-status", "socstatus"]:
+            self.soc_status()
+
+        elif cmd in ["soc-help", "sochelp"]:
+            self.soc_help()
+
+        elif cmd in ["soc-test", "socdebug"]:
+            self.soc_test()
+    # SOC Nmap Dashboard Commands ends here=============
+
         elif cmd in ["harden-list", "harden-ls"]:
             self.list_hardening_modules()
             return
@@ -10687,6 +8703,22 @@ class SecurityTerminal:
             self.harden_ssh_only()
             return
     # ==================== END HARDENING COMMANDS ====================
+        # Direct shortcuts for SOC commands (no space version)
+        # elif cmd == "soc-scan":
+        #     target = parts[1] if len(parts) > 1 else None
+        #     self.soc_nmap_scan(target)
+        # elif cmd == "soc-quick":
+        #     target = parts[1] if len(parts) > 1 else None
+        #     self.soc_quick_scan(target)
+        # elif cmd == "soc-full":
+        #     target = parts[1] if len(parts) > 1 else None
+        #     self.soc_full_scan(target)
+        # elif cmd == "soc-dashboard":
+        #     self.soc_dashboard()
+        # elif cmd == "soc-status":
+        #     self.soc_status()
+        # elif cmd == "soc-help":
+        #     self.soc_help()
 
         # Crypto commands
         elif cmd == "crypto-list":

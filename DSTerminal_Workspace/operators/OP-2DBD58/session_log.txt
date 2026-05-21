@@ -1,0 +1,15 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-2DBD58
+║ Session ID : SESSION-CFCC6
+║ Host       : DESKTOP-CFFMGUL
+║ Start Time : 2026-05-22 01:28:00
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[01:28:24] COMMAND: soc-test
+[01:28:33] COMMAND: soc-scan 192.168.1.1
+[01:28:38] COMMAND: soc-dashboard
+[01:28:47] COMMAND: soc-help
+[01:33:48] COMMAND: exit

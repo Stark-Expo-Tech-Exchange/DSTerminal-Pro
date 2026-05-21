@@ -1,0 +1,11 @@
+# Nmap 7.99 scan initiated Thu May 21 20:29:27 2026 as: nmap -F -T4 -oN C:\\Users\\stark\\DSTerminal_releases_latest\\DSTerminal_Workspace\\scans\\nmap_starkexpotechexchange-mw_netlify_app_20260521_202927.txt starkexpotechexchange-mw.netlify.app
+Nmap scan report for starkexpotechexchange-mw.netlify.app (35.157.26.135)
+Host is up (0.13s latency).
+Other addresses for starkexpotechexchange-mw.netlify.app (not scanned): 2a05:d014:58f:6200::259 2a05:d014:58f:6200::258 63.176.8.218
+rDNS record for 35.157.26.135: ec2-35-157-26-135.eu-central-1.compute.amazonaws.com
+Not shown: 98 filtered tcp ports (no-response)
+PORT    STATE SERVICE
+80/tcp  open  http
+443/tcp open  https
+
+# Nmap done at Thu May 21 20:29:33 2026 -- 1 IP address (1 host up) scanned in 5.77 seconds
