@@ -38,7 +38,8 @@ class Colors:
     PINK = '\033[38;5;205m'
     RESET = '\033[0m'
     BOLD = '\033[1m'
-    DIM = '\033[2m'
+    # Use this instead of DIM (some terminals don't support DIM)
+    DIM = '\033[2m' if hasattr('\033[2m', '__str__') else '\033[90m'  # Fallback to dark gray
 
 
 # ============================================================
@@ -670,13 +671,25 @@ class InteractiveSOCDashboard:
         Ultra-centered SOC dashboard with:
         LEFT PANEL  | CENTER PANEL | RIGHT PANEL
         """
+        # Get actual terminal width safely
+        try:
+            terminal_width = shutil.get_terminal_size((80, 24)).columns
+        except:
+            terminal_width = 80
+        
+        # Adjust panel widths based on terminal size
+        if terminal_width < 120:
+            panel_width = 38
+            spacing = 5
 
-        panel_width = 38
-        spacing = 55
+        elif terminal_width < 150:
+            panel_width = 38
+            spacing = 5
+        else:
+            panel_width = 35
+            spacing = 45
+        
         total_width = (panel_width * 3) + (spacing * 2)
-
-        # Dynamically center dashboard
-        terminal_width = shutil.get_terminal_size((140, 40)).columns
         left_padding = max(0, (terminal_width - total_width) // 2)
         pad = " " * left_padding
 

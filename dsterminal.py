@@ -290,7 +290,13 @@ except ImportError:
 
 # Import our footer engine
 from dst_footer import DSTerminalFooter, FooterBootAnimation, FooterColors
-
+# Add this with your other imports at the very top of dsterminal.py
+try:
+    from soc_nmap_dashboard import SOCNmapIntegration, InteractiveSOCDashboard
+    SOC_NMAP_AVAILABLE = True
+except ImportError:
+    SOC_NMAP_AVAILABLE = False
+    print("[!] SOC Nmap Dashboard module not found. Install soc_nmap_dashboard.py")
 # Import Financial Forensics Module
 try:
     # Add the current directory to path if needed
@@ -1331,19 +1337,22 @@ class SecurityTerminal:
         self.terminal_width = self._get_terminal_width()
         self.system = platform.system()
         self.session_id = datetime.now().strftime("%Y%m%d_%H%M%S")
-
-        self.network_nodes = {}  # {ip: {"ports": [], "status": "up"}}
-        self.network_edges = []  # optional future expansion
-        # Initialize SOC Nmap Dashboard
-        # Initialize SOC Nmap Dashboard
-        self.soc_nmap = None
+# Initialize SOC Nmap Dashboard integration (check if available)
         if SOC_NMAP_AVAILABLE:
             try:
-                from soc_nmap_dashboard import SOCNmapIntegration
                 self.soc_nmap = SOCNmapIntegration()
-                print(f"{Fore.GREEN}[✓] SOC Nmap Integration ready{Style.RESET_ALL}")
-            except:
-                pass
+                print("[+] SOC Nmap Dashboard integration loaded")
+            except Exception as e:
+                print(f"[!] Failed to initialize SOC Nmap: {e}")
+                self.soc_nmap = None
+        else:
+            self.soc_nmap = None
+            print("[!] SOC Nmap Dashboard not available - module not found")
+        # Initialize SOC Nmap Dashboard integration
+        self.soc_nmap = SOCNmapIntegration()
+        self.soc_dashboard_active = False
+        # Initialize SOC Nmap Dashboard
+        self.soc_nmap = None
         # ===== INTEGRATE HARDENING DASHBOARD =====
         self.hardening_dashboard = HardeningDashboard(terminal_width=self.terminal_width)
         self.hardening_enabled = True
@@ -1471,6 +1480,104 @@ class SecurityTerminal:
         self.ensure_vfs()
 
     # =========initializing operator workspace and username and session logging===========
+    
+    def cmd_soc_nmap(self):
+        """Launch SOC-grade Nmap dashboard with AI vulnerability scoring"""
+        self.print_status("Launching SOC Nmap Dashboard...", "INFO")
+        self.print_status("Interactive dashboard with real-time scanning", "INFO")
+        self.print_status("Features: GeoIP mapping | AI scoring | Threat intel", "INFO")
+        
+        try:
+            # Start the interactive dashboard
+            self.soc_nmap.start_interactive_dashboard()
+        except KeyboardInterrupt:
+            self.print_status("Exiting SOC dashboard...", "WARNING")
+        except Exception as e:
+            self.print_status(f"SOC dashboard error: {e}", "ERROR")
+    
+    def cmd_soc_quick(self, target=None):
+        """Quick scan using SOC dashboard"""
+        if not target:
+            target = input(f"{self.prompt}Enter target IP/Domain: ")
+            if not target:
+                return
+        
+        self.print_status(f"Running SOC quick scan on {target}...", "INFO")
+        self.soc_nmap.quick_scan(target)
+        self.print_status("Scan complete! Dashboard opened in browser.", "SUCCESS")
+    
+    def cmd_soc_full(self, target=None):
+        """Full aggressive scan using SOC dashboard"""
+        if not target:
+            target = input(f"{self.prompt}Enter target IP/Domain: ")
+            if not target:
+                return
+        
+        self.print_status(f"Running SOC full scan on {target}...", "INFO")
+        self.print_status("This may take several minutes...", "WARNING")
+        confirm = input(f"{self.prompt}Continue? (y/n): ")
+        
+        if confirm.lower() == 'y':
+            self.soc_nmap.full_scan(target)
+            self.print_status("Scan complete! Dashboard opened in browser.", "SUCCESS")
+    
+    def cmd_soc_dns(self, target=None):
+        """DNS reconnaissance using SOC dashboard"""
+        if not target:
+            target = input(f"{self.prompt}Enter domain for DNS recon: ")
+            if not target:
+                return
+        
+        self.print_status(f"Running DNS reconnaissance on {target}...", "INFO")
+        self.soc_nmap.dns_recon(target)
+        self.print_status("DNS recon complete! Dashboard opened in browser.", "SUCCESS")
+    
+    def cmd_soc_map(self):
+        """Generate threat map from last scan"""
+        if self.soc_nmap.dashboard and self.soc_nmap.dashboard.network_nodes:
+            self.print_status("Generating threat intelligence map...", "INFO")
+            self.soc_nmap.dashboard.generate_full_dashboard()
+            self.print_status("Threat map opened in browser", "SUCCESS")
+        else:
+            self.print_status("No scan data available. Run a scan first.", "ERROR")
+    
+    def cmd_soc_history(self):
+        """Show scan history"""
+        if self.soc_nmap.dashboard and self.soc_nmap.dashboard.scan_history:
+            self.print_status("Recent Scan History:", "INFO")
+            print("\n")
+            for i, hist in enumerate(self.soc_nmap.dashboard.scan_history[-10:], 1):
+                risk_color = "🔴" if hist.risk_score >= 7 else "🟡" if hist.risk_score >= 4 else "🟢"
+                print(f"  {i}. {risk_color} {hist.target} | Ports: {hist.open_ports} | Risk: {hist.risk_score:.1f} | Duration: {hist.duration}s")
+                print(f"     Services: {', '.join(hist.services[:3])}")
+                print(f"     Time: {hist.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+                print()
+        else:
+            self.print_status("No scan history available", "ERROR")
+    
+    def cmd_soc_organizations(self):
+        """Show organization location database"""
+        from soc_nmap_dashboard import OrganizationLocationDB
+        
+        self.print_status("Organization Location Database:", "INFO")
+        print("\n")
+        
+        # Group by country
+        countries = {}
+        for domain, info in OrganizationLocationDB.ORGANIZATIONS.items():
+            country = info.get("country", "Unknown")
+            if country not in countries:
+                countries[country] = []
+            countries[country].append(domain)
+        
+        for country, domains in sorted(countries.items()):
+            flag = OrganizationLocationDB.ORGANIZATIONS[domains[0]].get("flag", "🌐")
+            print(f"  {flag} {country}: {len(domains)} organizations")
+            for domain in domains[:3]:
+                print(f"      - {domain}")
+            if len(domains) > 3:
+                print(f"      ... and {len(domains) - 3} more")
+            print()
 # ======================================autpmatically detect and monitor new created folders
     def auto_discover_folders(self):
         """Auto-discover common user folders and add them to monitoring."""
@@ -2709,6 +2816,31 @@ class SecurityTerminal:
         # Command dispatch for other commands
         if command == "help":
             self.show_help()
+
+        # SOC Nmap Dashboard Commands
+        elif command == 'soc' or command == 'soc-nmap':
+            self.cmd_soc_nmap()
+        elif command == 'soc-quick':
+            target = args[0] if args else None
+            self.cmd_soc_quick(target)
+        elif command == 'soc-full':
+            target = args[0] if args else None
+            self.cmd_soc_full(target)
+        elif command == 'soc-dns':
+            target = args[0] if args else None
+            self.cmd_soc_dns(target)
+        elif command == 'soc-map':
+            self.cmd_soc_map()
+        elif command == 'soc-history':
+            self.cmd_soc_history()
+        elif command == 'soc-orgs':
+            self.cmd_soc_organizations()
+        elif command == 'soc-status':
+            self.soc_status()
+        elif command == 'soc-help':
+            self.soc_help()
+
+
         elif command in ("exit", "quit", "logout"):
             self.log_command(command)
             self.close_operator_session()
@@ -2755,6 +2887,8 @@ class SecurityTerminal:
             print(f"{Fore.RED}[!] Unknown command: {command}{Style.RESET_ALL}")
         
         return True
+
+        
 # ------added msf impleme
     def check_metasploit_installed(self):
         """Check if Metasploit is installed on Windows (multiple methods)"""
@@ -3180,185 +3314,310 @@ class SecurityTerminal:
 # ============================================================
 # SOC-GRADE NMAP SCAN DASHBOARD METHODS
 # ============================================================
+# ==================== SOC Nmap Dashboard Integration ====================
 
-# ============================================================
-# SOC-GRADE NMAP SCAN DASHBOARD INTEGRATION
-# ============================================================
+    def cmd_soc_nmap(self):
+        """Launch SOC-grade Nmap dashboard with AI vulnerability scoring"""
+        # Check if nmap is installed
+        if not shutil.which("nmap"):
+            print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[*] Install nmap: sudo apt install nmap (Debian/Ubuntu) or brew install nmap (macOS){Style.RESET_ALL}")
+            return
+        
+        print(f"{Fore.GREEN}[+] Launching SOC Nmap Dashboard...{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] Interactive dashboard with real-time scanning{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}[+] Features: GeoIP mapping | AI scoring | Threat intel{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[!] Type 'exit' or press Ctrl+C to return to DSTERMINAL{Style.RESET_ALL}")
+        print()
+        
+        try:
+            # Import and initialize the SOC dashboard
+            from soc_nmap_dashboard import SOCNmapIntegration
+            soc = SOCNmapIntegration()
+            soc.start_interactive_dashboard()
+        except KeyboardInterrupt:
+            print(f"\n{Fore.YELLOW}[!] Returning to DSTERMINAL...{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[*] Make sure soc_nmap_dashboard.py is in the same directory{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] SOC dashboard error: {e}{Style.RESET_ALL}")
 
-# ============================================================
-# SOC METHODS
-# ============================================================
-    def soc_nmap_scan(self, target=None):
-        """Launch SOC-grade nmap scan with real-time dashboard"""
+    def cmd_soc_quick(self, target=None):
+        """Quick scan using SOC dashboard (top 100 ports)"""
+        # Check if nmap is installed
+        if not shutil.which("nmap"):
+            print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
+            return
         
         if not target:
-            print(f"{Fore.YELLOW}[!] Usage: soc-scan <target>{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}    Example: soc-scan 192.168.1.1{Style.RESET_ALL}")
-            return
+            target = input(f"{Fore.CYAN}[?] Enter target IP/Domain: {Style.RESET_ALL}").strip()
+            if not target:
+                print(f"{Fore.RED}[!] No target specified{Style.RESET_ALL}")
+                return
         
-        if not SOC_NMAP_AVAILABLE:
-            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
-            return
+        print(f"{Fore.GREEN}[+] Running SOC quick scan on {target}...{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Scanning top 100 ports with service detection{Style.RESET_ALL}")
         
-        print(f"{Fore.GREEN}[+] Starting SOC-grade scan on {target}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}[+] Features: GeoMap | AI Scoring | Network Topology | Timeline{Style.RESET_ALL}")
-        
-        # Import here to avoid circular imports
-        from soc_nmap_dashboard import SOCNmapDashboard
-        
-        dashboard = SOCNmapDashboard()
-        flags = ["-F", "-T4", "-sV"]
-        
-        def run_scan():
-            dashboard.run_nmap_scan(target, flags)
-        
-        thread = threading.Thread(target=run_scan, daemon=True)
-        thread.start()
-        
-        print(f"{Fore.GREEN}[+] Scan started! Dashboard will open automatically when complete.{Style.RESET_ALL}")
+        try:
+            from soc_nmap_dashboard import SOCNmapIntegration
+            soc = SOCNmapIntegration()
+            soc.quick_scan(target)
+            print(f"{Fore.GREEN}[+] Scan complete! Dashboard opened in browser.{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] Scan failed: {e}{Style.RESET_ALL}")
 
-    def soc_quick_scan(self, target=None):
-        """Quick SOC scan with optimized flags"""
+    def cmd_soc_full(self, target=None):
+        """Full aggressive scan using SOC dashboard (all ports)"""
+        # Check if nmap is installed
+        if not shutil.which("nmap"):
+            print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
+            return
         
         if not target:
-            print(f"{Fore.YELLOW}[!] Usage: soc-quick <target>{Style.RESET_ALL}")
-            return
+            target = input(f"{Fore.CYAN}[?] Enter target IP/Domain: {Style.RESET_ALL}").strip()
+            if not target:
+                print(f"{Fore.RED}[!] No target specified{Style.RESET_ALL}")
+                return
         
-        if not SOC_NMAP_AVAILABLE:
-            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
-            return
+        print(f"{Fore.GREEN}[+] Running SOC full scan on {target}...{Style.RESET_ALL}")
+        print(f"{Fore.RED}[!] This is an aggressive scan that may take several minutes{Style.RESET_ALL}")
+        print(f"{Fore.RED}[!] Full port scan (-p-) with OS detection and scripts{Style.RESET_ALL}")
         
-        print(f"{Fore.GREEN}[+] Starting QUICK SOC scan on {target}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}[+] Flags: -F -T4 -sV --top-ports 100{Style.RESET_ALL}")
-        
-        from soc_nmap_dashboard import SOCNmapDashboard
-        
-        dashboard = SOCNmapDashboard()
-        flags = ["-F", "-T4", "-sV", "--top-ports", "100"]
-        
-        def run_scan():
-            dashboard.run_nmap_scan(target, flags)
-        
-        thread = threading.Thread(target=run_scan, daemon=True)
-        thread.start()
-        
-        print(f"{Fore.GREEN}[+] Quick scan started! Dashboard will open automatically.{Style.RESET_ALL}")
-
-    def soc_full_scan(self, target=None):
-        """Full SOC scan with comprehensive enumeration"""
-        
-        if not target:
-            print(f"{Fore.YELLOW}[!] Usage: soc-full <target>{Style.RESET_ALL}")
-            return
-        
-        if not SOC_NMAP_AVAILABLE:
-            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
-            return
-        
-        print(f"{Fore.GREEN}[+] Starting FULL SOC scan on {target}{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}[+] Flags: -sS -sV -sC -O -T4 -p-{Style.RESET_ALL}")
-        print(f"{Fore.YELLOW}[!] Warning: Full scan may take several minutes{Style.RESET_ALL}")
-        
-        confirm = input(f"{Fore.RED}Continue with full scan? (y/n): {Style.RESET_ALL}")
-        if confirm.lower() != 'y':
-            print(f"{Fore.CYAN}Scan cancelled.{Style.RESET_ALL}")
-            return
-        
-        from soc_nmap_dashboard import SOCNmapDashboard
-        
-        dashboard = SOCNmapDashboard()
-        flags = ["-sS", "-sV", "-sC", "-O", "-T4", "-p-"]
-        
-        def run_scan():
-            dashboard.run_nmap_scan(target, flags)
-        
-        thread = threading.Thread(target=run_scan, daemon=True)
-        thread.start()
-        
-        print(f"{Fore.GREEN}[+] Full scan started! This may take a while...{Style.RESET_ALL}")
-
-    def soc_dashboard(self):
-        """Open SOC dashboard (view last scan results)"""
-        
-        if not SOC_NMAP_AVAILABLE:
-            print(f"{Fore.RED}[!] SOC Nmap Dashboard not available{Style.RESET_ALL}")
+        confirm = input(f"{Fore.YELLOW}[?] Continue? (y/n): {Style.RESET_ALL}").strip().lower()
+        if confirm != 'y':
+            print(f"{Fore.YELLOW}[!] Scan cancelled{Style.RESET_ALL}")
             return
         
         try:
-            from soc_nmap_dashboard import SOCNmapDashboard
-            dashboard = SOCNmapDashboard()
-            
-            if dashboard.network_nodes:
-                print(f"{Fore.GREEN}[+] Opening SOC Dashboard...{Style.RESET_ALL}")
-                dashboard.generate_full_dashboard()
-            else:
-                print(f"{Fore.YELLOW}[!] No scan results available. Run a scan first.{Style.RESET_ALL}")
-                print(f"{Fore.CYAN}    Example: soc-scan 192.168.1.1{Style.RESET_ALL}")
+            from soc_nmap_dashboard import SOCNmapIntegration
+            soc = SOCNmapIntegration()
+            soc.full_scan(target)
+            print(f"{Fore.GREEN}[+] Scan complete! Dashboard opened in browser.{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
         except Exception as e:
-            print(f"{Fore.RED}[!] Error opening dashboard: {e}{Style.RESET_ALL}")
+            print(f"{Fore.RED}[!] Scan failed: {e}{Style.RESET_ALL}")
+
+    def cmd_soc_dns(self, target=None):
+        """DNS reconnaissance using SOC dashboard"""
+        # Check if nmap is installed
+        if not shutil.which("nmap"):
+            print(f"{Fore.RED}[!] Nmap is not installed on this system{Style.RESET_ALL}")
+            return
+        
+        if not target:
+            target = input(f"{Fore.CYAN}[?] Enter domain for DNS recon: {Style.RESET_ALL}").strip()
+            if not target:
+                print(f"{Fore.RED}[!] No domain specified{Style.RESET_ALL}")
+                return
+        
+        print(f"{Fore.GREEN}[+] Running DNS reconnaissance on {target}...{Style.RESET_ALL}")
+        print(f"{Fore.YELLOW}[*] Scanning DNS port 53 with version detection{Style.RESET_ALL}")
+        
+        try:
+            from soc_nmap_dashboard import SOCNmapIntegration
+            soc = SOCNmapIntegration()
+            soc.dns_recon(target)
+            print(f"{Fore.GREEN}[+] DNS recon complete! Dashboard opened in browser.{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] DNS recon failed: {e}{Style.RESET_ALL}")
+
+    def cmd_soc_map(self):
+        """Generate threat map from last scan"""
+        try:
+            from soc_nmap_dashboard import SOCNmapIntegration
+            
+            # Create a temporary instance to access the dashboard
+            soc = SOCNmapIntegration()
+            
+            # Check if we have a dashboard with data
+            if soc.dashboard and soc.dashboard.network_nodes and len(soc.dashboard.network_nodes) > 0:
+                print(f"{Fore.GREEN}[+] Generating threat intelligence map...{Style.RESET_ALL}")
+                soc.dashboard.generate_full_dashboard()
+                print(f"{Fore.GREEN}[+] Threat map opened in browser{Style.RESET_ALL}")
+            else:
+                print(f"{Fore.YELLOW}[!] No scan data available. Run a scan first: soc-quick <target>{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[!] Or launch interactive dashboard: soc{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] Failed to generate map: {e}{Style.RESET_ALL}")
+
+    def cmd_soc_history(self):
+        """Show scan history"""
+        try:
+            from soc_nmap_dashboard import SOCNmapIntegration
+            
+            soc = SOCNmapIntegration()
+            
+            if soc.dashboard and soc.dashboard.scan_history and len(soc.dashboard.scan_history) > 0:
+                print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+                print(f"{Fore.GREEN}[+] Recent SOC Scan History:{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+                
+                for i, hist in enumerate(soc.dashboard.scan_history[-10:], 1):
+                    # Determine risk indicator
+                    if hist.risk_score >= 7:
+                        risk_color = Fore.RED
+                        risk_icon = "🔴"
+                    elif hist.risk_score >= 4:
+                        risk_color = Fore.YELLOW
+                        risk_icon = "🟡"
+                    else:
+                        risk_color = Fore.GREEN
+                        risk_icon = "🟢"
+                    
+                    print(f"{risk_color}{risk_icon} Scan #{i}{Style.RESET_ALL}")
+                    print(f"   {Fore.CYAN}Target:{Style.RESET_ALL} {hist.target}")
+                    print(f"   {Fore.CYAN}Time:{Style.RESET_ALL} {hist.timestamp.strftime('%Y-%m-%d %H:%M:%S')}")
+                    print(f"   {Fore.CYAN}Duration:{Style.RESET_ALL} {hist.duration}s")
+                    print(f"   {Fore.CYAN}Open Ports:{Style.RESET_ALL} {hist.open_ports}")
+                    print(f"   {Fore.CYAN}Risk Score:{Style.RESET_ALL} {risk_color}{hist.risk_score:.1f}/10{Style.RESET_ALL}")
+                    print(f"   {Fore.CYAN}Services:{Style.RESET_ALL} {', '.join(hist.services[:5])}")
+                    print()
+            else:
+                print(f"{Fore.YELLOW}[!] No scan history available{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[*] Run a scan first: soc-quick <target>{Style.RESET_ALL}")
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] Failed to show history: {e}{Style.RESET_ALL}")
+
+    def cmd_soc_organizations(self):
+        """Show organization location database"""
+        try:
+            from soc_nmap_dashboard import OrganizationLocationDB
+            
+            print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}[+] Organization Location Database{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+            
+            # Group by country
+            countries = {}
+            for domain, info in OrganizationLocationDB.ORGANIZATIONS.items():
+                country = info.get("country", "Unknown")
+                if country not in countries:
+                    countries[country] = []
+                countries[country].append((domain, info))
+            
+            for country in sorted(countries.keys()):
+                orgs = countries[country]
+                flag = orgs[0][1].get("flag", "🌐")
+                print(f"{Fore.YELLOW}{flag} {country}: {Fore.GREEN}{len(orgs)} organizations{Style.RESET_ALL}")
+                
+                for domain, info in orgs[:5]:
+                    city = info.get("city", "Unknown")
+                    region = info.get("region", "")
+                    region_str = f" ({region})" if region else ""
+                    print(f"   {Fore.CYAN}→{Style.RESET_ALL} {domain} - {city}{region_str}")
+                
+                if len(orgs) > 5:
+                    print(f"   {Fore.DIM}... and {len(orgs) - 5} more{Style.RESET_ALL}")
+                print()
+            
+            print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}[+] Total: {len(OrganizationLocationDB.ORGANIZATIONS)} organizations{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[*] To add custom organizations, edit the database in soc_nmap_dashboard.py{Style.RESET_ALL}")
+            
+        except ImportError as e:
+            print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
+        except Exception as e:
+            print(f"{Fore.RED}[!] Failed to show organizations: {e}{Style.RESET_ALL}")
 
     def soc_status(self):
-        """Check SOC dashboard status"""
-        
-        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
-        print(f"{Fore.GREEN}🛡️ SOC NMAP DASHBOARD STATUS{Style.RESET_ALL}")
-        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
-        
-        if SOC_NMAP_AVAILABLE:
-            print(f"{Fore.YELLOW}Status:{Style.RESET_ALL} {Fore.GREEN}✓ Available{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}Features:{Style.RESET_ALL}")
-            print(f"  ✓ Geographic Threat Map with Blinking Markers")
-            print(f"  ✓ AI Vulnerability Scoring (CVSS-like)")
-            print(f"  ✓ Network Topology Visualization")
-            print(f"  ✓ Historical Scan Timeline")
-            print(f"  ✓ Organization Headquarters Location")
-        else:
-            print(f"{Fore.YELLOW}Status:{Style.RESET_ALL} {Fore.RED}✗ Not Available{Style.RESET_ALL}")
-            print(f"{Fore.RED}[!] soc_nmap_dashboard.py not found or import failed{Style.RESET_ALL}")
-        
-        print(f"{Fore.CYAN}{'═'*60}{Style.RESET_ALL}")
+        """Show SOC dashboard status"""
+        try:
+            from soc_nmap_dashboard import SOCNmapIntegration
+            
+            soc = SOCNmapIntegration()
+            
+            print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}[+] SOC Nmap Dashboard Status{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+            
+            # Check nmap
+            nmap_installed = shutil.which("nmap") is not None
+            print(f"{'✅' if nmap_installed else '❌'} Nmap: {'Installed' if nmap_installed else 'Not installed'}")
+            
+            # Check Python packages
+            packages = {
+                'folium': 'GeoIP Maps',
+                'plotly': 'Network Topology',
+                'requests': 'GeoIP Lookup'
+            }
+            
+            print(f"\n{Fore.YELLOW}Python Packages:{Style.RESET_ALL}")
+            for pkg, desc in packages.items():
+                try:
+                    __import__(pkg)
+                    print(f"   ✅ {pkg} - {desc}")
+                except ImportError:
+                    print(f"   ❌ {pkg} - {desc} (install: pip install {pkg})")
+            
+            # Check workspace
+            workspace = os.path.expanduser("~/dsterminal_workspace/scans")
+            if os.path.exists(workspace):
+                scan_count = len([f for f in os.listdir(workspace) if f.endswith('.html')])
+                print(f"\n📁 Workspace: {workspace}")
+                print(f"   📊 Generated reports: {scan_count}")
+            
+            print()
+        except ImportError:
+            print(f"{Fore.RED}[!] SOC module not available{Style.RESET_ALL}")
 
     def soc_help(self):
         """Display SOC Nmap Dashboard help"""
         help_text = f"""
-    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
-    {Fore.GREEN}🛡️ SOC NMAP DASHBOARD COMMANDS{Style.RESET_ALL}
-    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+    {Fore.CYAN}{'='*70}{Style.RESET_ALL}
+    {Fore.GREEN}🛡️ SOC Nmap Dashboard Commands{Style.RESET_ALL}
+    {Fore.CYAN}{'='*70}{Style.RESET_ALL}
 
-    {Fore.YELLOW}soc-scan <target>{Style.RESET_ALL}
-        Launch SOC-grade scan with real-time dashboard
-        Example: soc-scan 192.168.1.1
+    {Fore.YELLOW}Interactive Mode:{Style.RESET_ALL}
+    {Fore.GREEN}soc{Style.RESET_ALL} or {Fore.GREEN}soc-nmap{Style.RESET_ALL}     - Launch interactive SOC dashboard with 3-panel UI
 
-    {Fore.YELLOW}soc-quick <target>{Style.RESET_ALL}
-        Quick SOC scan with optimized flags
-        Example: soc-quick scanme.nmap.org
+    {Fore.YELLOW}Quick Scans:{Style.RESET_ALL}
+    {Fore.GREEN}soc-quick <target>{Style.RESET_ALL}    - Quick scan (top 100 ports with service detection)
+    {Fore.GREEN}soc-full <target>{Style.RESET_ALL}     - Full aggressive scan (all ports + scripts + OS detection)
+    {Fore.GREEN}soc-dns <domain>{Style.RESET_ALL}      - DNS reconnaissance scan
 
-    {Fore.YELLOW}soc-full <target>{Style.RESET_ALL}
-        Full comprehensive SOC scan (may take several minutes)
-        Example: soc-full 10.0.0.1
+    {Fore.YELLOW}Analysis & Reporting:{Style.RESET_ALL}
+    {Fore.GREEN}soc-map{Style.RESET_ALL}               - Generate threat intelligence map from last scan
+    {Fore.GREEN}soc-history{Style.RESET_ALL}           - Show scan history with risk scores
+    {Fore.GREEN}soc-orgs{Style.RESET_ALL}              - Show organization location database
 
-    {Fore.YELLOW}soc-dashboard{Style.RESET_ALL}
-        Open SOC dashboard (view last scan results)
+    {Fore.YELLOW}Status & Help:{Style.RESET_ALL}
+    {Fore.GREEN}soc-status{Style.RESET_ALL}            - Show SOC dashboard status and installed packages
+    {Fore.GREEN}soc-help{Style.RESET_ALL}              - Show this help message
 
-    {Fore.YELLOW}soc-status{Style.RESET_ALL}
-        Check SOC dashboard status
+    {Fore.YELLOW}Examples:{Style.RESET_ALL}
+    {Fore.GREEN}soc-quick google.com{Style.RESET_ALL}
+    {Fore.GREEN}soc-full 192.168.1.1{Style.RESET_ALL}
+    {Fore.GREEN}soc-dns example.com{Style.RESET_ALL}
+    {Fore.GREEN}soc{Style.RESET_ALL}
 
-    {Fore.YELLOW}soc-help{Style.RESET_ALL}
-        Display this help message
+    {Fore.CYAN}{'='*70}{Style.RESET_ALL}
 
-    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
-    {Fore.GREEN}Dashboard Features:{Style.RESET_ALL}
-    • Geographic Threat Map with Blinking Markers
-    • World Map with GeoIP visualization
-    • AI Vulnerability Scoring (CVSS-like)
-    • Animated Network Topology
-    • Organization Headquarters Location
-    • Historical Scan Timeline
-    • Real-time Service Discovery
-    {Fore.CYAN}{'═'*60}{Style.RESET_ALL}
+# In your show_help method, add this section
+print(f"{Fore.CYAN}┌─────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Fore.YELLOW}  🛡️  SOC NMAP DASHBOARD COMMANDS                          {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}├─────────────────────────────────────────────────────────────┤{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc{Style.RESET_ALL}              - Launch interactive SOC dashboard          {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-quick <target>{Style.RESET_ALL}  - Quick scan (top 100 ports)               {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-full <target>{Style.RESET_ALL}   - Full aggressive scan (all ports)         {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-dns <domain>{Style.RESET_ALL}    - DNS reconnaissance scan                  {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-map{Style.RESET_ALL}            - Generate threat map from last scan       {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-history{Style.RESET_ALL}        - Show scan history                        {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-orgs{Style.RESET_ALL}           - Show organization location database      {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-status{Style.RESET_ALL}         - Show SOC dashboard status                {Fore.CYAN}│{Style.RESET_ALL}")
+print(f"{Fore.CYAN}└─────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
+
     """
         print(help_text)
-
     def soc_test(self):
         """Test SOC functionality"""
         print(f"{Fore.CYAN}[DEBUG] Testing SOC functionality{Style.RESET_ALL}")
@@ -8595,64 +8854,7 @@ class SecurityTerminal:
         elif parts[0] == "harden-ssh":
             self.harden_ssh_only()
             return
-        # ==================== SOC COMMANDS (Same format as hardening) ====================
-        elif parts[0] == "soc-scan":
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_nmap_scan(target)
-            return
-        elif parts[0] == "soc-quick":
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_quick_scan(target)
-            return
-        elif parts[0] == "soc-full":
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_full_scan(target)
-            return
-        elif parts[0] == "soc-dashboard":
-            self.soc_dashboard()
-            return
-        elif parts[0] == "soc-status":
-            self.soc_status()
-            return
-        elif parts[0] == "soc-help":
-            self.soc_help()
-            return
-        elif parts[0] == "soc-test":
-            self.soc_test()
-            return
-        elif parts[0] == "soc-interactive":
-            self.soc_interactive()
-            return
-
-        # ==================== END HARDENING COMMANDS ====================
-
-# Direct command shortcuts
-# Add to command handler:
- # SOC Nmap Dashboard Commands
- # In your command processing loop
-        elif cmd in ["soc-scan", "socscan"]:
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_nmap_scan(target)
-
-        elif cmd in ["soc-quick", "socquick"]:
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_quick_scan(target)
-
-        elif cmd in ["soc-full", "socfull"]:
-            target = parts[1] if len(parts) > 1 else None
-            self.soc_full_scan(target)
-
-        elif cmd in ["soc-dashboard", "socdashboard"]:
-            self.soc_dashboard()
-
-        elif cmd in ["soc-status", "socstatus"]:
-            self.soc_status()
-
-        elif cmd in ["soc-help", "sochelp"]:
-            self.soc_help()
-
-        elif cmd in ["soc-test", "socdebug"]:
-            self.soc_test()
+    
     # SOC Nmap Dashboard Commands ends here=============
 
         elif cmd in ["harden-list", "harden-ls"]:
@@ -8704,21 +8906,21 @@ class SecurityTerminal:
             return
     # ==================== END HARDENING COMMANDS ====================
         # Direct shortcuts for SOC commands (no space version)
-        # elif cmd == "soc-scan":
-        #     target = parts[1] if len(parts) > 1 else None
-        #     self.soc_nmap_scan(target)
-        # elif cmd == "soc-quick":
-        #     target = parts[1] if len(parts) > 1 else None
-        #     self.soc_quick_scan(target)
-        # elif cmd == "soc-full":
-        #     target = parts[1] if len(parts) > 1 else None
-        #     self.soc_full_scan(target)
-        # elif cmd == "soc-dashboard":
-        #     self.soc_dashboard()
-        # elif cmd == "soc-status":
-        #     self.soc_status()
-        # elif cmd == "soc-help":
-        #     self.soc_help()
+        elif cmd == 'soc' or cmd == 'soc-nmap':
+            self.cmd_soc_nmap()
+        elif cmd == 'soc-quick':
+            self.cmd_soc_quick()
+        elif cmd == 'soc-full':
+            self.cmd_soc_full()
+        elif cmd == 'soc-dns':
+            self.cmd_soc_dns()
+        elif cmd == 'soc-map':
+            self.cmd_soc_map()
+        elif cmd == 'soc-history':
+            self.cmd_soc_history()
+        elif cmd == 'soc-orgs':
+            self.cmd_soc_organizations()
+    
 
         # Crypto commands
         elif cmd == "crypto-list":
@@ -9410,7 +9612,7 @@ class SecurityTerminal:
         elif cmd == "torify": 
             self.enable_tor_routing()
             self.show_tip(cmd)
-        elif cmd == "update": 
+        elif cmd == "dst-update": 
             print(f"\n[+] {self.check_updates()}")
             self.show_tip(cmd)
         elif cmd == "vt-scan": 
