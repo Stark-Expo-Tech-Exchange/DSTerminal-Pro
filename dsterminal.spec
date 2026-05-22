@@ -12,7 +12,6 @@ excludes = [
     'distutils.tests', '_posixshmem', 'resource', 'fcntl',
     'tkinter',  # Exclude if not needed (adds ~5MB)
     'unittest',  # Exclude test framework
-    'email',  # Exclude if not needed
     'xmlrpc',  # Exclude if not needed
 ]
 
@@ -98,6 +97,11 @@ hiddenimports = [
     'webbrowser', 'email', 'email.mime', 'email.mime.text', 'email.mime.multipart',
     'smtplib', 'ftplib', 'telnetlib', 'json.decoder', 'json.encoder',
     
+    # timezone finder
+    'timezonefinder', 'timezonefinder.timezonefinder',
+    'h3', 'h3._version', 'h3.api', 'h3.api.numpy_int',
+    'importlib.metadata', 'importlib.resources',
+
     # Data Processing & Visualization
     'psutil', 'psutil._psutil_windows', 'psutil._common',
     'folium', 'folium.folium', 'folium.plugins', 'folium.map',
