@@ -48,9 +48,6 @@ UpdateUninstallLogAppName=yes
 [Languages]
 Name: "english"; MessagesFile: "compiler:Default.isl"
 
-; Include additional language files if needed
-; Name: "french"; MessagesFile: "compiler:Languages\French.isl"
-
 [Types]
 Name: "full"; Description: "Full Installation (Recommended)"
 Name: "compact"; Description: "Compact Installation"
@@ -63,11 +60,14 @@ Name: "tools"; Description: "Additional Security Tools"; Types: full custom
 Name: "templates"; Description: "Report Templates"; Types: full custom
 Name: "ffmpeg"; Description: "FFmpeg (Video Analysis)"; Types: full custom
 Name: "updatehelper"; Description: "Auto-Update Helper Script"; Types: full custom
-; ===== NEW: Dependency Components =====
-Name: "dependencies"; Description: "Install Required Dependencies (Nmap, Python packages)"; Types: full custom; Flags: checkedonce
-Name: "dependencies\nmap"; Description: "Nmap Network Scanner"; Types: full; Flags: checkedonce
-Name: "dependencies\python"; Description: "Python 3.11+ (Required for SOC features)"; Types: full; Flags: checkedonce
-Name: "dependencies\packages"; Description: "Python Packages (colorama, requests, folium, plotly, reportlab)"; Types: full; Flags: checkedonce
+; ===== Dependency Components =====
+Name: "dependencies"; Description: "Install Required Dependencies (Nmap, Python packages)"; Types: full custom
+Name: "dependencies\nmap"; Description: "Nmap Network Scanner"; Types: full
+Name: "dependencies\sqlmap"; Description: "SQLMap (SQL Injection Tool)"; Types: full
+Name: "dependencies\metasploit"; Description: "Metasploit Framework"; Types: full
+Name: "dependencies\whois"; Description: "WHOIS Domain Lookup"; Types: full
+Name: "dependencies\python"; Description: "Python 3.11+ (Required for SOC features)"; Types: full
+Name: "dependencies\packages"; Description: "Python Packages (colorama, requests, folium, plotly, reportlab)"; Types: full
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"; Components: core; Flags: checkedonce
@@ -75,12 +75,11 @@ Name: "quicklaunchicon"; Description: "Create a &Quick Launch shortcut"; GroupDe
 Name: "autoupdate"; Description: "Automatically check for updates on startup"; GroupDescription: "Update settings:"; Components: core; Flags: checkedonce
 Name: "docshortcut"; Description: "Create Documentation shortcut on desktop"; GroupDescription: "Documentation:"; Components: docs; Flags: unchecked
 Name: "startwithwindows"; Description: "Start DSTerminal with Windows (minimized)"; GroupDescription: "Startup options:"; Components: core; Flags: unchecked
-; ===== NEW: Dependency installation tasks =====
+; ===== Dependency installation tasks =====
 Name: "installdeps"; Description: "Install/Update missing dependencies on completion"; GroupDescription: "Dependency management:"; Components: dependencies; Flags: checkedonce
 
 [Files]
 ; ========== CORE APPLICATION ==========
-; Main executable (ensure this file exists in dist folder)
 Source: "dist\dsterminal_win-2026_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
 Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
@@ -89,7 +88,6 @@ Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
 Source: "config\*"; DestDir: "{app}\config"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: core
 Source: "config\settings.json"; DestDir: "{app}\config"; Flags: ignoreversion onlyifdoesntexist; Components: core
 Source: "config\default.profile"; DestDir: "{app}\config"; Flags: ignoreversion; Components: core
-; Python dependencies (if needed)
 Source: "requirements.txt"; DestDir: "{app}"; Flags: ignoreversion; Components: core
 
 ; ========== DOCUMENTATION ==========
@@ -107,8 +105,6 @@ Source: "tools\diagnostic.bat"; DestDir: "{app}\tools"; Flags: ignoreversion ski
 
 ; ========== TEMPLATES ==========
 Source: "templates\*"; DestDir: "{app}\templates"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: templates
-;Source: "templates\reports\*"; DestDir: "{app}\templates\reports"; Flags: ignoreversion recursesubdirs; Components: templates
-;Source: "templates\scripts\*"; DestDir: "{app}\templates\scripts"; Flags: ignoreversion; Components: templates
 
 ; ========== FFMPEG (Conditional) ==========
 Source: "redist\ffmpeg\*"; DestDir: "{app}\ffmpeg"; Flags: ignoreversion recursesubdirs createallsubdirs; Components: ffmpeg; Check: IsFFmpegRequired
@@ -124,14 +120,22 @@ Source: "update\update-checker.exe"; DestDir: "{app}\update"; Flags: ignoreversi
 Source: "update\version.json"; DestDir: "{app}\update"; Flags: ignoreversion; Components: core
 Source: "update\updater.ps1"; DestDir: "{app}\update"; Flags: ignoreversion; Components: updatehelper
 
-; ========== DEPENDENCY INSTALLATION SCRIPTS (NEW) ==========
-Source: "tools\install_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+; ========== DEPENDENCY INSTALLATION SCRIPTS ==========
 Source: "tools\check_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_nmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\nmap
+Source: "tools\install_all_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_chocolatey.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_remaining_deps.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_metasploit_wsl.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\metasploit
+Source: "tools\install_metasploit.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\metasploit
+Source: "tools\install_nmap_admin.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_nmap.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_whois.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\whois
+Source: "tools\install_sqlmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\sqlmap
 Source: "tools\install_python_packages.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\packages
-
-; ========== WORKSPACE INITIALIZATION FILES ==========
-;Source: "workspace_defaults\*"; DestDir: "{userappdata}\DSTerminal_Workspace"; Flags: ignoreversion recursesubdirs createallsubdirs onlyifdoesntexist; AfterInstall: InitializeWorkspace
+Source: "tools\install_python.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\python
+Source: "tools\install_remaining_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\check_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
+Source: "tools\install_nmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\nmap
 
 [Dirs]
 ; Create workspace directories
@@ -156,90 +160,53 @@ Name: "{app}\temp"; Flags: uninsalwaysuninstall
 Name: "{group}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Comment: "Launch DSTerminal Security Operations Center"
 Name: "{group}\Uninstall DSTerminal"; Filename: "{uninstallexe}"; Comment: "Remove DSTerminal from your system"
 Name: "{group}\DSTerminal Documentation"; Filename: "{app}\docs\index.html"; IconFilename: "{app}\dsterminal.exe"; Components: docs
-
-; Desktop icons
-Name: "{userdesktop}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Tasks: desktopicon; Comment: "DSTerminal Security Terminal"
+Name: "{userdesktop}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Tasks: desktopicon; Comment: "DSTerminal Security Terminal"; Parameters: "/MAX"
 Name: "{userdesktop}\DSTerminal Documentation"; Filename: "{app}\docs\index.html"; IconFilename: "{app}\dsterminal.exe"; Tasks: docshortcut; Components: docs
 
-; Quick Launch (Windows 7/10)
-;Name: "{userappdata}\Microsoft\Internet Explorer\Quick Launch\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: quicklaunchicon
-
-; Startup folder (optional)
-;Name: "{userstartup}\DSTerminal.lnk"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; Tasks: startwithwindows; Parameters: "--minimized"
-
 [Run]
-; ========== POST-INSTALLATION ACTIONS ==========
-
 ; Launch documentation after install (if selected)
 Filename: "{app}\docs\index.html"; Description: "View DSTerminal Documentation"; Flags: postinstall shellexec skipifsilent; Components: docs
+
+; Add to PATH
 Filename: "{cmd}"; Parameters: "/c setx PATH ""%PATH%;{app}"""; Flags: runhidden
 
-; ===== NEW: Check and Install Dependencies =====
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; Description: "Checking for missing dependencies..."; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
+; Check and install dependencies
+;Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
 
-; ===== NEW: Install Nmap if selected and missing =====
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; Description: "Installing Nmap..."; Flags: runhidden waituntilterminated; Components: dependencies\nmap; Tasks: installdeps; Check: IsNmapMissing
+; Install Nmap if missing
+;Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\nmap; Tasks: installdeps; Check: IsNmapMissing
 
-; ===== NEW: Install Python packages if selected =====
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_python_packages.ps1"""; Description: "Installing Python packages..."; Flags: runhidden waituntilterminated; Components: dependencies\packages; Tasks: installdeps; Check: ArePythonPackagesMissing
+; Install Python packages if missing
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_python_packages.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\packages; Tasks: installdeps; Check: ArePythonPackagesMissing
+
+; Install Metasploit if missing
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_metasploit_wsl.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\metasploit; Tasks: installdeps; Check: IsMetasploitMissing
 
 ; Launch DSTerminal after install
 Filename: "{app}\dsterminal.exe"; Description: "Launch DSTerminal"; Flags: nowait postinstall skipifsilent; Components: core
 
-; Register file associations (optional)
-Filename: "{app}\tools\register-file-assoc.bat"; Parameters: "/S"; Flags: runhidden waituntilterminated skipifsilent; Check: FileExists(ExpandConstant('{app}\tools\register-file-assoc.bat'))
-
 ; Create update schedule task (if auto-update enabled)
 Filename: "schtasks"; Parameters: "/create /tn ""DSTerminal Update Check"" /tr ""'{app}\update\update-checker.exe'"" /sc weekly /d SUN /st 09:00 /f"; Flags: runhidden waituntilterminated skipifsilent; Tasks: autoupdate; Check: IsAdminInstallMode
 
-; Check dependencies with bypass
-Filename: "powershell.exe"; 
-Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; 
-Flags: runhidden waituntilterminated; 
-Components: dependencies
-
-; Install Nmap with bypass
-Filename: "powershell.exe"; 
-Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; 
-Flags: runhidden waituntilterminated; 
-Components: dependencies\nmap
-
-; Install Metasploit
-Filename: "powershell.exe";
-Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_metasploit_wsl.ps1""";
-Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_metasploit.ps1""";
-Flags: runhidden waituntilterminated;
-Components: dependencies\metasploit;
-Tasks: installdeps; Check: IsMetasploitMissing
-
-; Install Python packages with bypass  
-Filename: "powershell.exe"; 
-Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_python_packages.ps1"""; 
-Flags: runhidden waituntilterminated; 
-Components: dependencies\packages
-
 [UninstallRun]
 ; Clean up scheduled task
-Filename: "schtasks"; Parameters: "/delete /tn ""DSTerminal Update Check"" /f"; Check: IsAdminInstallMode
-
-; Clean up workspace (optional - user choice)
-;Filename: "{cmd}"; Parameters: "/c rmdir /s /q ""{userappdata}\DSTerminal_Workspace"""; Flags: runhidden waituntilterminated; Check: RemoveWorkspaceCheck
+Filename: "schtasks"; Parameters: "/delete /tn ""DSTerminal Update Check"" /f"; Check: IsAdminInstallMode; RunOnceId: "RemoveScheduledTask"
 
 [Code]
 // Global variables
 var
-  RemoveWorkspacePage: TInputOptionWizardPage;
-  UpdateChannelPage: TInputOptionWizardPage;
-  DependencyCheckPage: TInputOptionWizardPage;  // NEW: For dependency options
+  // RemoveWorkspacePage: TInputOptionWizardPage;
+  // helperUpdateChannelPage: TInputOptionWizardPage;
+  DependencyCheckPage: TInputOptionWizardPage;
 
 // ========== FFMPEG CHECK ==========
 function IsFFmpegRequired: Boolean;
 begin
-  Result := 
-    (FileExists(ExpandConstant('{sys}\ffmpeg.exe')) = False) and
-    (FileExists(ExpandConstant('{app}\ffmpeg\ffmpeg.exe')) = False);
+  Result := (FileExists(ExpandConstant('{sys}\ffmpeg.exe')) = False) and
+            (FileExists(ExpandConstant('{app}\ffmpeg\ffmpeg.exe')) = False);
 end;
 
+// ========== METASPLOIT CHECK ==========
 function IsMetasploitMissing: Boolean;
 var
   ResultCode: Integer;
@@ -252,7 +219,7 @@ begin
   end;
 end;
 
-// ========== NEW: Dependency Check Functions ==========
+// ========== NMAP CHECK ==========
 function IsNmapMissing: Boolean;
 var
   ResultCode: Integer;
@@ -265,27 +232,7 @@ begin
   end;
 end;
 
-function IsPythonInstalled: Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := False;
-  if Exec(ExpandConstant('{cmd}'), '/c python --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ResultCode = 0 then
-      Result := True;
-  end;
-  
-  if not Result then
-  begin
-    if Exec(ExpandConstant('{cmd}'), '/c python3 --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-    begin
-      if ResultCode = 0 then
-        Result := True;
-    end;
-  end;
-end;
-
+// ========== PYTHON PACKAGES CHECK ==========
 function ArePythonPackagesMissing: Boolean;
 var
   ResultCode: Integer;
@@ -294,7 +241,6 @@ begin
   Result := True;
   TempFile := ExpandConstant('{tmp}\check_packages.vbs');
   
-  // Create VBS script to check packages
   SaveStringToFile(TempFile, 
     'Set objShell = CreateObject("WScript.Shell")' + #13#10 +
     'packages = Array("colorama", "requests", "folium", "plotly", "reportlab")' + #13#10 +
@@ -326,7 +272,6 @@ begin
   WorkspacePath := ExpandConstant('{userappdata}\DSTerminal_Workspace');
   ConfigFile := WorkspacePath + '\config\workspace.json';
   
-  // Create default config if it doesn't exist
   if not FileExists(ConfigFile) then
   begin
     SaveStringToFile(ConfigFile, 
@@ -342,16 +287,12 @@ begin
   end;
 end;
 
-// ========== NEW: Custom Wizard Page for Dependencies =====
+// ========== CUSTOM WIZARD PAGE FOR DEPENDENCIES =====
 procedure InitializeWizard;
-var
-  DependencyPage: TWizardPage;
-  DependencyRadioGroup: TNewRadioButton;
 begin
-  // Create dependency options page
   DependencyCheckPage := CreateInputOptionPage(wpSelectTasks,
     'Dependency Installation', 'Install required dependencies',
-    'DSTerminal requires certain dependencies for full functionality. ' +
+    'DSTerminal requires certain dependencies for full functionality.' + #13#10#13#10 +
     'Select your preferred installation method:' + #13#10#13#10 +
     'Note: You can skip this and install dependencies manually later.',
     True, False);
@@ -359,35 +300,21 @@ begin
   DependencyCheckPage.Add('Automatically install all missing dependencies (Recommended)');
   DependencyCheckPage.Add('Only check for missing dependencies (Show report)');
   DependencyCheckPage.Add('Skip dependency installation (I will install manually)');
-  DependencyCheckPage.Values[0] := True;  // Default to auto-install
+  DependencyCheckPage.Values[0] := True;
 end;
 
 // ========== HELPER FUNCTIONS ==========
-function GetUninstallString: string;
-var
-  sUnInstPath: string;
-  sUnInstallString: String;
-begin
-  sUnInstPath := ExpandConstant('Software\Microsoft\Windows\CurrentVersion\Uninstall\{#emit SetupSetting("AppName")}_is1');
-  sUnInstallString := '';
-  if not RegQueryStringValue(HKLM, sUnInstPath, 'UninstallString', sUnInstallString) then
-    RegQueryStringValue(HKCU, sUnInstPath, 'UninstallString', sUnInstallString);
-  Result := sUnInstallString;
-end;
-
-// ========== CHECK FOR ADMIN RIGHTS (FOR TASKS THAT NEED IT) ==========
 function IsAdminInstallMode: Boolean;
 begin
-  Result := IsAdminLoggedOn or IsPowerUserLoggedOn;
+  Result := IsAdmin or IsPowerUserLoggedOn;
 end;
 
-// ========== NEW: Remove Workspace Check Function ==========
 function RemoveWorkspaceCheck: Boolean;
 begin
-  Result := False;  // Set to True if you want to ask user about workspace removal
+  Result := False;
 end;
 
-// ========== NEW: CurStepChanged for dependency handling =====
+// ========== DEPENDENCY HANDLING =====
 procedure CurStepChanged(CurStep: TSetupStep);
 var
   DependencyChoice: Integer;
@@ -398,20 +325,17 @@ begin
     
     if DependencyChoice = 0 then
     begin
-      // Auto-install dependencies
       MsgBox('DSTerminal will now check and install missing dependencies. This may take a few minutes.', mbInformation, MB_OK);
     end
     else if DependencyChoice = 1 then
     begin
-      // Only check, show report
       MsgBox('DSTerminal will check for missing dependencies and show a report.', mbInformation, MB_OK);
     end
     else
     begin
-      // Skip installation
       MsgBox('Dependency installation skipped. You can install them manually later.' + #13#10#13#10 +
-             'Required: nmap, whois, sqlmap' + #13#10 +
-             'Optional: Python packages (colorama, requests, folium, plotly, reportlab)', mbInformation, MB_OK);
+             'Required: nmap, sqlmap' + #13#10 +
+             'Optional: whois, Metasploit, Python packages', mbInformation, MB_OK);
     end;
   end;
 end;

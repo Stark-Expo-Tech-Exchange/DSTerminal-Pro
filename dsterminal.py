@@ -1,5 +1,59 @@
-import os
+# -*- coding: utf-8 -*-
 import sys
+import subprocess
+import os
+import platform
+
+def maximize_terminal():
+    """Maximize terminal window on startup - Cross Platform"""
+    system = platform.system()
+    
+    if system == "Windows":
+        try:
+            subprocess.run(['powershell', '-Command', 
+                '$hwnd = (Get-Process -Id $pid).MainWindowHandle; '
+                'Add-Type -MemberDefinition @"[DllImport("user32.dll")]public static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);"@ -Name "Win32" -Namespace "Utils"; '
+                '[Utils.Win32]::ShowWindow($hwnd, 3)'], 
+                capture_output=True)
+        except:
+            pass
+    
+    elif system == "Linux":
+        try:
+            # Method 1: Using xdotool (if installed)
+            result = subprocess.run(['which', 'xdotool'], capture_output=True)
+            if result.returncode == 0:
+                subprocess.run(['xdotool', 'getactivewindow', 'windowsize', '100%', '100%'], capture_output=True)
+            else:
+                # Method 2: Using terminal-specific escape sequences
+                # Send resize command to most terminals
+                sys.stdout.write('\x1b[8;40;140t')  # Set to 40 rows x 140 cols
+                sys.stdout.flush()
+        except:
+            pass
+    
+    elif system == "Darwin":  # macOS
+        try:
+            # AppleScript to maximize terminal
+            applescript = '''
+            tell application "Terminal"
+                activate
+                set bounds of front window to {0, 22, 1440, 878}
+                set front window's size to {140, 40}
+            end tell
+            '''
+            subprocess.run(['osascript', '-e', applescript], capture_output=True)
+        except:
+            try:
+                # Alternative: Use escape sequence
+                sys.stdout.write('\x1b[8;40;140t')
+                sys.stdout.flush()
+            except:
+                pass
+
+# Call the function at startup
+maximize_terminal()
+
 import tempfile
 from pathlib import Path
 # Add at the top of the file with other imports
@@ -2875,8 +2929,8 @@ class SecurityTerminal:
             self.show_help()
 
         # SOC Nmap Dashboard Commands
-        # elif command == 'soc' or command == 'soc-nmap':
-        #     self.cmd_soc_nmap()
+        elif command == 'soc' or command == 'soc-nmap':
+            self.cmd_soc_nmap()
         elif command == 'soc-quick':
             target = args[0] if args else None
             self.cmd_soc_quick(target)
@@ -2894,6 +2948,8 @@ class SecurityTerminal:
             self.cmd_soc_organizations()
         elif command == 'soc-status':
             self.cmd_soc_status()
+        elif command == 'soc-dashboard':
+            self.soc_dashboard_active()
         elif command == 'soc-reports':
             self.cmd_soc_reports()
         elif command == 'soc-report':
@@ -3702,12 +3758,11 @@ class SecurityTerminal:
                     print(f"   {Fore.CYAN}→{Style.RESET_ALL} {domain} - {city}{region_str}")
                 
                 if len(orgs) > 5:
-                    print(f"   {Fore.DIM}... and {len(orgs) - 5} more{Style.RESET_ALL}")
+                    print(f"   {Fore.MAGENTA}... and {len(orgs) - 5} more{Style.RESET_ALL}")
                 print()
             
             print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
             print(f"{Fore.GREEN}[+] Total: {len(OrganizationLocationDB.ORGANIZATIONS)} organizations{Style.RESET_ALL}")
-            print(f"{Fore.YELLOW}[*] To add custom organizations, edit the database in soc_nmap_dashboard.py{Style.RESET_ALL}")
             
         except ImportError as e:
             print(f"{Fore.RED}[!] Failed to import SOC module: {e}{Style.RESET_ALL}")
@@ -3723,28 +3778,19 @@ class SecurityTerminal:
         # Check if file exists
         import os
         if os.path.exists("soc_nmap_dashboard.py"):
-            print(f"{Fore.GREEN}✅ soc_nmap_dashboard.py: Found{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}✅ {Style.RESET_ALL}")
             
             # Check file size
             size = os.path.getsize("soc_nmap_dashboard.py")
             print(f"   {Fore.CYAN}Size: {size} bytes{Style.RESET_ALL}")
         else:
-            print(f"{Fore.RED}❌ soc_nmap_dashboard.py: Not found{Style.RESET_ALL}")
+            print(f"{Fore.RED}❌ {Style.RESET_ALL}")
             print(f"   {Fore.YELLOW}Current directory: {os.getcwd()}{Style.RESET_ALL}")
         
         # Check nmap
         nmap_installed = shutil.which("nmap") is not None
-        print(f"\n{'✅' if nmap_installed else '❌'} Nmap: {'Installed' if nmap_installed else 'Not installed'}")
+        print(f"\n{'✅' if nmap_installed else '❌'} Network Mapper: {'✅' if nmap_installed else '❌'}")
         
-        # Check Python packages
-        print(f"\n{Fore.YELLOW}Optional Packages:{Style.RESET_ALL}")
-        packages = ['folium', 'plotly', 'requests', 'reportlab']
-        for pkg in packages:
-            try:
-                __import__(pkg)
-                print(f"   {Fore.GREEN}✅{Style.RESET_ALL} {pkg}")
-            except ImportError:
-                print(f"   {Fore.RED}❌{Style.RESET_ALL} {pkg}")
         
         # Check workspace
         workspace = os.path.expanduser("~/dsterminal_workspace/scans")
@@ -3774,7 +3820,7 @@ class SecurityTerminal:
     {Fore.GREEN}soc-reports{Style.RESET_ALL}            - List all generated reports (HTML & PDF)
 
     {Fore.YELLOW}Analysis & Reporting:{Style.RESET_ALL}
-    {Fore.GREEN}soc-map{Style.RESET_ALL}               - Generate threat intelligence map from last scan
+    {Fore.GREEN}soc{Style.RESET_ALL}               - Generate threat intelligence map from last scan
     {Fore.GREEN}soc-history{Style.RESET_ALL}           - Show scan history with risk scores
     {Fore.GREEN}soc-orgs{Style.RESET_ALL}              - Show organization location database
 
@@ -3789,20 +3835,6 @@ class SecurityTerminal:
     {Fore.GREEN}soc{Style.RESET_ALL}
 
     {Fore.CYAN}{'='*70}{Style.RESET_ALL}
-
-# In your show_help method, add this section
-print(f"{Fore.CYAN}┌─────────────────────────────────────────────────────────────┐{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Fore.YELLOW}  🛡️  SOC NMAP DASHBOARD COMMANDS                          {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}├─────────────────────────────────────────────────────────────┤{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc{Style.RESET_ALL}              - Launch interactive SOC dashboard          {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-quick <target>{Style.RESET_ALL}  - Quick scan (top 100 ports)               {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-full <target>{Style.RESET_ALL}   - Full aggressive scan (all ports)         {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-dns <domain>{Style.RESET_ALL}    - DNS reconnaissance scan                  {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-map{Style.RESET_ALL}            - Generate threat map from last scan       {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-history{Style.RESET_ALL}        - Show scan history                        {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-orgs{Style.RESET_ALL}           - Show organization location database      {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}│{Style.RESET_ALL}  {Fore.GREEN}soc-status{Style.RESET_ALL}         - Show SOC dashboard status                {Fore.CYAN}│{Style.RESET_ALL}")
-print(f"{Fore.CYAN}└─────────────────────────────────────────────────────────────┘{Style.RESET_ALL}")
 
     """
         print(help_text)
@@ -9112,6 +9144,9 @@ print(f"{Fore.CYAN}└───────────────────�
             self.cmd_soc_reports()
         elif cmd == 'soc-report':
             self.cmd_soc_report()
+        elif cmd == 'soc-status':
+            self.cmd_soc_status()
+        
         elif cmd== 'soc-help':
             self.soc_help()
         elif cmd == 'soc-orgs':
