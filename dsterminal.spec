@@ -40,10 +40,13 @@ for dir_name in ['config', 'data', 'docs', 'installer_assets', 'logo_path',
 files = [
     'VERSION', 'license.txt', 'README.md',
     'version_info.txt',
-    'icon-removebg-preview.ico', 'financial_forensics.py',
-    'crypto_engine.py', 'integrity_monitor.py', 'recon.py', 'recon_full.py',
+    'icon-removebg-preview.ico', 'financial_forensics.py', 'install_dependencies.sh', 'install_dependencies.bat', 'dependency_checker.py',
+    'crypto_engine.py', 'integrity_monitor.py', 'recon.py', 'recon_full.py', 'install_dsterminal.py',
     'vt_scan.py', 'edu_typing_engine.py', 'soc_nmap_dashboard.py',
-    'deletion_protection.py', 'hardening_dashboard.py', 'dst_footer.py', 'telemetry_engine.py',
+    'deletion_protection.py', 'hardening_dashboard.py', 'dst_footer.py', 'telemetry_engine.py', 'setupt.sh', 'setupt.bat',
+    'install_nmap.ps1', 'install_python_packages.ps1', 'check_dependencies.ps1', 'install_metasploit.ps1', 'install_metasploit_wsl.ps1', 'install_all_dependencies.ps1',
+    'install_nmap.bat', 'install_remaining_deps.ps1', 'install_remaining_deps.bat', 'check_deps.bat', 'install_chocolatey.ps1',
+    'install_whois.ps1', 'install_sqlmap.ps1', 'install_nmap_admin.ps1',
 ]
 
 for file in files:
