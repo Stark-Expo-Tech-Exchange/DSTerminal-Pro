@@ -2818,8 +2818,8 @@ class SecurityTerminal:
             self.show_help()
 
         # SOC Nmap Dashboard Commands
-        elif command == 'soc' or command == 'soc-nmap':
-            self.cmd_soc_nmap()
+        # elif command == 'soc' or command == 'soc-nmap':
+        #     self.cmd_soc_nmap()
         elif command == 'soc-quick':
             target = args[0] if args else None
             self.cmd_soc_quick(target)
@@ -2836,7 +2836,14 @@ class SecurityTerminal:
         elif command == 'soc-orgs':
             self.cmd_soc_organizations()
         elif command == 'soc-status':
-            self.soc_status()
+            self.cmd_soc_status()
+        elif command == 'soc-reports':
+            self.cmd_soc_reports()
+        elif command == 'soc-report':
+            self.cmd_soc_report()
+        elif command == 'soc-pdf':
+            self.cmd_soc_pdf()
+
         elif command == 'soc-help':
             self.soc_help()
 
@@ -3448,6 +3455,127 @@ class SecurityTerminal:
         except Exception as e:
             print(f"{Fore.RED}[!] Failed to generate map: {e}{Style.RESET_ALL}")
 
+    def cmd_soc_reports(self):
+        """List all generated SOC reports (HTML and PDF)"""
+        workspace = os.path.expanduser("~/dsterminal_workspace/scans")
+        if os.path.exists(workspace):
+            all_files = os.listdir(workspace)
+            html_reports = [f for f in all_files if f.endswith('.html') and 'soc_report' in f]
+            pdf_reports = [f for f in all_files if f.endswith('.pdf') and 'soc_report' in f]
+            
+            print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+            print(f"{Fore.GREEN}[+] Generated SOC Reports{Style.RESET_ALL}")
+            print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+            
+            if html_reports:
+                print(f"{Fore.YELLOW}📄 HTML Reports:{Style.RESET_ALL}")
+                for report in sorted(html_reports, reverse=True)[:5]:
+                    report_path = os.path.join(workspace, report)
+                    mod_time = datetime.fromtimestamp(os.path.getmtime(report_path))
+                    size_kb = os.path.getsize(report_path) / 1024
+                    print(f"   {Fore.GREEN}→{Style.RESET_ALL} {report}")
+                    print(f"     {Fore.WHITE}Size: {size_kb:.1f} KB | Modified: {mod_time.strftime('%Y-%m-%d %H:%M:%S')}{Style.RESET_ALL}")
+
+            if pdf_reports:
+                print(f"\n{Fore.YELLOW}📑 PDF Reports:{Style.RESET_ALL}")
+                for report in sorted(pdf_reports, reverse=True)[:5]:
+                    report_path = os.path.join(workspace, report)
+                    mod_time = datetime.fromtimestamp(os.path.getmtime(report_path))
+                    size_kb = os.path.getsize(report_path) / 1024
+                    print(f"   {Fore.GREEN}→{Style.RESET_ALL} {report}")
+                    print(f"     {Fore.DIM}Size: {size_kb:.1f} KB | Modified: {mod_time.strftime('%Y-%m-%d %H:%M:%S')}{Style.RESET_ALL}")
+            
+            if not html_reports and not pdf_reports:
+                print(f"{Fore.YELLOW}[!] No reports found{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}[*] Run a scan first: soc-quick <target>{Style.RESET_ALL}")
+            
+            print(f"\n{Fore.CYAN}📁 Location: {workspace}{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}[!] No reports directory found{Style.RESET_ALL}")
+            print(f"{Fore.YELLOW}[*] Run a scan first to create the directory{Style.RESET_ALL}")
+
+    def cmd_soc_pdf(self):
+        """Generate PDF report from last scan"""
+        import glob
+        
+        workspace = os.path.expanduser("~/dsterminal_workspace/scans")
+        
+        # Look for existing PDF reports
+        if os.path.exists(workspace):
+            pdf_files = glob.glob(os.path.join(workspace, "soc_report_*.pdf"))
+            if pdf_files:
+                latest_pdf = max(pdf_files, key=os.path.getctime)
+                print(f"{Fore.GREEN}[+] Found PDF report: {os.path.basename(latest_pdf)}{Style.RESET_ALL}")
+                print(f"{Fore.CYAN}   Location: {latest_pdf}{Style.RESET_ALL}")
+                
+                open_file = input(f"{Fore.YELLOW}[?] Open PDF? (y/n): {Style.RESET_ALL}").strip().lower()
+                if open_file == 'y':
+                    import webbrowser
+                    webbrowser.open(f"file://{latest_pdf}")
+                return
+            else:
+                print(f"{Fore.YELLOW}[!] No PDF reports found. Run a scan first.{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.YELLOW}[!] No reports directory found.{Style.RESET_ALL}")
+    def cmd_soc_report(self):
+        """Open the latest generated report (HTML or PDF)"""
+        import glob
+        
+        workspace = os.path.expanduser("~/dsterminal_workspace/scans")
+        
+        if not os.path.exists(workspace):
+            print(f"{Fore.YELLOW}[!] No reports found. Run a scan first.{Style.RESET_ALL}")
+            return
+        
+        # Get all reports
+        html_reports = glob.glob(os.path.join(workspace, "soc_report_*.html"))
+        pdf_reports = glob.glob(os.path.join(workspace, "soc_report_*.pdf"))
+        
+        if not html_reports and not pdf_reports:
+            print(f"{Fore.YELLOW}[!] No reports found. Run a scan first.{Style.RESET_ALL}")
+            return
+        
+        print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}[+] Latest Reports{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+        
+        # Show HTML reports
+        if html_reports:
+            latest_html = max(html_reports, key=os.path.getctime)
+            html_time = datetime.fromtimestamp(os.path.getmtime(latest_html))
+            print(f"{Fore.YELLOW}📄 HTML Report:{Style.RESET_ALL}")
+            print(f"   {os.path.basename(latest_html)}")
+            print(f"   {Fore.DIM}Modified: {html_time.strftime('%Y-%m-%d %H:%M:%S')}{Style.RESET_ALL}")
+        
+        # Show PDF reports
+        if pdf_reports:
+            latest_pdf = max(pdf_reports, key=os.path.getctime)
+            pdf_time = datetime.fromtimestamp(os.path.getmtime(latest_pdf))
+            print(f"\n{Fore.YELLOW}📑 PDF Report:{Style.RESET_ALL}")
+            print(f"   {os.path.basename(latest_pdf)}")
+            print(f"   {Fore.DIM}Modified: {pdf_time.strftime('%Y-%m-%d %H:%M:%S')}{Style.RESET_ALL}")
+        
+        print(f"\n{Fore.CYAN}📁 Location: {workspace}{Style.RESET_ALL}")
+        
+        # Ask which to open
+        choice = input(f"\n{Fore.YELLOW}[?] Open (1=HTML, 2=PDF, 3=Both, n=None): {Style.RESET_ALL}").strip()
+        
+        import webbrowser
+        if choice == '1' and html_reports:
+            webbrowser.open(f"file://{latest_html}")
+            print(f"{Fore.GREEN}[+] Opening HTML report...{Style.RESET_ALL}")
+        elif choice == '2' and pdf_reports:
+            webbrowser.open(f"file://{latest_pdf}")
+            print(f"{Fore.GREEN}[+] Opening PDF report...{Style.RESET_ALL}")
+        elif choice == '3':
+            if html_reports:
+                webbrowser.open(f"file://{latest_html}")
+            if pdf_reports:
+                webbrowser.open(f"file://{latest_pdf}")
+            print(f"{Fore.GREEN}[+] Opening both reports...{Style.RESET_ALL}")
+        elif choice.lower() != 'n':
+            print(f"{Fore.YELLOW}[!] Invalid choice or report not available{Style.RESET_ALL}")
+            
     def cmd_soc_history(self):
         """Show scan history"""
         try:
@@ -3529,47 +3657,46 @@ class SecurityTerminal:
         except Exception as e:
             print(f"{Fore.RED}[!] Failed to show organizations: {e}{Style.RESET_ALL}")
 
-    def soc_status(self):
+    def cmd_soc_status(self):
         """Show SOC dashboard status"""
-        try:
-            from soc_nmap_dashboard import SOCNmapIntegration
+        print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}[+] SOC Nmap Dashboard Status{Style.RESET_ALL}")
+        print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
+        
+        # Check if file exists
+        import os
+        if os.path.exists("soc_nmap_dashboard.py"):
+            print(f"{Fore.GREEN}✅ soc_nmap_dashboard.py: Found{Style.RESET_ALL}")
             
-            soc = SOCNmapIntegration()
-            
-            print(f"\n{Fore.CYAN}{'='*70}{Style.RESET_ALL}")
-            print(f"{Fore.GREEN}[+] SOC Nmap Dashboard Status{Style.RESET_ALL}")
-            print(f"{Fore.CYAN}{'='*70}{Style.RESET_ALL}\n")
-            
-            # Check nmap
-            nmap_installed = shutil.which("nmap") is not None
-            print(f"{'✅' if nmap_installed else '❌'} Nmap: {'Installed' if nmap_installed else 'Not installed'}")
-            
-            # Check Python packages
-            packages = {
-                'folium': 'GeoIP Maps',
-                'plotly': 'Network Topology',
-                'requests': 'GeoIP Lookup'
-            }
-            
-            print(f"\n{Fore.YELLOW}Python Packages:{Style.RESET_ALL}")
-            for pkg, desc in packages.items():
-                try:
-                    __import__(pkg)
-                    print(f"   ✅ {pkg} - {desc}")
-                except ImportError:
-                    print(f"   ❌ {pkg} - {desc} (install: pip install {pkg})")
-            
-            # Check workspace
-            workspace = os.path.expanduser("~/dsterminal_workspace/scans")
-            if os.path.exists(workspace):
-                scan_count = len([f for f in os.listdir(workspace) if f.endswith('.html')])
-                print(f"\n📁 Workspace: {workspace}")
-                print(f"   📊 Generated reports: {scan_count}")
-            
-            print()
-        except ImportError:
-            print(f"{Fore.RED}[!] SOC module not available{Style.RESET_ALL}")
-
+            # Check file size
+            size = os.path.getsize("soc_nmap_dashboard.py")
+            print(f"   {Fore.CYAN}Size: {size} bytes{Style.RESET_ALL}")
+        else:
+            print(f"{Fore.RED}❌ soc_nmap_dashboard.py: Not found{Style.RESET_ALL}")
+            print(f"   {Fore.YELLOW}Current directory: {os.getcwd()}{Style.RESET_ALL}")
+        
+        # Check nmap
+        nmap_installed = shutil.which("nmap") is not None
+        print(f"\n{'✅' if nmap_installed else '❌'} Nmap: {'Installed' if nmap_installed else 'Not installed'}")
+        
+        # Check Python packages
+        print(f"\n{Fore.YELLOW}Optional Packages:{Style.RESET_ALL}")
+        packages = ['folium', 'plotly', 'requests', 'reportlab']
+        for pkg in packages:
+            try:
+                __import__(pkg)
+                print(f"   {Fore.GREEN}✅{Style.RESET_ALL} {pkg}")
+            except ImportError:
+                print(f"   {Fore.RED}❌{Style.RESET_ALL} {pkg}")
+        
+        # Check workspace
+        workspace = os.path.expanduser("~/dsterminal_workspace/scans")
+        if os.path.exists(workspace):
+            report_count = len([f for f in os.listdir(workspace) if f.endswith(('.html', '.pdf'))])
+            print(f"\n{Fore.GREEN}📁 Workspace: {workspace}{Style.RESET_ALL}")
+            print(f"   {Fore.CYAN}Reports generated: {report_count}{Style.RESET_ALL}")
+        
+        print()
     def soc_help(self):
         """Display SOC Nmap Dashboard help"""
         help_text = f"""
@@ -3584,6 +3711,10 @@ class SecurityTerminal:
     {Fore.GREEN}soc-quick <target>{Style.RESET_ALL}    - Quick scan (top 100 ports with service detection)
     {Fore.GREEN}soc-full <target>{Style.RESET_ALL}     - Full aggressive scan (all ports + scripts + OS detection)
     {Fore.GREEN}soc-dns <domain>{Style.RESET_ALL}      - DNS reconnaissance scan
+
+    {Fore.YELLOW}Reporting:{Style.RESET_ALL}
+    {Fore.GREEN}soc-pdf{Style.RESET_ALL}                 - Generate PDF report from last scan
+    {Fore.GREEN}soc-reports{Style.RESET_ALL}            - List all generated reports (HTML & PDF)
 
     {Fore.YELLOW}Analysis & Reporting:{Style.RESET_ALL}
     {Fore.GREEN}soc-map{Style.RESET_ALL}               - Generate threat intelligence map from last scan
@@ -8918,6 +9049,14 @@ print(f"{Fore.CYAN}└───────────────────�
             self.cmd_soc_map()
         elif cmd == 'soc-history':
             self.cmd_soc_history()
+        elif cmd == 'soc-pdf':
+            self.cmd_soc_pdf()
+        elif cmd == 'soc-reports':
+            self.cmd_soc_reports()
+        elif cmd == 'soc-report':
+            self.cmd_soc_report()
+        elif cmd== 'soc-help':
+            self.soc_help()
         elif cmd == 'soc-orgs':
             self.cmd_soc_organizations()
     
@@ -9395,12 +9534,6 @@ print(f"{Fore.CYAN}└───────────────────�
         elif cmd == "debug":
             self.cmd_debug()
             return
-
-# nmap-------------------
-        elif parts[0] == "nmap":
-            self.handle_nmap(parts[1:])
-            return
-
 # metasplo----------------
         elif parts[0] == "msf":
             self.handle_msf(parts[1:])

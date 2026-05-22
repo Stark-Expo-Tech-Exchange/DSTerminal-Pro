@@ -637,8 +637,299 @@ class InteractiveSOCDashboard:
         self.geo_map = EnhancedGeoMapVisualizer()
         self.scan_history: List[ScanHistory] = []
         
+
+        # Load history from file
+        self.history_file = os.path.join(self.scans_dir, "scan_history.json")
+        self._load_history()
+        
+        # Terminal display settings
         self.spinner_frames = ["⠋", "⠙", "⠹", "⠸", "⠼", "⠴", "⠦", "⠧", "⠇", "⠏"]
-        self.terminal_width = 100
+        self.terminal_width = self._get_terminal_width()
+
+    def _get_terminal_width(self):
+        """Get terminal width safely"""
+        try:
+            return shutil.get_terminal_size((100, 24)).columns
+        except:
+            return 100
+    def _load_history(self):
+        """Load scan history from file"""
+        if os.path.exists(self.history_file):
+            try:
+                with open(self.history_file, 'r') as f:
+                    data = json.load(f)
+                    for item in data:
+                        hist = ScanHistory(
+                            timestamp=datetime.fromisoformat(item['timestamp']),
+                            target=item['target'],
+                            duration=item['duration'],
+                            open_ports=item['open_ports'],
+                            risk_score=item['risk_score'],
+                            services=item['services']
+                        )
+                        self.scan_history.append(hist)
+            except:
+                pass
+    
+    def _save_history(self):
+        """Save scan history to file"""
+        try:
+            data = []
+            for hist in self.scan_history:
+                data.append({
+                    'timestamp': hist.timestamp.isoformat(),
+                    'target': hist.target,
+                    'duration': hist.duration,
+                    'open_ports': hist.open_ports,
+                    'risk_score': hist.risk_score,
+                    'services': hist.services
+                })
+            with open(self.history_file, 'w') as f:
+                json.dump(data, f, indent=2)
+        except:
+            pass
+        
+    def generate_pdf_report(self, target: str = None) -> str:
+        """Generate professional PDF report of scan results"""
+        try:
+            from reportlab.lib import colors
+            from reportlab.lib.pagesizes import letter, A4
+            from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+            from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+            from reportlab.lib.units import inch
+            from reportlab.lib.enums import TA_CENTER, TA_LEFT
+            from reportlab.pdfgen import canvas
+            import datetime
+            
+            # Create PDF filename
+            if not target:
+                target = self.current_target if self.current_target else "scan"
+            
+            timestamp = datetime.datetime.now().strftime('%Y%m%d_%H%M%S')
+            pdf_filename = f"soc_report_{target.replace('.', '_')}_{timestamp}.pdf"
+            pdf_path = os.path.join(self.scans_dir, pdf_filename)
+            
+            # Create the PDF document
+            doc = SimpleDocTemplate(pdf_path, pagesize=A4,
+                                    rightMargin=72, leftMargin=72,
+                                    topMargin=72, bottomMargin=72)
+            
+            # Styles
+            styles = getSampleStyleSheet()
+            title_style = ParagraphStyle(
+                'CustomTitle',
+                parent=styles['Heading1'],
+                fontSize=24,
+                textColor=colors.HexColor('#00ff00'),
+                alignment=TA_CENTER,
+                spaceAfter=30
+            )
+            
+            heading_style = ParagraphStyle(
+                'CustomHeading',
+                parent=styles['Heading2'],
+                fontSize=16,
+                textColor=colors.HexColor('#00ffff'),
+                spaceAfter=12,
+                spaceBefore=12
+            )
+            
+            risk_high_style = ParagraphStyle(
+                'RiskHigh',
+                parent=styles['Normal'],
+                textColor=colors.HexColor('#ff0000'),
+                fontSize=10
+            )
+            
+            risk_medium_style = ParagraphStyle(
+                'RiskMedium',
+                parent=styles['Normal'],
+                textColor=colors.HexColor('#ffcc00'),
+                fontSize=10
+            )
+            
+            risk_low_style = ParagraphStyle(
+                'RiskLow',
+                parent=styles['Normal'],
+                textColor=colors.HexColor('#00ff00'),
+                fontSize=10
+            )
+            
+            # Build story (content)
+            story = []
+            
+            # Title
+            story.append(Paragraph("DSTERMINAL SOC Security Assessment Report", title_style))
+            story.append(Spacer(1, 12))
+            
+            # Report metadata
+            story.append(Paragraph(f"Generated: {datetime.datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", styles['Normal']))
+            story.append(Paragraph(f"Target: {target}", styles['Normal']))
+            story.append(Paragraph(f"Scan Duration: {self.scan_duration} seconds", styles['Normal']))
+            story.append(Spacer(1, 20))
+            
+            # Executive Summary
+            story.append(Paragraph("Executive Summary", heading_style))
+            
+            total_risk = sum(p.get("risk_score", 0) for p in self.discovered_ports)
+            avg_risk = total_risk / max(1, len(self.discovered_ports))
+            
+            if avg_risk >= 7:
+                risk_level = "CRITICAL"
+                risk_color = colors.HexColor('#ff0000')
+            elif avg_risk >= 4:
+                risk_level = "WARNING"
+                risk_color = colors.HexColor('#ffcc00')
+            else:
+                risk_level = "LOW"
+                risk_color = colors.HexColor('#00ff00')
+            
+            summary_text = f"""
+            <b>Risk Assessment Score: {avg_risk:.1f}/10 - {risk_level}</b><br/>
+            <br/>
+            This report summarizes the security assessment performed on {target}. 
+            The scan identified {len(self.network_nodes)} host(s) with {len(self.discovered_ports)} open ports 
+            and {len(self.services_found)} active services.<br/>
+            <br/>
+            <b>Key Findings:</b><br/>
+            • Total Open Ports: {len(self.discovered_ports)}<br/>
+            • Total Services: {len(self.services_found)}<br/>
+            • Average Risk Score: {avg_risk:.1f}/10<br/>
+            • Scan Duration: {self.scan_duration} seconds
+            """
+            story.append(Paragraph(summary_text, styles['Normal']))
+            story.append(Spacer(1, 20))
+            
+            # Discovered Services Table
+            story.append(Paragraph("Discovered Services & Vulnerabilities", heading_style))
+            
+            if self.services_found:
+                # Table data
+                table_data = [['Port', 'Service', 'Version', 'Risk Score', 'Exploit', 'CVE ID']]
+                
+                for service in self.services_found[:20]:  # Limit to 20 for PDF
+                    risk_score = service.get("risk_score", 0)
+                    risk_str = f"{risk_score:.1f}"
+                    
+                    table_data.append([
+                        f"{service['port']}/{service['protocol']}",
+                        service['service'][:20],
+                        service.get('version', 'N/A')[:15],
+                        risk_str,
+                        service.get('exploit', 'N/A')[:15],
+                        service.get('cvss_id', 'N/A')
+                    ])
+                
+                # Create table
+                table = Table(table_data, colWidths=[60, 80, 70, 50, 80, 70])
+                table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#00ffff')),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTSIZE', (0, 0), (-1, 0), 10),
+                    ('BOTTOMPADDING', (0, 0), (-1, 0), 12),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.beige),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('FONTSIZE', (0, 1), (-1, -1), 8),
+                ]))
+                story.append(table)
+            else:
+                story.append(Paragraph("No services discovered during the scan.", styles['Normal']))
+            
+            story.append(Spacer(1, 20))
+            
+            # Critical Findings (High Risk)
+            high_risk = [s for s in self.services_found if s.get("risk_score", 0) >= 7]
+            if high_risk:
+                story.append(Paragraph("Critical Findings (High Risk)", heading_style))
+                for service in high_risk[:10]:
+                    finding_text = f"""
+                    <b>• {service['port']}/{service['protocol']} - {service['service']}</b><br/>
+                    Risk Score: {service['risk_score']}/10 | CVE: {service.get('cvss_id', 'N/A')}<br/>
+                    Exploit: {service.get('exploit', 'N/A')}<br/>
+                    Recommendation: {service.get('recommendation', 'Patch immediately')}
+                    """
+                    story.append(Paragraph(finding_text, risk_high_style))
+                    story.append(Spacer(1, 10))
+            
+            # Medium Risk Findings
+            medium_risk = [s for s in self.services_found if 4 <= s.get("risk_score", 0) < 7]
+            if medium_risk:
+                story.append(Paragraph("Medium Risk Findings", heading_style))
+                for service in medium_risk[:10]:
+                    finding_text = f"""
+                    <b>• {service['port']}/{service['protocol']} - {service['service']}</b><br/>
+                    Risk Score: {service['risk_score']}/10 | CVE: {service.get('cvss_id', 'N/A')}
+                    """
+                    story.append(Paragraph(finding_text, risk_medium_style))
+                    story.append(Spacer(1, 10))
+            
+            story.append(PageBreak())
+            
+            # Network Topology
+            story.append(Paragraph("Network Topology Analysis", heading_style))
+            
+            if self.network_nodes:
+                topo_data = [['Host', 'Open Ports', 'Risk Score', 'Location Type']]
+                for ip, node in self.network_nodes.items():
+                    location_type = "🏢 HQ" if node.is_organization_location else "🖥️ Server"
+                    topo_data.append([
+                        ip[:15],
+                        str(len(node.ports)),
+                        f"{node.risk_score:.1f}",
+                        location_type
+                    ])
+                
+                topo_table = Table(topo_data, colWidths=[100, 70, 70, 80])
+                topo_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#00ffff')),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                    ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                    ('GRID', (0, 0), (-1, -1), 1, colors.black),
+                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                ]))
+                story.append(topo_table)
+            else:
+                story.append(Paragraph("No network topology data available.", styles['Normal']))
+            
+            story.append(Spacer(1, 20))
+            
+            # Recommendations
+            story.append(Paragraph("Security Recommendations", heading_style))
+            
+            recommendations = []
+            for service in self.services_found:
+                if service.get("risk_score", 0) >= 7:
+                    recommendations.append(f"• CRITICAL: Patch {service['service']} on port {service['port']} immediately")
+                elif service.get("risk_score", 0) >= 4:
+                    recommendations.append(f"• MEDIUM: Update {service['service']} on port {service['port']}")
+            
+            if recommendations:
+                for rec in recommendations[:10]:
+                    story.append(Paragraph(rec, styles['Normal']))
+                    story.append(Spacer(1, 5))
+            else:
+                story.append(Paragraph("No critical recommendations at this time. Continue regular security monitoring.", styles['Normal']))
+            
+            story.append(Spacer(1, 20))
+            
+            # Footer note
+            story.append(Paragraph("This report was automatically generated by DSTERMINAL SOC Platform.", styles['Normal']))
+            story.append(Paragraph("For questions or support, contact your security team.", styles['Normal']))
+            
+            # Build PDF
+            doc.build(story)
+            
+            print(f"{Colors.GREEN}[+] PDF Report generated: {pdf_path}{Colors.RESET}")
+            return pdf_path
+            
+        except ImportError:
+            print(f"{Colors.RED}[!] ReportLab not installed. Install with: pip install reportlab{Colors.RESET}")
+            return None
+        except Exception as e:
+            print(f"{Colors.RED}[!] PDF generation failed: {e}{Colors.RESET}")
+            return None
     
     def clear_screen(self):
         os.system('cls' if os.name == 'nt' else 'clear')
@@ -1011,6 +1302,7 @@ class InteractiveSOCDashboard:
                 services=services_list[:5]
             )
             self.scan_history.append(history)
+            self._save_history()  # Save to file
             if len(self.scan_history) > 10:
                 self.scan_history.pop(0)
             
@@ -1019,7 +1311,12 @@ class InteractiveSOCDashboard:
             
             print(self.center(Colors.YELLOW + '[+] Opening GeoMap dashboard with organization locations...' + Colors.RESET))
             self.generate_full_dashboard()
-            
+
+            # Generate PDF report as well
+            print(self.center(Colors.CYAN + '[+] Generating PDF report...' + Colors.RESET))
+            pdf_path = self.generate_pdf_report(target)
+            if pdf_path:
+                print(self.center(Colors.GREEN + f'[+] PDF saved: {pdf_path}' + Colors.RESET))
         except Exception as e:
             print(self.center(f"{Colors.RED}[!] Scan failed: {e}{Colors.RESET}"))
             self.scan_active = False
@@ -1259,7 +1556,7 @@ class InteractiveSOCDashboard:
             f.write(html)
         
         webbrowser.open(f"file://{html_path}")
-        print(self.center(f"{Colors.GREEN}[+] Full dashboard opened: {html_path}{Colors.RESET}"))
+        # print(self.center(f"{Colors.GREEN}[+] Full dashboard opened: {html_path}{Colors.RESET}"))
         return html_path
     
     def interactive_loop(self):
@@ -1319,12 +1616,6 @@ class InteractiveSOCDashboard:
 """
         print(help_text)
 
-# ============================================================
-# EXPORTED CLASSES FOR MAIN DSTERMINAL
-# ============================================================
-# ============================================================
-# EXPORTED CLASSES FOR MAIN DSTERMINAL
-# ============================================================
 # ============================================================
 # EXPORTED CLASSES FOR MAIN DSTERMINAL
 # ============================================================
