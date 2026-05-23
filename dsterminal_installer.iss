@@ -1,13 +1,13 @@
 ; DSTerminal Installer Script - Non-Admin Safe with Documentation & Auto-Update
-; Version: 2.0.113
+; Version: 3.1.113
 ; Date: 2026
 
 [Setup]
 ; Basic Setup Information
 AppId={{1EFF5130-85AF-4EE9-B818-5634A06408D2}}
 AppName=DSTerminal
-AppVersion=2.0.113
-AppVerName=DSTerminal v2.0.113
+AppVersion=3.1.113
+AppVerName=DSTerminal v3.1.113
 AppPublisher=Stark Expo Tech Exchange
 AppPublisherURL=https://starkexpotechexchange-mw.com
 AppSupportURL=https://github.com/Stark-Expo-Tech-Exchange/DSTerminal_releases_latest/issues
@@ -21,7 +21,7 @@ DefaultDirName={userappdata}\DSTerminal
 DefaultGroupName=DSTerminal
 LicenseFile=license.txt
 OutputDir=installer_output
-OutputBaseFilename=DSTerminal_Installer_2026_v2.0.113
+OutputBaseFilename=DSTerminal_Installer_2026_v3.1.113
 Compression=lzma2/ultra64
 SolidCompression=yes
 DisableWelcomePage=no
@@ -32,14 +32,14 @@ AllowNoIcons=yes
 PrivilegesRequired=lowest
 MinVersion=10.0
 UninstallDisplayIcon={app}\dsterminal.exe
-UninstallDisplayName=DSTerminal v2.0.113
-VersionInfoVersion=2.0.113
+UninstallDisplayName=DSTerminal v3.1.113
+VersionInfoVersion=3.1.113
 VersionInfoCompany=Stark Expo Tech Exchange
-VersionInfoDescription=DSTerminal SOC Platform
-VersionInfoTextVersion=2.0.113
+VersionInfoDescription=DSTerminal Cyber-Ops Platform
+VersionInfoTextVersion=3.1.113
 VersionInfoCopyright=© 2024 Stark Expo Tech Exchange
 VersionInfoProductName=DSTerminal
-VersionInfoProductVersion=2.0.113
+VersionInfoProductVersion=3.1.113
 
 ; Create uninstaller in registry
 CreateUninstallRegKey=yes
@@ -275,7 +275,7 @@ begin
   begin
     SaveStringToFile(ConfigFile, 
       '{' + #13#10 +
-      '  "version": "2.0.113",' + #13#10 +
+      '  "version": "3.1.113",' + #13#10 +
       '  "created": "' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + '",' + #13#10 +
       '  "operator": "default",' + #13#10 +
       '  "settings": {' + #13#10 +
@@ -345,8 +345,8 @@ Root: HKCU; Subkey: "Environment"; ValueType: expandsz; ValueName: "PATH"; \
 ValueData: "{olddata};{app}"; Flags: preservestringtype
 
 [Messages]
-BeveledLabel=DSTerminal SOC Platform v2.0.113
+BeveledLabel=DSTerminal Cyber-Ops Platform v3.1.113
 
 [CustomMessages]
 SetupAppTitle=DSTerminal Installer
-SetupWindowTitle=DSTerminal v2.0.113 Setup
+SetupWindowTitle=DSTerminal v3.1.113 Setup

@@ -816,78 +816,7 @@ class FinancialForensics:
             "Entity relationship mapping"
         ])
     
-    # def cinematic_fraud_investigation(self):
-    #     """Main cinematic fraud investigation interface"""
-        
-    #     console.clear()
-        
-    #     # Animated title sequence
-    #     self._display_hacker_title()
-        
-    #     # Main menu with three-column layout
-    #     while True:
-    #         # Create menu items for three columns
-    #         left_items = [
-    #             "[cyan]1.[/cyan] 🔍 Trace Money Laundering",
-    #             "[cyan]2.[/cyan] 💸 Investigate Wire Fraud",
-    #             "[cyan]3.[/cyan] 🪙 Analyze Crypto Scams",
-    #             "[cyan]4.[/cyan] 🆔 Identity Theft Investigation"
-    #         ]
-            
-    #         center_items = [
-    #             "[cyan]5.[/cyan] 📊 Insider Trading Detection",
-    #             "[cyan]6.[/cyan] 🏢 Shell Company Analysis",
-    #             "[cyan]7.[/cyan] 📋 View Investigation Reports",
-    #             "[cyan]8.[/cyan] 🌐 Live Financial Crime Monitor"
-    #         ]
-            
-    #         right_items = [
-    #             "[cyan]9.[/cyan] 📄 Generate PDF Report",
-    #             "[cyan]0.[/cyan] Exit Financial Suite",
-    #             "",
-    #             f"[dim]Active Cases: {len(self.case_files)}[/dim]",
-    #             f"[dim]PDF Reports: {len(list(Path(self.reports_dir).glob('*.pdf')))}[/dim]"
-    #         ]
-            
-    #         left_panel = Panel("\n".join(left_items), title="[bold red]FRAUD TYPES[/bold red]", border_style="red")
-    #         center_panel = Panel("\n".join(center_items), title="[bold yellow]ANALYSIS TOOLS[/bold yellow]", border_style="yellow")
-    #         right_panel = Panel("\n".join(right_items), title="[bold cyan]STATISTICS[/bold cyan]", border_style="cyan")
-            
-    #         menu_layout = Layout()
-    #         menu_layout.split_row(
-    #             Layout(left_panel, ratio=1),
-    #             Layout(center_panel, ratio=1),
-    #             Layout(right_panel, ratio=1),
-    #             height=20
-    #         )
-            
-    #         console.print(Align.center(Panel(menu_layout, title="[bold white]🌍 GLOBAL FINANCIAL FRAUD INVESTIGATION SUITE 🌍[/bold white]", border_style="bright_red", width=180)))
-            
-    #         choice = console.input("\n[bold cyan]└─$ Select investigation type: [/]").strip()
-            
-    #         if choice == "0":
-    #             console.print("\n[bold red]Exiting Financial Forensics Suite...[/bold red]")
-    #             break
-    #         elif choice == "1":
-    #             self.investigate_money_laundering()
-    #         elif choice == "2":
-    #             self.investigate_wire_fraud()
-    #         elif choice == "3":
-    #             self.investigate_crypto_scam()
-    #         elif choice == "4":
-    #             self.investigate_identity_theft()
-    #         elif choice == "5":
-    #             self.detect_insider_trading()
-    #         elif choice == "6":
-    #             self.analyze_shell_company()
-    #         elif choice == "7":
-    #             self.view_investigation_reports()
-    #         elif choice == "8":
-    #             self.live_financial_crime_monitor()
-    #         elif choice == "9":
-    #             self.generate_pdf_report_from_cases()
-    #         else:
-    #             console.print("[red]Invalid selection![/red]")
+
     def cinematic_fraud_investigation(self):
         """Main cinematic fraud investigation interface"""
         
