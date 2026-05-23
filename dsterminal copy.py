@@ -1435,7 +1435,7 @@ class SecurityTerminal:
     #     "    ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝",
     #     "",
     #     "╠══════════════════════════════════════════════════════════════============══════╣",
-    #     f"║    Defensive Security Terminal v3.1.113 | {platform.system()} {platform.release()}   ║",
+    #     f"║    Defensive Security Terminal v2.1.327 | {platform.system()} {platform.release()}   ║",
     #     "║    Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange║",
     #     "║    Type 'help' for available commands                                            ║",
     #     f"║ (🔍 ⚡ 🛡️) 🌐 ⚡ CLI Mode: {'ADMIN' if self.is_admin() else 'USER'}               ",
@@ -2277,7 +2277,7 @@ class SecurityTerminal:
     
     def run(self):
         """Main terminal loop"""
-        print(f"{Fore.GREEN}DSTerminal v3.1.113 | Type 'help' for commands | Workspace: ~/DSTerminal_Workspace{Style.RESET_ALL}")
+        print(f"{Fore.GREEN}DSTerminal v2.1.327 | Type 'help' for commands | Workspace: ~/DSTerminal_Workspace{Style.RESET_ALL}")
         print(f"{Fore.YELLOW}Mode: {'ADMIN' if self.is_admin() else 'USER'}{Style.RESET_ALL}\n")
         
         running = True
@@ -5367,7 +5367,7 @@ class SecurityTerminal:
         def perform_update(latest_tag):
             """
             Downloads the latest DSTerminal release and updates local version.
-            latest_tag: string, e.g., "v3.1.113"
+            latest_tag: string, e.g., "v2.1.327"
             """
 
             os_type = platform.system().lower()  # 'linux', 'windows', 'darwin'
@@ -6227,7 +6227,7 @@ class SecurityTerminal:
                 os.system('cls' if os.name == 'nt' else 'clear')
                 print(f"\n{color}{centered_banner}{Style.RESET_ALL}")
                 print(f"\n{Fore.CYAN}{self._center_text('═' * 60)}{Style.RESET_ALL}")
-                print(f"{Fore.YELLOW}{self._center_text('DEFENSIVE SECURITY TERMINAL v3.1.113')}{Style.RESET_ALL}")
+                print(f"{Fore.YELLOW}{self._center_text('DEFENSIVE SECURITY TERMINAL v2.1.327')}{Style.RESET_ALL}")
                 print(f"{Fore.CYAN}{self._center_text('═' * 60)}{Style.RESET_ALL}")
                 print(f"{Fore.GREEN}{self._center_text('⚡ System Ready | Mode: HARDENING MODE ⚡')}{Style.RESET_ALL}")
                 time.sleep(0.2)
@@ -7214,7 +7214,7 @@ class SecurityTerminal:
     
     # Create header
         print(f"\n{Fore.RED}╔{'═' * (terminal_width-2)}╗{Style.RESET_ALL}")
-        print(f"{Fore.RED}║{Fore.CYAN}{'DSTerminal v3.1.113 - Command Reference Manual'.center(terminal_width-2)}{Fore.RED}║{Style.RESET_ALL}")
+        print(f"{Fore.RED}║{Fore.CYAN}{'DSTerminal v2.1.327 - Command Reference Manual'.center(terminal_width-2)}{Fore.RED}║{Style.RESET_ALL}")
         print(f"{Fore.RED}║{Fore.YELLOW}{'INTERACTIVE COMMAND MENU'.center(terminal_width-2)}{Fore.RED}║{Style.RESET_ALL}")
         print(f"{Fore.RED}╠{'═' * (terminal_width-2)}╣{Style.RESET_ALL}")
     

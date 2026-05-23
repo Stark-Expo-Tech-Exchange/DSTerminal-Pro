@@ -416,7 +416,7 @@ class DSTERMINALEULAGenerator:
             canvas_obj.setFont('Helvetica', 8)
             canvas_obj.setFillAlpha(0.5)
             canvas_obj.setFillColor(colors.gray)
-            canvas_obj.drawCentredString(center_x, 20, f"Page {doc.page} | DSTERMINAL EULA v3.1.113")
+            canvas_obj.drawCentredString(center_x, 20, f"Page {doc.page} | DSTERMINAL EULA v2.1.327")
             canvas_obj.restoreState()
         
         # Build PDF

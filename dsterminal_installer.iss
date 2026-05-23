@@ -1,12 +1,12 @@
 ; DSTerminal Installer Script - Non-Admin Safe with Documentation & Auto-Update
-; Version: 3.1.113
+; Version: 2.1.327
 ; Date: 2026
 
 [Setup]
 ; Basic Setup Information
 AppId={{1EFF5130-85AF-4EE9-B818-5634A06408D2}}
 AppName=DSTerminal
-AppVersion=3.1.113
+AppVersion=2.1.327
 AppVerName=DSTerminal v2.1.327
 AppPublisher=Stark Expo Tech Exchange
 AppPublisherURL=https://starkexpotechexchange-mw.com
@@ -21,7 +21,7 @@ DefaultDirName={userappdata}\DSTerminal
 DefaultGroupName=DSTerminal
 LicenseFile=license.txt
 OutputDir=installer_output
-OutputBaseFilename=DSTerminal_Installer_2026_v3.1.113
+OutputBaseFilename=DSTerminal_Installer_2026_v2.1.327
 Compression=lzma2/ultra64
 SolidCompression=yes
 DisableWelcomePage=no
@@ -39,13 +39,13 @@ PrivilegesRequired=lowest
 MinVersion=10.0
 UninstallDisplayIcon={app}\dsterminal.exe
 UninstallDisplayName=DSTerminal v2.1.327
-VersionInfoVersion=3.1.113
+VersionInfoVersion=2.1.327
 VersionInfoCompany=Stark Expo Tech Exchange
 VersionInfoDescription=DSTerminal Cyber-Ops Platform
-VersionInfoTextVersion=3.1.113
+VersionInfoTextVersion=2.1.327
 VersionInfoCopyright=© 2024 Stark Expo Tech Exchange
 VersionInfoProductName=DSTerminal
-VersionInfoProductVersion=3.1.113
+VersionInfoProductVersion=2.1.327
 
 ; Create uninstaller in registry
 CreateUninstallRegKey=yes
@@ -85,7 +85,7 @@ Name: "installdeps"; Description: "Install/Update missing dependencies on comple
 
 [Files]
 ; ========== CORE APPLICATION ==========
-Source: "dist\dsterminal_win-2026_v3.1.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
+Source: "dist\dsterminal_win-2026_v2.1.327_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
 Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -161,7 +161,7 @@ Name: "{app}\temp"; Flags: uninsalwaysuninstall
 
 [Icons]
 ; Main application icons
-Name: "{group}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Comment: "Launch DSTerminal Security Operations Center"
+Name: "{group}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Comment: "Launch DSTerminal Cyber Ops Platform"
 Name: "{group}\Uninstall DSTerminal"; Filename: "{uninstallexe}"; Comment: "Remove DSTerminal from your system"
 Name: "{group}\DSTerminal Documentation"; Filename: "{app}\docs\index.html"; IconFilename: "{app}\dsterminal.exe"; Components: docs
 Name: "{userdesktop}\DSTerminal SOC"; Filename: "{app}\dsterminal.exe"; WorkingDir: "{userappdata}\DSTerminal_Workspace"; IconFilename: "{app}\dsterminal.exe"; Tasks: desktopicon; Comment: "DSTerminal Security Terminal"; Parameters: "/MAX"
@@ -293,7 +293,7 @@ begin
   begin
     SaveStringToFile(ConfigFile, 
       '{' + #13#10 +
-      '  "version": "3.1.113",' + #13#10 +
+      '  "version": "2.1.327",' + #13#10 +
       '  "created": "' + GetDateTimeString('yyyy-mm-dd hh:nn:ss', '-', ':') + '",' + #13#10 +
       '  "operator": "default",' + #13#10 +
       '  "settings": {' + #13#10 +
