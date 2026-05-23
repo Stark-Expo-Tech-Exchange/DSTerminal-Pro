@@ -27,12 +27,10 @@ SolidCompression=yes
 DisableWelcomePage=no
 WizardStyle=modern
 SetupIconFile=installer_assets\3486-removebg-preview.ico
-
 WizardImageFile=installer_assets\wizard-image.bmp
 WizardSmallImageFile=installer_assets\wizard-small.bmp
 WizardImageStretch=No
 WizardImageBackColor=clBlack
-
 DisableProgramGroupPage=no
 AllowNoIcons=yes
 PrivilegesRequired=lowest
@@ -67,12 +65,9 @@ Name: "templates"; Description: "Report Templates"; Types: full custom
 Name: "ffmpeg"; Description: "FFmpeg (Video Analysis)"; Types: full custom
 Name: "updatehelper"; Description: "Auto-Update Helper Script"; Types: full custom
 ; ===== Dependency Components =====
-Name: "dependencies"; Description: "Install Required Dependencies (Nmap, Python packages)"; Types: full custom
-Name: "dependencies\nmap"; Description: "Nmap Network Scanner"; Types: full
-Name: "dependencies\sqlmap"; Description: "SQLMap (SQL Injection Tool)"; Types: full
-Name: "dependencies\whois"; Description: "WHOIS Domain Lookup"; Types: full
-Name: "dependencies\python"; Description: "Python 3.11+ (Required for SOC features)"; Types: full
-Name: "dependencies\packages"; Description: "Python Packages (colorama, requests, folium, plotly, reportlab)"; Types: full
+Name: "dependencies"; Description: "Install Required Dependencies"; Types: full custom; Flags: checkable
+Name: "dependencies\sqlmap"; Description: "SQLMap (SQL Injection Tool)"; Types: full; Flags: checkable
+Name: "dependencies\whois"; Description: "WHOIS Domain Lookup"; Types: full; Flags: checkable
 
 [Tasks]
 Name: "desktopicon"; Description: "Create a &desktop shortcut"; GroupDescription: "Additional icons:"; Components: core; Flags: checkedonce
@@ -81,7 +76,7 @@ Name: "autoupdate"; Description: "Automatically check for updates on startup"; G
 Name: "docshortcut"; Description: "Create Documentation shortcut on desktop"; GroupDescription: "Documentation:"; Components: docs; Flags: unchecked
 Name: "startwithwindows"; Description: "Start DSTerminal with Windows (minimized)"; GroupDescription: "Startup options:"; Components: core; Flags: unchecked
 ; ===== Dependency installation tasks =====
-Name: "installdeps"; Description: "Install/Update missing dependencies on completion"; GroupDescription: "Dependency management:"; Components: dependencies; Flags: checkedonce
+Name: "installdeps"; Description: "Install/Update missing dependencies"; GroupDescription: "Dependency management:"; Components: dependencies; Flags: checkedonce
 
 [Files]
 ; ========== CORE APPLICATION ==========
@@ -128,18 +123,8 @@ Source: "update\updater.ps1"; DestDir: "{app}\update"; Flags: ignoreversion; Com
 ; ========== DEPENDENCY INSTALLATION SCRIPTS ==========
 Source: "tools\check_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_all_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_chocolatey.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_remaining_deps.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_metasploit.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_nmap_admin.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_nmap.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_whois.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_sqlmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\sqlmap
-Source: "tools\install_python_packages.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\packages
-Source: "tools\install_python.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_remaining_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\check_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_nmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\nmap
+Source: "tools\install_whois.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\whois
 
 [Dirs]
 ; Create workspace directories
@@ -174,20 +159,10 @@ Filename: "{app}\docs\index.html"; Description: "View DSTerminal Documentation";
 ; Add to PATH
 Filename: "{cmd}"; Parameters: "/c setx PATH ""%PATH%;{app}"""; Flags: runhidden
 
-; Check and install dependencies (REMOVED THE SEMICOLON)
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
-
-; Install Nmap if missing (REMOVED THE SEMICOLON)
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\nmap; Tasks: installdeps; Check: IsNmapMissing
-
-; Launch post-install script after installer closes
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\tools\post_install.ps1"""; Flags: nowait skipifsilent
-
-; Install Python packages if missing (This one is already uncommented - good!)
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_python_packages.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\packages; Tasks: installdeps; Check: ArePythonPackagesMissing
-
-; Install all missing dependencies (synchronous)
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_all_dependencies.ps1"""; Description: "Installing missing dependencies..."; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
+; ============================================
+; ONE SINGLE DEPENDENCY INSTALLER (RUNS ONCE!)
+; ============================================
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_all_dependencies.ps1"""; Description: "Installing dependencies..."; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
 
 ; Launch DSTerminal after install
 Filename: "{app}\dsterminal.exe"; Description: "Launch DSTerminal"; Flags: nowait postinstall skipifsilent; Components: core
@@ -202,8 +177,6 @@ Filename: "schtasks"; Parameters: "/delete /tn ""DSTerminal Update Check"" /f"; 
 [Code]
 // Global variables
 var
-  // RemoveWorkspacePage: TInputOptionWizardPage;
-  // helperUpdateChannelPage: TInputOptionWizardPage;
   DependencyCheckPage: TInputOptionWizardPage;
 
 // ========== FFMPEG CHECK ==========
@@ -211,45 +184,6 @@ function IsFFmpegRequired: Boolean;
 begin
   Result := (FileExists(ExpandConstant('{sys}\ffmpeg.exe')) = False) and
             (FileExists(ExpandConstant('{app}\ffmpeg\ffmpeg.exe')) = False);
-end;
-
-// ========== METASPLOIT CHECK ==========
-function IsMetasploitMissing: Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := True;
-  if Exec(ExpandConstant('{cmd}'), '/c msfconsole --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ResultCode = 0 then
-      Result := False;
-  end;
-end;
-
-// ========== NMAP CHECK ==========
-function IsNmapMissing: Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := True;
-  if Exec(ExpandConstant('{cmd}'), '/c nmap --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ResultCode = 0 then
-      Result := False;
-  end;
-end;
-
-// ========== SQLMAP CHECK ==========
-function IsSQLMapMissing: Boolean;
-var
-  ResultCode: Integer;
-begin
-  Result := True;
-  if Exec(ExpandConstant('{cmd}'), '/c sqlmap --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
-  begin
-    if ResultCode = 0 then
-      Result := False;
-  end;
 end;
 
 // ========== PYTHON PACKAGES CHECK ==========
@@ -353,9 +287,7 @@ begin
     end
     else
     begin
-      MsgBox('Dependency installation skipped. You can install them manually later.' + #13#10#13#10 +
-             'Required: nmap, sqlmap' + #13#10 +
-             'Optional: whois, Metasploit, Python packages', mbInformation, MB_OK);
+      MsgBox('Dependency installation skipped. You can install them manually later.', mbInformation, MB_OK);
     end;
   end;
 end;
