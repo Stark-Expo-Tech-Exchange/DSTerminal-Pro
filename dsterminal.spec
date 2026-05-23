@@ -10,7 +10,6 @@ excludes = [
     'IPython', 'jupyter', 'matplotlib.tests', 'numpy.tests', 
     'pandas.tests', 'scipy', 'scipy.tests', 'setuptools.tests',
     'distutils.tests', '_posixshmem', 'resource', 'fcntl',
-    'tkinter',  # Exclude if not needed (adds ~5MB)
     'unittest',  # Exclude test framework
     'xmlrpc',  # Exclude if not needed
 ]
@@ -81,6 +80,11 @@ hiddenimports = [
     'colorama', 'colorama.initialise', 'colorama.ansitowin32',
     'colorama.winterm', 'colorama.win32',
     
+    'tkinter', 'tkinter.ttk', 'tkinter.filedialog', 'tkinter.messagebox',
+    'tkinter.simpledialog', 'tkinter.scrolledtext', 'tkinter.colorchooser',
+    'tkinter.font', 'tkinter.dnd', 'tkinter.commondialog',
+    'turtle',
+
     # Core Python libraries
     'json', 'os', 'sys', 'time', 'random', 'datetime', 'threading',
     'pathlib', 'shutil', 'platform', 'subprocess', 'hashlib', 'base64',
