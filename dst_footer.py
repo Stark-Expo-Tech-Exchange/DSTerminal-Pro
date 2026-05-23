@@ -49,7 +49,7 @@ class DSTerminalFooter:
     Fixed sticky footer engine for DSTerminal
     """
     
-    def __init__(self, version="v3.1.113", dynamic_bg=True):
+    def __init__(self, version="v2.1.327", dynamic_bg=True):
         self.version = version
         self.dynamic_bg = dynamic_bg
         
@@ -161,7 +161,7 @@ class DSTerminalFooter:
 
 class FooterBootAnimation:
     @staticmethod
-    def show(version="v3.1.113"):
+    def show(version="v2.1.327"):
         width = shutil.get_terminal_size().columns
         
         # Animated gradient effect

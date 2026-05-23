@@ -1011,7 +1011,7 @@ class SystemIntegrityMonitor:
             'metadata': {
                 'generated': datetime.now().isoformat(),
                 'workspace': self.workspace,
-                'version': '3.1.113'
+                'version': '2.1.327'
             },
             'system_info': scan_results['system_info'],
             'summary': {
@@ -1920,7 +1920,7 @@ class ForensicAnalyzer:
                 'analysis_period_days': days,
                 'total_events': len(timeline),
                 'target_file': file_path,
-                'version': '3.1.113'
+                'version': '2.1.327'
             },
             'summary': self._generate_summary_stats(timeline),
             'timeline': [

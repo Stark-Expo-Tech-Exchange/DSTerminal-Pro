@@ -1575,7 +1575,7 @@ class SecurityTerminal:
             "║     ╚═════╝ ╚═╝     ╚═╝     ╚══════╝╚═╝  ╚═══╝╚══════╝╚═╝  ╚═╝            ║",
             "║                                                                            ║",
             "╠════════════════════════════════════════════════════════════════════════════╣",
-            f"║     Defensive Security Terminal v3.1.113 | {platform.system()} {platform.release():<20}        ║",
+            f"║     Defensive Security Terminal v2.1.327 | {platform.system()} {platform.release():<20}        ║",
             "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo     ║",
             "║     Type 'help' for available commands                                    ║",
             f"║     CLI Mode: {'ADMIN' if self.is_admin() else 'USER'} 🔒                              ║",

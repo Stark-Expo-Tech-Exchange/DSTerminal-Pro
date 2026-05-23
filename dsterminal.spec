@@ -237,7 +237,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='dsterminal_win-2026_v3.1.113_x64-amd64',
+    name='dsterminal_win-2026_v2.1.327_x64-amd64',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,
@@ -255,4 +255,4 @@ exe = EXE(
 )
 
 print("\n[*] Build spec processing complete!")
-print(f"[*] Output will be: dist/dsterminal_win-2026_v3.1.113_x64-amd64.exe")
+print(f"[*] Output will be: dist/dsterminal_win-2026_v2.1.327_x64-amd64.exe")

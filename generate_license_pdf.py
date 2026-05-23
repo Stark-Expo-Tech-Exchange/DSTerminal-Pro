@@ -26,7 +26,7 @@ class DSTERMINALEULAGenerator:
         """Generate the professional EULA PDF with clean formatting"""
         
         timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
-        pdf_filename = f"DSTERMINAL_EULA_v2.0.113_{timestamp}.pdf"
+        pdf_filename = f"DSTERMINAL_EULA_v2.1.327_{timestamp}.pdf"
         pdf_path = os.path.join(self.output_dir, pdf_filename)
         
         doc = SimpleDocTemplate(
@@ -179,9 +179,9 @@ class DSTERMINALEULAGenerator:
         
         # Title
         story.append(Paragraph("DSTERMINAL - Defensive Security Terminal", title_style))
-        story.append(Paragraph("CYBER-OPS PLATFORM", title_style))
+        story.append(Paragraph("Cyber-Ops Platform", title_style))
         story.append(Paragraph("End User License Agreement (EULA)", subtitle_style))
-        story.append(Paragraph(f"Version 3.1.113 | Last Updated: {datetime.now().strftime('%B %d, %Y')}", subtitle_style))
+        story.append(Paragraph(f"Version v2.1.327 | Last Updated: {datetime.now().strftime('%B %d, %Y')}", subtitle_style))
         story.append(Spacer(1, 15))
         
         # Divider
@@ -321,7 +321,7 @@ class DSTERMINALEULAGenerator:
             ["Licensor:", "Stark Expo Tech Exchange", ""],
             ["Authorized Representative:", "_________________________", ""],
             ["Title:", "_________________________", ""],
-            ["Date:", "_________________________", datetime.now().strftime('%Y-%m-%d')],
+            ["Date:", "_________________________", ""],
             ["Signature:", "_________________________", ""],
         ]
         
@@ -348,7 +348,7 @@ class DSTERMINALEULAGenerator:
             ["Number of Users:", "_________", ""],
             ["Authorized Representative:", "_________________________", ""],
             ["Title/Position:", "_________________________", ""],
-            ["Date:", "_________________________", datetime.now().strftime('%Y-%m-%d')],
+            ["Date:", "_________________________", ""],
             ["Signature:", "_________________________", ""],
         ]
         
@@ -393,7 +393,7 @@ class DSTERMINALEULAGenerator:
         <br/>
         Document ID: DSTERMINAL-EULA-{datetime.now().strftime('%Y%m%d')}-001<br/>
         Printed On: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}<br/>
-        Version: 3.1.113
+        Version: 2.1.327
         """
         story.append(Paragraph(copyright_text, footer_style))
         
