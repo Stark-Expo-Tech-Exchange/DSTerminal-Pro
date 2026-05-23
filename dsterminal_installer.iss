@@ -27,6 +27,12 @@ SolidCompression=yes
 DisableWelcomePage=no
 WizardStyle=modern
 SetupIconFile=installer_assets\3486-removebg-preview.ico
+
+WizardImageFile=installer_assets\wizard-image.bmp
+WizardSmallImageFile=installer_assets\wizard-small.bmp
+WizardImageStretch=No
+WizardImageBackColor=clBlack
+
 DisableProgramGroupPage=no
 AllowNoIcons=yes
 PrivilegesRequired=lowest
@@ -64,7 +70,6 @@ Name: "updatehelper"; Description: "Auto-Update Helper Script"; Types: full cust
 Name: "dependencies"; Description: "Install Required Dependencies (Nmap, Python packages)"; Types: full custom
 Name: "dependencies\nmap"; Description: "Nmap Network Scanner"; Types: full
 Name: "dependencies\sqlmap"; Description: "SQLMap (SQL Injection Tool)"; Types: full
-Name: "dependencies\metasploit"; Description: "Metasploit Framework"; Types: full
 Name: "dependencies\whois"; Description: "WHOIS Domain Lookup"; Types: full
 Name: "dependencies\python"; Description: "Python 3.11+ (Required for SOC features)"; Types: full
 Name: "dependencies\packages"; Description: "Python Packages (colorama, requests, folium, plotly, reportlab)"; Types: full
@@ -80,7 +85,7 @@ Name: "installdeps"; Description: "Install/Update missing dependencies on comple
 
 [Files]
 ; ========== CORE APPLICATION ==========
-Source: "dist\dsterminal_win-2026_v2.0.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
+Source: "dist\dsterminal_win-2026_v3.1.113_x64-amd64.exe"; DestDir: "{app}"; DestName: "dsterminal.exe"; Flags: ignoreversion; Components: core
 Source: "dist\dsterminal_console.exe"; DestDir: "{app}"; DestName: "dsterminal-console.exe"; Flags: ignoreversion skipifsourcedoesntexist; Components: core
 Source: "./dsterminal.bat"; DestDir: "{app}"; Flags: ignoreversion
 
@@ -169,17 +174,20 @@ Filename: "{app}\docs\index.html"; Description: "View DSTerminal Documentation";
 ; Add to PATH
 Filename: "{cmd}"; Parameters: "/c setx PATH ""%PATH%;{app}"""; Flags: runhidden
 
-; Check and install dependencies
-;Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
+; Check and install dependencies (REMOVED THE SEMICOLON)
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\check_dependencies.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
 
-; Install Nmap if missing
-;Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\nmap; Tasks: installdeps; Check: IsNmapMissing
+; Install Nmap if missing (REMOVED THE SEMICOLON)
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_nmap.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\nmap; Tasks: installdeps; Check: IsNmapMissing
 
-; Install Python packages if missing
+; Launch post-install script after installer closes
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -WindowStyle Hidden -File ""{app}\tools\post_install.ps1"""; Flags: nowait skipifsilent
+
+; Install Python packages if missing (This one is already uncommented - good!)
 Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_python_packages.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\packages; Tasks: installdeps; Check: ArePythonPackagesMissing
 
-; Install Metasploit if missing
-Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_metasploit_wsl.ps1"""; Flags: runhidden waituntilterminated; Components: dependencies\metasploit; Tasks: installdeps; Check: IsMetasploitMissing
+; Install all missing dependencies (synchronous)
+Filename: "powershell.exe"; Parameters: "-ExecutionPolicy Bypass -File ""{app}\tools\install_all_dependencies.ps1"""; Description: "Installing missing dependencies..."; Flags: runhidden waituntilterminated; Components: dependencies; Tasks: installdeps
 
 ; Launch DSTerminal after install
 Filename: "{app}\dsterminal.exe"; Description: "Launch DSTerminal"; Flags: nowait postinstall skipifsilent; Components: core
@@ -225,6 +233,19 @@ var
 begin
   Result := True;
   if Exec(ExpandConstant('{cmd}'), '/c nmap --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
+  begin
+    if ResultCode = 0 then
+      Result := False;
+  end;
+end;
+
+// ========== SQLMAP CHECK ==========
+function IsSQLMapMissing: Boolean;
+var
+  ResultCode: Integer;
+begin
+  Result := True;
+  if Exec(ExpandConstant('{cmd}'), '/c sqlmap --version', '', SW_HIDE, ewWaitUntilTerminated, ResultCode) then
   begin
     if ResultCode = 0 then
       Result := False;

@@ -10543,7 +10543,9 @@ class SecurityTerminal:
                     cmd_color = Fore.YELLOW
                 elif "ls" in cmd or "cat" in cmd or "touch" in cmd:
                     cmd_color = Fore.BLUE
-                elif "msf" in cmd or "metasploit" in cmd or "msfconsole" in cmd:
+                elif "msf" in cmd or "metasploit" in cmd or "wsl msfconsole" in cmd:
+                    cmd_color = Fore.RED + Style.BRIGHT
+                elif "msfconsole" in cmd or "metasploit" in cmd or "wsl msfconsole" in cmd:
                     cmd_color = Fore.RED + Style.BRIGHT
                 elif "nmap" in cmd:
                     cmd_color = Fore.YELLOW + Style.BRIGHT

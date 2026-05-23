@@ -53,7 +53,7 @@ files = [
     'telemetry_engine.py', 'setupt.sh', 'setupt.bat',
     # Dependency installation scripts
     'install_nmap.ps1', 'install_python_packages.ps1', 'check_dependencies.ps1', 
-    'install_metasploit.ps1', 'install_metasploit_wsl.ps1', 'install_all_dependencies.ps1',
+    'install_metasploit.ps1', 'install_all_dependencies.ps1',
     'install_nmap.bat', 'install_remaining_deps.ps1', 'install_remaining_deps.bat', 
     'check_deps.bat', 'install_chocolatey.ps1',
     'install_whois.ps1', 'install_sqlmap.ps1', 'install_nmap_admin.ps1', 
