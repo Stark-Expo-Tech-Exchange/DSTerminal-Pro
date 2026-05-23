@@ -125,14 +125,13 @@ Source: "tools\check_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignorever
 Source: "tools\install_all_dependencies.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_chocolatey.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_remaining_deps.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_metasploit_wsl.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\metasploit
-Source: "tools\install_metasploit.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\metasploit
+Source: "tools\install_metasploit.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_nmap_admin.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_nmap.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
-Source: "tools\install_whois.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\whois
+Source: "tools\install_whois.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_sqlmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\sqlmap
 Source: "tools\install_python_packages.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\packages
-Source: "tools\install_python.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\python
+Source: "tools\install_python.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_remaining_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\check_deps.bat"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies
 Source: "tools\install_nmap.ps1"; DestDir: "{app}\tools"; Flags: ignoreversion; Components: dependencies\nmap
