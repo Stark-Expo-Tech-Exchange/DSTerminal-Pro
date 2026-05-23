@@ -180,8 +180,6 @@ class OrganizationLocationDB:
 
 
 # Initialize organization database at startup
-print(f"[+] Loaded {len(OrganizationLocationDB.ORGANIZATIONS)} organizations from multiple countries")
-
 
 # ============================================================
 # Data Classes

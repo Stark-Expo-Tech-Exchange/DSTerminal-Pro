@@ -1395,7 +1395,7 @@ class SecurityTerminal:
         if SOC_NMAP_AVAILABLE:
             try:
                 self.soc_nmap = SOCNmapIntegration()
-                print("[+] SOC Nmap Dashboard integration loaded")
+                # print("[+] SOC Nmap Dashboard integration loaded")
             except Exception as e:
                 print(f"[!] Failed to initialize SOC Nmap: {e}")
                 self.soc_nmap = None
@@ -6418,179 +6418,698 @@ class SecurityTerminal:
             input()
 
         # end here macspoof
+   
     def sql_injection_scan(self, url=None):
-        """Interactive SQL injection scanner with cinematic animations"""
+        """Interactive SQL injection scanner with cinematic animations and PDF report generation"""
+        import subprocess
+        import os
+        import random
+        import time
+        import json
+        from datetime import datetime
+        from shutil import which
+        from rich.live import Live
+        from rich.panel import Panel
+        from rich.columns import Columns
+        from rich.progress import Progress, SpinnerColumn, TextColumn, BarColumn
+        from rich.console import Console
+        from rich.table import Table
+        from rich.layout import Layout
+        from rich.align import Align
+        from rich import box
+        import shutil
+        
         console = Console()
-    
-    # Animation frames
+        
+        # Animation frames for different scan phases
         SQL_FRAMES = [
-            "SELECT * FROM users",
-            "UNION SELECT 1,2,3",
-            "1' OR '1'='1",
-            "WAITFOR DELAY '0:0:5'",
-            "CONVERT(int,@@version)"
+            "[red]SELECT * FROM users WHERE id = '1' OR '1'='1'[/red]",
+            "[yellow]UNION SELECT 1,2,3,4,5,6,7,8,9,10[/yellow]",
+            "[green]1' OR '1'='1' --[/green]",
+            "[cyan]WAITFOR DELAY '0:0:5'[/cyan]",
+            "[magenta]CONVERT(int, @@version)[/magenta]",
+            "[red]; DROP TABLE users; --[/red]",
+            "[yellow]admin' OR '1'='1' --[/yellow]",
+            "[green]1' AND SLEEP(5) --[/green]",
+            "[cyan]' UNION SELECT @@VERSION, NULL, NULL --[/cyan]",
+            "[magenta]1' AND 1=CONVERT(int, @@VERSION) --[/magenta]"
         ]
-
-    # Get URL if not provided
+        
+        # Get URL if not provided
         if not url:
-            url = console.input("\n[bold cyan]Enter target URL (with http://): [/]").strip()
-    
+            url = console.input("\n[bold cyan]🎯 Enter target URL (with http:// or https://): [/]").strip()
+        
+        # Clean URL - remove any sqlmap flags if user accidentally added them
+        if ' --' in url:
+            url = url.split(' --')[0]
+        for flag in ['--technique', '--batch', '--level', '--risk', '--dbs']:
+            if flag in url:
+                url = url.split(flag)[0]
+        url = url.strip()
+        
         if not url.startswith(("http://", "https://")):
             console.print(Panel(
-                "[red]Invalid URL format! Must include http:// or https://[/red]",
-                title="Input Error",
+                "[red]❌ Invalid URL format! Must include http:// or https://[/red]",
+                title="[bold red]Input Error[/bold red]",
                 border_style="red"
             ))
+            console.print("\n[bold]Example:[/bold] [cyan]http://testphp.vulnweb.com/artists.php?artist=1[/cyan]")
             return
-
-    # Check sqlmap installation
+        
+        # Check sqlmap installation
         if not which("sqlmap"):
             console.print(Panel(
-                "[red]sqlmap not found![/red]\n\n"
+                "[red]❌ sqlmap not found![/red]\n\n"
                 "Install with:\n"
-                "[green]git clone --depth 1 https://github.com/sqlmapproject/sqlmap.git[/green]\n\n"
+                "[green]▶ pip install sqlmap[/green]\n\n"
                 "Or visit: [blue]https://sqlmap.org[/blue]",
-                title="Dependency Missing",
+                title="[bold red]Dependency Missing[/bold red]",
                 border_style="red"
             ))
             return
-
-    # Prepare display panels
-        def create_panel(content, title="", border_style="blue"):
+        
+        # Create workspace directory
+        workspace = os.path.expanduser("~/dsterminal_workspace")
+        scans_dir = os.path.join(workspace, "scans")
+        os.makedirs(scans_dir, exist_ok=True)
+        
+        # Prepare display panels
+        def create_panel(content, title="", border_style="blue", height=None):
             return Panel(
                 content,
-                title=title,
+                title=f"[bold {border_style}]{title}[/bold {border_style}]" if title else "",
                 border_style=border_style,
-                width=50,
-                padding=(1, 1)
+                width=55,
+                padding=(1, 1),
+                height=height
             )
-
-    # Main display generator
-        def generate_display(scan_log, status_msg, animation_frame):
-            log_panel = create_panel(
-                "\n".join(scan_log[-5:]),
-                title="[blue]SCAN LOG[/blue]",
+        
+        # Main display generator
+        def generate_display(scan_log, status_msg, animation_frame, scan_stats):
+            layout = Layout()
+            layout.split_row(
+                Layout(name="log", ratio=2),
+                Layout(name="right", ratio=1)
+            )
+            layout["right"].split_column(
+                Layout(name="status"),
+                Layout(name="injection")
+            )
+            
+            log_content = "\n".join(scan_log[-8:]) if scan_log else "[dim]Waiting for scan output...[/dim]"
+            layout["log"].update(create_panel(
+                log_content,
+                title="📊 SCAN LOG",
                 border_style="blue"
-            )
-        
-            status_panel = create_panel(
-                status_msg,
-                title="[green]STATUS[/green]",
+            ))
+            
+            stats_content = f"""
+    [green]• Target:[/green] {url[:50]}
+    [cyan]• Status:[/cyan] {status_msg}
+    [yellow]• Tests Run:[/yellow] {scan_stats['tests']}
+    [magenta]• Vulnerabilities:[/magenta] {scan_stats['vulns_found']}
+    [red]• Time Elapsed:[/red] {scan_stats['elapsed']}s
+            """
+            layout["status"].update(create_panel(
+                stats_content,
+                title="⚡ STATUS",
                 border_style="green"
-            )
-        
-            anim_panel = create_panel(
-                animation_frame,
-                title="[red]SQL INJECTION[/red]",
+            ))
+            
+            layout["injection"].update(create_panel(
+                f"\n[bold red]{animation_frame}[/bold red]\n\n[dim]Testing injection techniques...[/dim]",
+                title="💉 SQL INJECTION",
                 border_style="red"
-            )
+            ))
+            
+            return layout
         
-            return Columns([log_panel, status_panel, anim_panel])
-
         scan_log = []
         status_msg = "Initializing scan..."
         current_frame = random.choice(SQL_FRAMES)
-
-    # Prepare sqlmap command
-        report_dir = "./sqlmap_reports"
+        scan_stats = {'tests': 0, 'vulns_found': 0, 'elapsed': 0}
+        start_time = time.time()
+        vulnerabilities = []
+        
+        # Prepare sqlmap command
+        timestamp = datetime.now().strftime('%Y%m%d_%H%M%S')
+        safe_url = url.replace('://', '_').replace('/', '_').replace('?', '_').replace('&', '_')[:50]
+        report_dir = os.path.join(scans_dir, f"sqlmap_{safe_url}_{timestamp}")
         os.makedirs(report_dir, exist_ok=True)
-    
+        
         cmd = [
             "sqlmap",
             "-u", url,
             "--batch",
-            "--risk=3",
-            "--level=3",
-            "--crawl=1",
             "--random-agent",
-            "--output-dir", report_dir
+            "--output-dir", report_dir,
+            "--smart",
+            "--threads=5",
+            "--level=3",
+            "--risk=2"
         ]
-
+        
+        # Ask for advanced options
+        console.print("\n[bold yellow]⚡ SQLMap Configuration[/bold yellow]")
+        console.print("[dim]Press Enter to use defaults[/dim]\n")
+        
+        db_choice = console.input("[cyan]Database type (MySQL/MSSQL/Oracle/PostgreSQL/All) [All]: [/]").strip()
+        if db_choice.lower() not in ['', 'all']:
+            cmd.extend(["--dbms", db_choice.lower()])
+        
+        tech_choice = console.input("[cyan]Technique (B/E/U/S/T/Q/All) [All]: [/]").strip()
+        if tech_choice.upper() not in ['', 'ALL']:
+            cmd.extend(["--technique", tech_choice.upper()])
+        
+        if console.input("[cyan]Test GET parameters only? (y/n) [n]: [/]").strip().lower() == 'y':
+            cmd.append("--no-cast")
+        
+        data = console.input("[cyan]POST data (if any, press Enter to skip): [/]").strip()
+        if data:
+            cmd.extend(["--data", data])
+        
+        cookie = console.input("[cyan]Cookie (if any, press Enter to skip): [/]").strip()
+        if cookie:
+            cmd.extend(["--cookie", cookie])
+        
+        # console.print("\n[bold green]Starting SQLMap scan...[/bold green]")
+        # console.print(f"[dim]Command: {' '.join(cmd)}[/dim]\n")
+        
+        process = None
+        
         try:
-            with Live(generate_display(scan_log, status_msg, current_frame), 
+            with Live(generate_display(scan_log, status_msg, current_frame, scan_stats), 
                     console=console, 
-                    refresh_per_second=10,
-                    transient=False) as live:
-            
-            # Start scan with progress animation
-                scan_log.append(f"Starting scan on: {url}")
-                status_msg = "[yellow]Scanning target...[/yellow]"
-            
+                    refresh_per_second=8,
+                    transient=False,
+                    screen=True) as live:
+                
+                scan_log.append(f"[bold cyan]▶ Starting scan on: {url}[/bold cyan]")
+                status_msg = "[yellow]🔍 Scanning target...[/yellow]"
+                scan_stats['elapsed'] = int(time.time() - start_time)
+                live.update(generate_display(scan_log, status_msg, current_frame, scan_stats))
+                
                 with Progress(
                     SpinnerColumn(),
                     TextColumn("[progress.description]{task.description}"),
                     BarColumn(),
                     TextColumn("[progress.percentage]{task.percentage:>3.0f}%"),
-                    transient=True
+                    transient=False
                 ) as progress:
-                    task = progress.add_task("[cyan]Testing parameters", total=100)
-                
-                # Run sqlmap in background
+                    task = progress.add_task("[cyan]🧪 Testing parameters", total=100)
+                    
                     process = subprocess.Popen(
                         cmd,
                         stdout=subprocess.PIPE,
-                        stderr=subprocess.PIPE,
-                        universal_newlines=True
+                        stderr=subprocess.STDOUT,
+                        universal_newlines=True,
+                        bufsize=1
                     )
-                
-                # Animate while scanning
+                    
                     frame_counter = 0
+                    last_line = ""
+                    
                     while process.poll() is None:
                         frame_counter += 1
                         if frame_counter % 5 == 0:
                             current_frame = random.choice(SQL_FRAMES)
-                    
-                    # Update progress
-                        progress.update(task, advance=0.5)
+                            scan_stats['tests'] += 1
+                        
+                        if "testing" in last_line.lower():
+                            progress.update(task, advance=0.3)
+                        elif "vulnerable" in last_line.lower():
+                            progress.update(task, advance=1)
+                            scan_stats['vulns_found'] += 1
+                        
                         if progress.tasks[0].percentage >= 100:
                             progress.update(task, completed=99)
-                    
-                    # Read output
+                        
                         line = process.stdout.readline()
                         if line:
-                            if "testing" in line.lower():
-                                status_msg = f"[yellow]{line.strip()}[/yellow]"
-                            scan_log.append(line.strip())
+                            last_line = line.strip()
+                            if any(keyword in last_line.lower() for keyword in ["testing", "checking", "trying"]):
+                                status_msg = f"[yellow]{last_line[:50]}[/yellow]"
+                            elif "vulnerable" in last_line.lower():
+                                status_msg = f"[red]⚠️ {last_line[:50]}[/red]"
+                                scan_stats['vulns_found'] += 1
+                                vulnerabilities.append(last_line)
+                            elif "payload" in last_line.lower():
+                                scan_log.append(f"[red]💉 {last_line}[/red]")
+                            else:
+                                scan_log.append(f"[dim]{last_line}[/dim]")
+                            
+                            if len(scan_log) > 20:
+                                scan_log = scan_log[-20:]
+                            
+                            scan_stats['elapsed'] = int(time.time() - start_time)
+                            live.update(generate_display(scan_log, status_msg, current_frame, scan_stats))
+                            time.sleep(0.05)
                     
-                        live.update(generate_display(scan_log, status_msg, current_frame))
-                        time.sleep(0.1)
-                
                     progress.update(task, completed=100)
-            
-            # Process results
-                status_msg = "[green]Scan completed![/green]"
-                live.update(generate_display(scan_log, status_msg, current_frame))
-            
-            # Parse vulnerabilities
-                vulns = []
-                report_file = os.path.join(report_dir, url.replace("://", "_").replace("/", "_"), "log")
+                
+                scan_stats['elapsed'] = int(time.time() - start_time)
+                status_msg = "[green]✅ Scan completed![/green]"
+                live.update(generate_display(scan_log, status_msg, current_frame, scan_stats))
+                
+                report_file = os.path.join(report_dir, "log")
                 if os.path.exists(report_file):
-                    with open(report_file, "r") as f:
-                        for line in f:
-                            if any(x in line for x in ["injectable", "vulnerable", "payload:"]):
-                                vulns.append(line.strip())
-            
-            # Show results
-                if vulns:
-                    status_msg = "[red]VULNERABILITIES FOUND![/red]"
-                    scan_log.extend([""] + vulns[-3:] + [f"\nFull report: {report_file}"])
-                else:
-                    status_msg = "[green]No vulnerabilities found[/green]"
-            
-                live.update(generate_display(scan_log, status_msg, current_frame))
-                console.print("\n[bold]Press Enter to continue...[/]", end="")
-                input()
-            
+                    with open(report_file, "r", encoding='utf-8', errors='ignore') as f:
+                        content = f.read()
+                        for line in content.split('\n'):
+                            if any(x in line.lower() for x in ["injectable", "vulnerable", "payload:", "parameter"]):
+                                if line.strip() not in vulnerabilities:
+                                    vulnerabilities.append(line.strip())
+        
+        except KeyboardInterrupt:
+            console.print("\n[bold yellow]⚠️ Scan interrupted by user[/bold yellow]")
+            if process:
+                process.terminate()
+                process.wait()
         except Exception as e:
             console.print(Panel(
-                f"[red]Error: {str(e)}[/red]",
-                title="Scan Failed",
+                f"[red]❌ Error: {str(e)}[/red]\n\n"
+                f"[dim]Command: {' '.join(cmd)}[/dim]",
+                title="[bold red]Scan Failed[/bold red]",
                 border_style="red"
             ))
-            console.print("\n[bold]Press Enter to continue...[/]", end="")
-            input()
- 
-    # ==================== UTILITY METHODS ====================
+        
+        # ============================================================
+        # Generate PDF Report
+        # ============================================================
+        
+        def generate_sqlmap_pdf_report():
+            """Generate a professional PDF report of SQLMap scan results with DSTERMINAL watermark and logo"""
+            try:
+                from reportlab.lib import colors
+                from reportlab.lib.pagesizes import A4
+                from reportlab.platypus import SimpleDocTemplate, Paragraph, Spacer, Table, TableStyle, PageBreak, Image
+                from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
+                from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+                from reportlab.pdfgen import canvas
+                import hashlib
+                from PIL import Image as PILImage
+                import io
+                import os
+                
+                pdf_filename = f"SQLMap_Report_{safe_url}_{timestamp}.pdf"
+                pdf_path = os.path.join(scans_dir, pdf_filename)
+                
+                # Load the DSTERMINAL logo
+                logo_path = os.path.join("installer_assets", "3486-removebg-preview.ico")
+                logo_img = None
+                logo_temp_path = None
+                
+                # Convert ICO to PNG for reportlab compatibility
+                if os.path.exists(logo_path):
+                    try:
+                        pil_img = PILImage.open(logo_path)
+                        if pil_img.mode in ('RGBA', 'LA', 'P'):
+                            background = PILImage.new('RGB', pil_img.size, (255, 255, 255))
+                            if pil_img.mode == 'P':
+                                pil_img = pil_img.convert('RGBA')
+                            if pil_img.mode == 'RGBA':
+                                background.paste(pil_img, mask=pil_img.split()[-1])
+                            else:
+                                background.paste(pil_img)
+                            pil_img = background
+                        elif pil_img.mode != 'RGB':
+                            pil_img = pil_img.convert('RGB')
+                        
+                        logo_temp_path = os.path.join(scans_dir, "temp_logo.png")
+                        pil_img.save(logo_temp_path, "PNG")
+                        logo_img = Image(logo_temp_path, width=60, height=60)
+                    except Exception as e:
+                        console.print(f"[yellow]Logo loading warning: {e}[/yellow]")
+                        logo_img = None
+                else:
+                    console.print(f"[yellow]Logo not found at: {logo_path}[/yellow]")
+                
+                # Create PDF document with custom page template for watermark
+                class WatermarkedDocTemplate(SimpleDocTemplate):
+                    def __init__(self, filename, **kwargs):
+                        super().__init__(filename, **kwargs)
+                    
+                    def afterFlowable(self, flowable):
+                        pass
+                
+                doc = WatermarkedDocTemplate(pdf_path, pagesize=A4,
+                                            rightMargin=72, leftMargin=72,
+                                            topMargin=72, bottomMargin=72)
+                
+                # Custom page template with watermark
+                def add_watermark(canvas_obj, doc):
+                    canvas_obj.saveState()
+                    page_width, page_height = A4
+                    center_x = page_width / 2
+                    center_y = page_height / 2
+                    
+                    canvas_obj.setFont('Helvetica-Bold', 60)
+                    canvas_obj.setFillColor(colors.HexColor('#1a1a2e'))
+                    canvas_obj.setFillAlpha(0.15)
+                    canvas_obj.saveState()
+                    canvas_obj.translate(center_x, center_y)
+                    canvas_obj.rotate(45)
+                    canvas_obj.drawCentredString(0, 0, "DSTERMINAL")
+                    canvas_obj.restoreState()
+                    
+                    canvas_obj.setFont('Helvetica', 25)
+                    canvas_obj.setFillAlpha(0.1)
+                    canvas_obj.drawCentredString(center_x, 50, "CYBER-OPS PLATFORM")
+                    
+                    canvas_obj.setFont('Helvetica', 8)
+                    canvas_obj.setFillAlpha(0.5)
+                    canvas_obj.setFillColor(colors.HexColor('#666666'))
+                    canvas_obj.drawCentredString(center_x, 20, f"Page {doc.page} | DSTERMINAL SOC v2.0.113")
+                    canvas_obj.restoreState()
+                
+                # Styles
+                styles = getSampleStyleSheet()
+                
+                title_style = ParagraphStyle(
+                    'CustomTitle',
+                    parent=styles['Heading1'],
+                    fontSize=28,
+                    textColor=colors.HexColor('#00ff00'),
+                    alignment=TA_CENTER,
+                    spaceAfter=20,
+                    fontName='Helvetica-Bold'
+                )
+                
+                subtitle_style = ParagraphStyle(
+                    'Subtitle',
+                    parent=styles['Normal'],
+                    fontSize=12,
+                    textColor=colors.HexColor('#888888'),
+                    alignment=TA_CENTER,
+                    spaceAfter=30
+                )
+                
+                heading_style = ParagraphStyle(
+                    'CustomHeading',
+                    parent=styles['Heading2'],
+                    fontSize=18,
+                    textColor=colors.HexColor('#00ffff'),
+                    spaceAfter=15,
+                    spaceBefore=15,
+                    fontName='Helvetica-Bold'
+                )
+                
+                body_style = ParagraphStyle(
+                    'Body',
+                    parent=styles['Normal'],
+                    fontSize=10,
+                    textColor=colors.HexColor('#e0e0e0'),
+                    alignment=TA_LEFT,
+                    spaceAfter=6,
+                    fontName='Helvetica'
+                )
+                
+                # Build story
+                story = []
+                
+                # Add logo centered at the top
+                if logo_img:
+                    logo_table = Table([[logo_img]], colWidths=[400], rowHeights=[100])
+                    logo_table.setStyle(TableStyle([
+                        ('ALIGN', (0, 0), (-1, -1), 'CENTER'),
+                        ('VALIGN', (0, 0), (-1, -1), 'MIDDLE'),
+                    ]))
+                    story.append(logo_table)
+                    story.append(Spacer(1, 10))
+                
+                # Title
+                story.append(Paragraph("DSTERMINAL Cyber-Ops Platform", title_style))
+                story.append(Paragraph("SQL Injection Security Assessment Report", subtitle_style))
+                story.append(Spacer(1, 15))
+                
+                # Divider
+                story.append(Paragraph("-" * 80, styles['Normal']))
+                story.append(Spacer(1, 15))
+                
+                # Report Metadata Table
+                report_id = hashlib.md5(f"{url}{timestamp}".encode()).hexdigest()[:16].upper()
+                
+                metadata_data = [
+                    ["Report ID:", report_id],
+                    ["Generated By:", "DSTERMINAL SOC Platform v2.0.113"],
+                    ["Classification:", "CONFIDENTIAL - Security Team Only"],
+                    ["Target URL:", url[:80]],
+                    ["Scan Date:", datetime.now().strftime('%Y-%m-%d %H:%M:%S')],
+                    ["Scan Duration:", f"{scan_stats['elapsed']} seconds ({int(scan_stats['elapsed']/60)} minutes)"],
+                    ["Tests Performed:", str(scan_stats['tests'])],
+                ]
+                
+                metadata_table = Table(metadata_data, colWidths=[140, 330])
+                metadata_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (0, -1), colors.HexColor('#1a1a2e')),
+                    ('TEXTCOLOR', (0, 0), (0, -1), colors.HexColor('#00ffff')),
+                    ('BACKGROUND', (1, 0), (1, -1), colors.HexColor('#0d1117')),
+                    ('TEXTCOLOR', (1, 0), (1, -1), colors.HexColor('#33ff33')),
+                    ('FONTNAME', (0, 0), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                    ('ALIGN', (0, 0), (0, -1), 'LEFT'),
+                    ('ALIGN', (1, 0), (1, -1), 'LEFT'),
+                    ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#333333')),
+                ]))
+                story.append(metadata_table)
+                story.append(Spacer(1, 25))
+                
+                # Executive Summary
+                story.append(Paragraph("Executive Summary", heading_style))
+                
+                if scan_stats['vulns_found'] > 0:
+                    summary_text = f"""
+                    <b><font color="#ff0000">⚠️ RISK ASSESSMENT: CRITICAL</font></b><br/>
+                    <br/>
+                    The security assessment of <b>{url[:60]}</b> has identified <b>{scan_stats['vulns_found']} potential SQL injection vulnerabilities</b>.
+                    SQL injection is a critical vulnerability that allows attackers to manipulate database queries,
+                    potentially leading to unauthorized data access, data manipulation, or complete system compromise.
+                    <br/>
+                    <br/>
+                    <b><font color="#ff0000">⚠️ IMMEDIATE REMEDIATION REQUIRED</font></b>
+                    """
+                    story.append(Paragraph(summary_text, body_style))
+                else:
+                    summary_text = f"""
+                    <b><font color="#33ff33">✅ RISK ASSESSMENT: LOW</font></b><br/>
+                    <br/>
+                    <font color="#33ff33">The security assessment of <b>{url[:60]}</b> did not detect any SQL injection vulnerabilities.
+                    The application appears to implement proper input validation and parameterized queries.</font>
+                    <br/>
+                    <br/>
+                    <b><font color="#33ff33">✓ No immediate action required. Continue regular security monitoring.</font></b>
+                    """
+                    story.append(Paragraph(summary_text, body_style))
+                
+                story.append(Spacer(1, 80))
+                
+                # Scan Statistics Table
+                story.append(Paragraph("Detailed Scan Statistics", heading_style))
+                
+                stats_data = [
+                    ["Metric", "Value"],
+                    ["Target URL", url[:80]],
+                    ["Scan Start Time", datetime.now().strftime('%Y-%m-%d %H:%M:%S')],
+                    ["Total Duration", f"{scan_stats['elapsed']} seconds ({int(scan_stats['elapsed']/60)} minutes)"],
+                    ["SQLMap Tests Executed", str(scan_stats['tests'])],
+                    ["Vulnerabilities Identified", str(scan_stats['vulns_found'])],
+                    ["Report ID", report_id],
+                ]
+                
+                stats_table = Table(stats_data, colWidths=[150, 320])
+                stats_table.setStyle(TableStyle([
+                    ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#00ffff')),
+                    ('TEXTCOLOR', (0, 0), (-1, 0), colors.black),
+                    ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#0d1117')),
+                    ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#33ff33')),
+                    ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                    ('FONTNAME', (0, 1), (-1, -1), 'Helvetica'),
+                    ('FONTSIZE', (0, 0), (-1, -1), 9),
+                    ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                    ('ALIGN', (0, 1), (-1, -1), 'LEFT'),
+                    ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#333333')),
+                ]))
+                story.append(stats_table)
+                story.append(Spacer(1, 35))
+                # End of Page 1
+                # story.append(PageBreak())
+                
+                # PAGE 2 - Vulnerabilities & Recommendations
+                if vulnerabilities:
+                    story.append(Paragraph("Vulnerabilities Detected", heading_style))
+                    story.append(Spacer(1, 10))
+                    
+                    vuln_data = [["#", "Type", "Description"]]
+                    for i, vuln in enumerate(vulnerabilities[:15], 1):
+                        if "injectable" in vuln.lower():
+                            vuln_type = "Boolean-Based Blind"
+                        elif "union" in vuln.lower():
+                            vuln_type = "UNION Query"
+                        elif "time" in vuln.lower():
+                            vuln_type = "Time-Based Blind"
+                        elif "error" in vuln.lower():
+                            vuln_type = "Error-Based"
+                        else:
+                            vuln_type = "SQL Injection"
+                        
+                        desc = vuln[:150] + "..." if len(vuln) > 150 else vuln
+                        vuln_data.append([str(i), vuln_type, desc])
+                    
+                    vuln_table = Table(vuln_data, colWidths=[30, 100, 350])
+                    vuln_table.setStyle(TableStyle([
+                        ('BACKGROUND', (0, 0), (-1, 0), colors.HexColor('#ff0000')),
+                        ('TEXTCOLOR', (0, 0), (-1, 0), colors.white),
+                        ('BACKGROUND', (0, 1), (-1, -1), colors.HexColor('#0d1117')),
+                        ('TEXTCOLOR', (0, 1), (-1, -1), colors.HexColor('#33ff33')),
+                        ('FONTNAME', (0, 0), (-1, 0), 'Helvetica-Bold'),
+                        ('FONTSIZE', (0, 0), (-1, -1), 8),
+                        ('ALIGN', (0, 0), (-1, 0), 'CENTER'),
+                        ('GRID', (0, 0), (-1, -1), 0.5, colors.HexColor('#333333')),
+                    ]))
+                    story.append(vuln_table)
+                    
+                    if len(vulnerabilities) > 15:
+                        story.append(Spacer(1, 10))
+                        story.append(Paragraph(f"<i>... and {len(vulnerabilities) - 15} more vulnerabilities found (see sqlmap output for details)</i>", body_style))
+                else:
+                    story.append(Paragraph("No Vulnerabilities Detected", heading_style))
+                    story.append(Spacer(1, 15))
+                    story.append(Paragraph(
+                        '<font color="#33ff33">✓ The application passed all SQL injection tests. No exploitable vulnerabilities were found.</font>',
+                        body_style
+                    ))
+                
+                story.append(Spacer(1, 25))
+                
+                # Security Recommendations
+                story.append(Paragraph("Security Recommendations", heading_style))
+                
+                if scan_stats['vulns_found'] > 0:
+                    recommendations = [
+                        "1. <b>Use Parameterized Queries:</b> Implement prepared statements or stored procedures.",
+                        "2. <b>Input Validation:</b> Validate and sanitize all user inputs.",
+                        "3. <b>Least Privilege:</b> Ensure database accounts have minimum permissions.",
+                        "4. <b>Web Application Firewall (WAF):</b> Deploy a WAF to detect and block SQL injection.",
+                        "5. <b>Regular Security Audits:</b> Conduct quarterly penetration testing.",
+                        "6. <b>Error Handling:</b> Implement custom error pages that don't reveal database information.",
+                    ]
+                else:
+                    recommendations = [
+                        '<font color="#33ff33">1. <b>Continue Monitoring:</b> Maintain regular security assessments and log review.</font>',
+                        '<font color="#33ff33">2. <b>Keep Dependencies Updated:</b> Regularly update all frameworks and libraries.</font>',
+                        '<font color="#33ff33">3. <b>Security Training:</b> Provide ongoing security awareness training for developers.</font>',
+                        '<font color="#33ff33">4. <b>Incident Response Plan:</b> Maintain and regularly test incident response procedures.</font>',
+                    ]
+                
+                for rec in recommendations:
+                    story.append(Paragraph(rec, body_style))
+                    story.append(Spacer(1, 8))
+                
+                story.append(Spacer(1, 20))
+                
+                # Footer Information
+                story.append(Paragraph("Report Information", heading_style))
+                footer_text = f"""
+                <font color="#33ff33"><b>Generated by:</b> DSTERMINAL Cyber-Ops Platform v2.0.113</font><br/>
+                <font color="#33ff33"><b>Report Type:</b> SQL Injection Security Assessment</font><br/>
+                <font color="#33ff33"><b>Classification:</b> CONFIDENTIAL - Security Team Only</font><br/>
+                <font color="#33ff33"><b>Retention Policy:</b> 90 days</font><br/>
+                <font color="#33ff33"><b>Contact:</b> security@dsterminal.local</font><br/>
+                <br/>
+                <font color="#33ff33"><i>Disclaimer: This report is automatically generated by DSTERMINAL SOC Platform.
+                The findings should be verified manually before taking remediation actions.
+                Unauthorized distribution of this report is prohibited.</i></font>
+                """
+                story.append(Paragraph(footer_text, body_style))
+                
+                # Build PDF with watermark on every page
+                doc.build(story, onFirstPage=add_watermark, onLaterPages=add_watermark)
+                
+                # Clean up temporary logo file
+                if logo_temp_path and os.path.exists(logo_temp_path):
+                    try:
+                        os.remove(logo_temp_path)
+                    except:
+                        pass
+                
+                console.print(f"\n[bold green]📄 PDF Report Generated: {pdf_path}[/bold green]")
+                return pdf_path
+                
+            except ImportError as e:
+                console.print(f"[yellow]⚠️ Missing module: {e}. PDF report skipped.[/yellow]")
+                console.print("[dim]Install with: pip install reportlab Pillow[/dim]")
+                return None
+            except Exception as e:
+                console.print(f"[red]❌ PDF generation failed: {e}[/red]")
+                return None
+        # Generate PDF
+        pdf_path = generate_sqlmap_pdf_report()
+        
+        # ============================================================
+        # CENTERED RESULTS TABLE
+        # ============================================================
+        
+        # Clear screen for clean results
+        console.clear()
+        
+        # Get terminal width for centering
+        try:
+            term_width = shutil.get_terminal_size().columns
+        except:
+            term_width = 100
+        
+        # Create the results table
+        results_table = Table(
+            title="[bold cyan]🔍 SQLMap Scan Results[/bold cyan]",
+            box=box.ROUNDED,
+            width=70,
+            show_header=True,
+            header_style="bold cyan"
+        )
+        results_table.add_column("Metric", style="yellow", width=25)
+        results_table.add_column("Value", style="green", width=45)
+        
+        results_table.add_row("Target URL", url)
+        results_table.add_row("Scan Duration", f"{scan_stats['elapsed']} seconds ({int(scan_stats['elapsed']/60)} minutes)")
+        results_table.add_row("Tests Performed", str(scan_stats['tests']))
+        
+        vuln_text = f"[bold red]{scan_stats['vulns_found']} FOUND![/bold red]" if scan_stats['vulns_found'] > 0 else "[green]0[/green]"
+        results_table.add_row("Vulnerabilities Found", vuln_text)
+        
+        report_loc = pdf_path[:57] + "..." if pdf_path and len(pdf_path) > 60 else str(pdf_path)
+        results_table.add_row("Report Location", report_loc if pdf_path else "Not generated")
+        
+        # Center and display the table
+        centered_table = Align.center(results_table)
+        console.print(centered_table)
+        
+        # Show vulnerabilities if found
+        if vulnerabilities:
+            console.print("\n[bold red]⚠️ VULNERABILITIES DETECTED![/bold red]\n")
+            for v in vulnerabilities[:5]:
+                console.print(f"  [red]•[/red] {v[:80]}")
+            
+            if len(vulnerabilities) > 5:
+                console.print(f"\n[dim]... and {len(vulnerabilities) - 5} more (see full report)[/dim]")
+        else:
+            console.print("\n[green]✅ No SQL injection vulnerabilities detected.[/green]")
+            console.print("[dim]The application appears to be secure against SQL injection attacks.[/dim]")
+        
+        # Separator line
+        console.print("\n" + "=" * 70)
+        
+        # Open PDF if requested
+        if pdf_path and os.path.exists(pdf_path):
+            open_pdf = console.input("\n[bold cyan]📄 Open PDF report? (y/n): [/]").strip().lower()
+            if open_pdf == 'y':
+                import webbrowser
+                webbrowser.open(f"file://{pdf_path}")
+                console.print("[green]✓ PDF report opened[/green]")
+        
+        console.print("\n[bold]Press Enter to continue...[/]", end="")
+        input()
+
+# ==================== UTILITY METHODS ====================
  
 
     def clear_logs(self):
@@ -10186,7 +10705,7 @@ class SecurityTerminal:
         from prompt_toolkit import PromptSession
         from prompt_toolkit.styles import Style
         style = Style.from_dict({
-            'bottom-toolbar': 'bg:#1a1a2e #00ff00',
+            'bottom-toolbar': 'bg:#1a1a2e #33ff33',
             'bottom-toolbar.text': "#078507",
         })
 

@@ -1,0 +1,12 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-EF748F
+║ Session ID : SESSION-8772F
+║ Host       : DESKTOP-CFFMGUL
+║ Start Time : 2026-05-23 16:30:52
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[16:31:16] COMMAND: sqlmap
+[16:31:45] COMMAND: exit

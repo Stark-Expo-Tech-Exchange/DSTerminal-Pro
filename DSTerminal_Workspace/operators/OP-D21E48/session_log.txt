@@ -1,0 +1,13 @@
+╔══════════════════════════════════════════════╗
+║       DSTerminal Operator Security Audit Log ║
+╠══════════════════════════════════════════════╣
+║ Operator   : OP-D21E48
+║ Session ID : SESSION-B21AB
+║ Host       : DESKTOP-CFFMGUL
+║ Start Time : 2026-05-23 14:43:58
+╠══════════════════════════════════════════════╣
+║ Command Activity                             ║
+╠══════════════════════════════════════════════╣
+[14:44:31] COMMAND: sqlmap
+[14:46:24] COMMAND: sqlmap
+[14:52:57] COMMAND: exit
