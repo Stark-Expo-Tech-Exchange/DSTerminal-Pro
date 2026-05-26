@@ -1,0 +1,9 @@
+[Desktop Entry]
+Version=2.1.327
+Name=DSTerminal
+Comment=Cyber Operations Command Center
+Exec=dsterminal
+Icon=dsterminal
+Terminal=true
+Type=Application
+Categories=Utility;Security;

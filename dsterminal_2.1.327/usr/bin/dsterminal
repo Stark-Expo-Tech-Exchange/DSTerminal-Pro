@@ -1,0 +1,2 @@
+#!/bin/bash
+/opt/dsterminal/venv/bin/python /opt/dsterminal/dsterminal.py "$@"

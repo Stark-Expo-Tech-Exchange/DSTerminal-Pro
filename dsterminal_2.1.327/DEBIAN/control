@@ -1,0 +1,9 @@
+Package: dsterminal
+Version: 2.1.327
+Section: utils
+Priority: optional
+Architecture: amd64
+Maintainer: Stark Expo Tech Exchange
+Depends: python3, python3-venv, python3-pip, nmap
+Description: DSTerminal Cyber Operations Platform
+ Advanced Cybersecurity Operations Toolkit with SOC automation engine

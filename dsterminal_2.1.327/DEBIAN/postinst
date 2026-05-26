@@ -1,0 +1,32 @@
+#!/bin/bash
+
+set -e
+
+echo "[*] Setting up DSTerminal virtual environment..."
+
+APP_DIR="/opt/dsterminal"
+VENV="$APP_DIR/venv"
+
+mkdir -p "$APP_DIR"
+
+# Create venv if missing
+if [ ! -d "$VENV" ]; then
+    python3 -m venv "$VENV"
+fi
+
+# Upgrade pip inside venv
+"$VENV/bin/pip" install --upgrade pip
+
+# Install dependencies INSIDE venv (safe)
+"$VENV/bin/pip" install \
+    requests \
+    rich \
+    psutil \
+    colorama \
+    pyfiglet \
+    netifaces
+
+echo "[*] Fixing launcher permissions..."
+chmod +x /usr/bin/dsterminal
+
+echo "[+] DSTerminal installed successfully"
