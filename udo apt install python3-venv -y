@@ -1,0 +1,93 @@
+[32midle-python3.13[0m/parrot 3.13.5-2+deb13u2 all
+  IDE for Python (v3.13) using Tkinter
+
+[32mlibfungw-python3-1[0m/parrot 1.2.1-3.1+b2 amd64
+  Scripting support for fungw: python3
+
+[32mlibpython3-all-dbg[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 debugging packages
+
+[32mlibpython3-all-dev[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 development packages
+
+[32mlibpython3-dbg[0m/parrot 3.13.5-1 amd64
+  debug build of the Python 3 Interpreter (version 3.13)
+
+[32mlibpython3.13[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Shared Python runtime library (version 3.13)
+
+[32mlibpython3.13-dbg[0m/parrot 3.13.5-2+deb13u2 amd64
+  Debug Build of the Python Interpreter (version 3.13)
+
+[32mlibpython3.13-dev[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Header files and a static library for Python (v3.13)
+
+[32mlibpython3.13-minimal[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Minimal subset of the Python language (version 3.13)
+
+[32mlibpython3.13-stdlib[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Interactive high-level object-oriented language (standard library, version 3.13)
+
+[32mlibpython3.13-testsuite[0m/parrot 3.13.5-2+deb13u2 all
+  Testsuite for the Python standard library (v3.13)
+
+[32mpostgresql-plpython3-17[0m/parrot,parrot-security 17.10-0+deb13u1 amd64
+  PL/Python 3 procedural language for PostgreSQL 17
+
+[32mpython3-all[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 runtime versions
+
+[32mpython3-all-dbg[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 debugging packages
+
+[32mpython3-all-dev[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 development packages
+
+[32mpython3-all-venv[0m/parrot 3.13.5-1 amd64
+  package depending on all supported Python 3 venv modules
+
+[32mpython3-apipkg[0m/parrot 3.0.2-1 all
+  namespace control and lazy-import mechanism for Python 3
+
+[32mpython3-dbg[0m/parrot 3.13.5-1 amd64
+  debug build of the Python 3 Interpreter (version 3.13)
+
+[32mpython3-flake8-2020[0m/parrot 1.8.1-2 all
+  flake8 checks for misuse of sys.version or sys.version_info
+
+[32mpython3-minimal[0m/parrot,now 3.13.5-1 amd64 [installed,automatic]
+  minimal subset of the Python language (default python3 version)
+
+[32mpython3.13[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Interactive high-level object-oriented language (version 3.13)
+
+[32mpython3.13-dbg[0m/parrot 3.13.5-2+deb13u2 amd64
+  Debug Build of the Python Interpreter (version 3.13)
+
+[32mpython3.13-dev[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Header files and a static library for Python (v3.13)
+
+[32mpython3.13-doc[0m/parrot 3.13.5-2+deb13u2 all
+  Documentation for the high-level object-oriented language Python (v3.13)
+
+[32mpython3.13-examples[0m/parrot 3.13.5-2+deb13u2 all
+  Examples for the Python language (v3.13)
+
+[32mpython3.13-full[0m/parrot 3.13.5-2+deb13u2 amd64
+  Python Interpreter with complete class library (version 3.13)
+
+[32mpython3.13-gdbm[0m/parrot 3.13.5-2+deb13u2 amd64
+  GNU dbm database support for Python (v3.13)
+
+[32mpython3.13-minimal[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Minimal subset of the Python language (version 3.13)
+
+[32mpython3.13-nopie[0m/parrot 3.13.5-2+deb13u2 amd64
+  Python interpreter linked without PIE (version 3.13)
+
+[32mpython3.13-tk[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Tkinter - Writing Tk applications with Python (v3.13)
+
+[32mpython3.13-venv[0m/parrot,now 3.13.5-2+deb13u2 amd64 [installed,automatic]
+  Interactive high-level object-oriented language (pyvenv binary, version 3.13)
+

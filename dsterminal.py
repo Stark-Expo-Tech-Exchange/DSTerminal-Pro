@@ -180,7 +180,7 @@ except ImportError:
     class init:
         def __init__(self, autoreset=True):
             pass
-    
+
     COLORS_AVAILABLE = False
     # ==========================import hardening==================
     # Try importing colorama for cross-platform color support
@@ -277,6 +277,19 @@ except ImportError:
         REVERSE = '\033[7m'
         HIDDEN = '\033[8m'
         RESET_ALL = '\033[0m'
+from privilege_manager import PrivilegeManager
+# =========================
+# SOC MODE DEFINITIONS
+# =========================
+
+class SOCMode(Enum):
+    USER = "USER"
+    ELEVATED = "ELEVATED"
+    FORENSIC = "FORENSIC"
+priv = PrivilegeManager()
+
+print(f"🔐 SOC MODE DETECTED: {priv.mode.value}")   
+    
     # Import hardening modules
 try:
     from hardening_dashboard import (
@@ -519,6 +532,10 @@ except Exception as e:
     print(f"⚠ Education typing engine import error: {e}")
     engine = None
     # =========================
+import ctypes
+import platform
+import time
+from enum import Enum
 import math
 import shlex
 import shutil
@@ -2143,19 +2160,86 @@ class SecurityTerminal:
         self.scan_complete = Event()
         self.scan_progress = 0
 
+    from enum import Enum
+    import os
+    import ctypes
+    import subprocess
+    import logging
+ 
+    def is_windows(self):
+        return os.name == "nt"
+
+
     def is_admin(self):
         """
         Check if running with administrative/root privileges
         """
         try:
-            return os.geteuid() == 0
-        except AttributeError:
-        # Windows fallback
-            import ctypes
-            try:
-                return ctypes.windll.shell32.IsUserAnAdmin()
-            except Exception:
-                return False
+            if self.is_windows():
+                return ctypes.windll.shell32.IsUserAnAdmin() != 0
+            else:
+                return os.geteuid() == 0
+        except Exception:
+            return False
+
+
+    def has_net_capabilities(self):
+        """
+        Check Linux raw socket capabilities
+        """
+        try:
+            result = subprocess.run(
+                ["capsh", "--print"],
+                capture_output=True,
+                text=True
+            )
+            return "cap_net_raw" in result.stdout
+        except Exception:
+            return False
+
+
+    def get_soc_mode(self):
+        """
+        SOC Mode priority:
+        FORENSIC > ELEVATED > USER
+        """
+
+        try:
+            # =========================
+            # FORENSIC OVERRIDE (highest priority)
+            # =========================
+            if os.path.exists(".FORENSIC_MODE"):
+                return SOCMode.FORENSIC
+
+            # =========================
+            # Privilege detection (cross-platform safe)
+            # =========================
+            is_admin = self.is_admin()
+            net_caps = self.has_net_capabilities()
+
+            # Linux root detection (FIX)
+            is_root = False
+            if os.name != "nt":
+                try:
+                    is_root = (os.geteuid() == 0)
+                except AttributeError:
+                    is_root = False
+
+            # Windows admin fallback (optional reinforcement)
+            if os.name == "nt":
+                is_root = is_admin
+
+            # =========================
+            # MODE DECISION
+            # =========================
+            if is_admin or net_caps or is_root:
+                return SOCMode.ELEVATED
+
+            return SOCMode.USER
+
+        except Exception:
+            return SOCMode.USER
+
 
     def setup_logging(self):
         """Configure logging system"""
@@ -2165,8 +2249,6 @@ class SecurityTerminal:
             format='%(asctime)s - %(message)s',
             filemode='a'
         )
-    def is_windows(self):
-        return os.name == "nt"
 
  
     def print_banner(self):
@@ -2183,10 +2265,26 @@ class SecurityTerminal:
             '\033[38;5;154m', '\033[38;5;190m', '\033[38;5;226m', '\033[38;5;220m',
             '\033[96m', '\033[95m', '\033[91m', '\033[93m'
         ]
-    
         BLINK = '\033[5m'
         BOLD = '\033[1m'
         RESET = '\033[0m'
+
+        # ================== ADD THIS BLOCK HERE ==================
+        mode = self.get_soc_mode()
+
+        mode_colors = {
+            SOCMode.USER: '\033[93m',      # yellow
+            SOCMode.ELEVATED: '\033[92m',  # green
+            SOCMode.FORENSIC: '\033[91m',  # red
+        }
+
+        mode_icons = {
+            SOCMode.USER: "USER 🔒",
+            SOCMode.ELEVATED: "ELEVATED 🛡️",
+            SOCMode.FORENSIC: "FORENSIC ☣️",
+        }
+        cli_mode_text = f"CLI Mode: {mode_icons.get(mode, 'UNKNOWN')}"
+# ==========================================================
     # ===============================================
     # Side content generators (rotating)
         left_panels = [
@@ -2262,6 +2360,9 @@ class SecurityTerminal:
         ]
     
     # Main banner (centered)
+        # Main banner (centered)
+        mode = self.get_soc_mode()
+
         main_banner = [
             "╔════════════════════════════════════════════════════════════════════════════╗",
             "║                                                                            ║",
@@ -2274,10 +2375,10 @@ class SecurityTerminal:
             "║                                                                            ║",
             "╠════════════════════════════════════════════════════════════════════════════╣",
             f"║     Defensive Security Terminal v2.1.327 | {platform.system()} {platform.release():<20}║",
-            "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange    ║",
+            "║     Developed by: Spark Wilson Spink | © 2024 | Powered by Stark Expo Tech Exchange     ║",
             "║     Type 'help' for available commands: Always Operate as an Administrator              ║",
-            f"║     CLI Mode: {'ADMIN' if self.is_admin() else 'USER'} 🔒                              ║",
-            "╚════════════════════════════════════════════════════════════════════════════╝"    
+            f"║                         {cli_mode_text:<72}                                            ║",
+            "╚════════════════════════════════════════════════════════════════════════════╝"
         ]
     
     # Animation state
@@ -2412,9 +2513,9 @@ class SecurityTerminal:
             sys.stdout.write(f"{color}{right_text:<24}")
             sys.stdout.write('\n')
 
-        if not self.is_admin():
-            print(f"\n{color}{BOLD}✅ System Ready | \n[!] Warning: Running without administrator privileges. Some features may be limited.{RESET}\n")
-    #         # =====================banner print ends here======================================
+    #     if not self.is_admin():
+    #         print(f"\n{color}{BOLD}✅ System Ready | \n[!] Warning: Running without administrator privileges. Some features may be limited.{RESET}\n")
+    # #         # =====================banner print ends here======================================
     def system_info(self):
         """Enhanced system information display with security context"""
         print("\n" + "="*60)
@@ -9321,128 +9422,6 @@ class SecurityTerminal:
         # Blinking threat neutralized
         self._blinking_text(self._center_text("⚠ THREAT NEUTRALIZED ⚠"), Fore.RED, 2)
     
-    # def harden_system(self, dry_run=False):
-    #     """Cinematic system hardening with typing, animations, and progress bars"""
-    #     try:
-    #         # Show enlarged blinking banner at start - THIS WAS MISSING!
-    #         self._enlarged_ascii_banner()
-            
-    #         # Matrix rain effect for style
-    #         self._matrix_rain_effect(1)
-            
-    #         # Check admin privileges
-    #         if not self.is_admin():
-    #             self._hacking_animation("Checking Privileges")
-    #             print(f"{Fore.RED}[!] Warning: Running without administrator privileges. Some features may be limited.{Style.RESET_ALL}")
-    #             # Don't return, continue with limited functionality
-            
-    #         # ----------------------------
-    #         # Pre-hardening animations
-    #         # ----------------------------
-    #         self._hacking_animation("Initializing Threat Assessment")
-    #         self._cinematic_typing("Scanning system threats...")
-    #         self._progress_bar("Threat Assessment", duration=3)
-            
-    #         self._network_scan_animation()
-    #         self._hacking_animation("Scanning Exploit Database")
-    #         self._cinematic_typing("Analyzing known vulnerabilities...")
-    #         self._progress_bar("Exploit Database Scan", duration=3)
-            
-    #         self._vulnerability_scan()
-    #         self._cyber_attack_simulation()
-    #         self._cinematic_typing("Threat analysis complete.")
-    #         self._progress_bar("Threat Analysis", duration=2)
-            
-    #         # ----------------------------
-    #         # Dry-run simulation
-    #         # ----------------------------
-    #         if dry_run:
-    #             self._hacking_animation("Simulating Countermeasures")
-    #             self._cinematic_typing("[SIMULATION] No changes were actually made.", 0.05)
-    #             self._progress_bar("Simulation", duration=2)
-            
-    #         # ----------------------------
-    #         # Actual hardening
-    #         # ----------------------------
-    #         else:
-    #             self._hacking_animation("Deploying Cyber Armor")
-    #             self._cinematic_typing("Applying system fortifications...", 0.04)
-    #             self._progress_bar("Deploying Armor", duration=3)
-                
-    #             try:
-    #                 system = platform.system()
-                    
-    #                 # Windows Hardening
-    #                 if system == "Windows":
-    #                     try:
-    #                         self._cinematic_typing("Disabling SMB1 protocol...", 0.04)
-    #                         powershell_cmd = "powershell -Command Disable-WindowsOptionalFeature -Online -FeatureName smb1protocol -NoRestart"
-    #                         self._progress_bar("SMB1 Disable", duration=2)
-                            
-    #                         if self.is_admin():
-    #                             result = subprocess.run(powershell_cmd, shell=True, capture_output=True, text=True)
-                                
-    #                             if result.returncode == 0:
-    #                                 self._cinematic_typing("[OK] SMB1 protocol disabled.", 0.04)
-    #                                 logging.info("SMB1 protocol disabled successfully on Windows")
-    #                             else:
-    #                                 self._cinematic_typing(f"[!] PowerShell command failed: {result.stderr}", 0.04)
-    #                                 logging.error(f"PowerShell command failed: {result.stderr}")
-    #                         else:
-    #                             self._cinematic_typing("[!] Skipping SMB1 disable (requires admin rights)", 0.04)
-                            
-    #                     except Exception as e:
-    #                         self._cinematic_typing(f"[!] Could not disable SMB1: {str(e)}", 0.04)
-    #                         logging.error(f"Error disabling SMB1: {str(e)}")
-                    
-    #                 # Linux Hardening
-    #                 elif system == "Linux":
-    #                     ufw_path = shutil.which("ufw")
-    #                     if ufw_path:
-    #                         self._cinematic_typing("Enabling UFW firewall...", 0.04)
-    #                         self._progress_bar("UFW Firewall", duration=2)
-    #                         try:
-    #                             subprocess.run(["sudo", ufw_path, "--force", "enable"], check=True)
-    #                             self._cinematic_typing("[OK] UFW firewall enabled.", 0.04)
-    #                             logging.info("UFW firewall enabled successfully on Linux")
-    #                         except subprocess.CalledProcessError as e:
-    #                             self._cinematic_typing(f"[!] Failed to enable UFW: {str(e)}", 0.04)
-    #                             logging.error(f"Failed to enable UFW: {str(e)}")
-    #                     else:
-    #                         self._cinematic_typing("[!] UFW firewall not found — skipping Linux hardening", 0.04)
-                
-    #             except Exception as e:
-    #                 logging.error(f"Hardening failed: {str(e)}")
-    #                 print(f"{Fore.RED}[!] Error during hardening: {str(e)}{Style.RESET_ALL}")
-            
-    #         # ----------------------------
-    #         # Cinematic completion with blinking
-    #         # ----------------------------
-    #         self._cinematic_typing("System fortification complete!", 0.05)
-            
-    #         # Blinking completion banner
-    #         for _ in range(3):
-    #             print(f"\r{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}", end="")
-    #             time.sleep(0.3)
-    #             print(f"\r{' ' * self.terminal_width}", end="")
-    #             time.sleep(0.3)
-            
-    #         print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
-    #         threat_level = random.randint(1, 10)
-            
-    #         # Blinking threat level
-    #         threat_text = f" Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10"
-    #         self._blinking_text(self._center_text(threat_text), Fore.YELLOW, 3)
-            
-    #     except Exception as e:
-    #         # Catch-all to preserve cinematic end even on errors
-    #         print(f"{Fore.RED}[!] Critical error: {str(e)}{Style.RESET_ALL}")
-    #         self._cinematic_typing("System fortification complete with errors.", 0.05)
-    #         print(f"\n{Fore.GREEN}{self._center_text('▄︻デ══━ SYSTEM FORTIFICATION COMPLETE ══━︻▄')}{Style.RESET_ALL}")
-    #         threat_level = random.randint(1, 10)
-    #         print(f"{Fore.YELLOW}{self._center_text(f' Firewall Active | Intrusion Prevention Engaged | Threat Level: {threat_level}/10')}{Style.RESET_ALL}")
-
-
     # go down here, don't remove these lines below
     def nikto_scan(self, target_url, port=80, output_file=None):
         """Run Nikto scan on a target URL."""

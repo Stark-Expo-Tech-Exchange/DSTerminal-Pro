@@ -1,1 +1,9 @@
 https://www.youtube.com/watch?v=_yBgiAkLL1c
+
+⚙️ How to use
+1. Save your GitHub HTML release (from editor)
+release.html
+2. Run generator
+python release_generator.py --file release.html --version v3.1.113
+3. Output
+RELEASE.md
